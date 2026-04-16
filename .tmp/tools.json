@@ -1,0 +1,60 @@
+{
+  "image": {
+    "annotate": "/dashboard/image/annotate",
+    "bg-remove": "/dashboard/image/bg-remove",
+    "compress": "/dashboard/image/compress",
+    "crop": "/dashboard/image/crop",
+    "favicon": "/dashboard/image/favicon",
+    "filters": "/dashboard/image/filters",
+    "format": "/dashboard/image/format",
+    "images-to-pdf": "/dashboard/image/images-to-pdf",
+    "palette": "/dashboard/image/palette",
+    "resize": "/dashboard/image/resize",
+    "rotate": "/dashboard/image/rotate",
+    "watermark": "/dashboard/image/watermark"
+  },
+  "video": {
+    "audio": "/dashboard/video/audio",
+    "compress": "/dashboard/video/compress",
+    "gif": "/dashboard/video/gif",
+    "rotate": "/dashboard/video/rotate",
+    "screenshots": "/dashboard/video/screenshots",
+    "silence": "/dashboard/video/silence",
+    "speed": "/dashboard/video/speed",
+    "trim": "/dashboard/video/trim"
+  },
+  "pdf": {
+    "compress": "/dashboard/pdf/compress",
+    "lock": "/dashboard/pdf/lock",
+    "merge": "/dashboard/pdf/merge",
+    "page-numbers": "/dashboard/pdf/page-numbers",
+    "pdf-to-images": "/dashboard/pdf/pdf-to-images",
+    "reorder": "/dashboard/pdf/reorder",
+    "rotate": "/dashboard/pdf/rotate",
+    "split": "/dashboard/pdf/split",
+    "text-watermark": "/dashboard/pdf/text-watermark"
+  },
+  "dev": {
+    "base64": "/dashboard/dev/base64",
+    "color": "/dashboard/dev/color",
+    "diff": "/dashboard/dev/diff",
+    "hash": "/dashboard/dev/hash",
+    "json": "/dashboard/dev/json",
+    "jwt": "/dashboard/dev/jwt",
+    "lorem": "/dashboard/dev/lorem",
+    "markdown": "/dashboard/dev/markdown",
+    "minifier": "/dashboard/dev/minifier",
+    "qr": "/dashboard/dev/qr",
+    "regex": "/dashboard/dev/regex",
+    "timestamp": "/dashboard/dev/timestamp",
+    "url": "/dashboard/dev/url",
+    "uuid": "/dashboard/dev/uuid"
+  },
+  "text": {
+    "case-converter": "/dashboard/text/case-converter",
+    "csv": "/dashboard/text/csv",
+    "replace": "/dashboard/text/replace",
+    "speech": "/dashboard/text/speech",
+    "word-counter": "/dashboard/text/word-counter"
+  }
+}

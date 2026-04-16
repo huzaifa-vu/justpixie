@@ -1,0 +1,462 @@
+.toolContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.toolHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.titleArea {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.backBtn {
+  background: white;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.backBtn:hover {
+  color: var(--pixie-teal);
+  border-color: var(--pixie-teal);
+}
+
+.iconBox {
+  background: var(--flutter-blue);
+  color: var(--pixie-teal);
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-size: 1.5rem;
+  color: var(--foreground);
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.mainWorkspace {
+  display: flex;
+  gap: 2rem;
+  min-height: 500px;
+}
+
+.previewArea {
+  flex: 1;
+  background: var(--surface-card);
+  border-radius: var(--radius-bento);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-bento);
+}
+
+.dropZone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-bento);
+  margin: 1.5rem;
+  background: var(--soft-pearl);
+  transition: all 0.2s;
+}
+
+.dropZone:hover {
+  border-color: var(--mint-green);
+  background: rgba(167, 243, 208, 0.1);
+}
+
+.dropIcon {
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.dropZone h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--foreground);
+}
+
+.dropZone p {
+  color: var(--text-muted);
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.viewerContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.viewerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.clearBtn {
+  background: transparent;
+  border: none;
+  color: var(--coral-pink);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.clearBtn:hover {
+  text-decoration: underline;
+}
+
+.imageComparisonBlock {
+  flex: 1;
+  position: relative;
+  background: var(--soft-pearl);
+}
+
+.imageBox {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+}
+
+/* ─── Before/After Slider ─── */
+.comparisonContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.comparisonImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.afterLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.invisibleSlider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  z-index: 10;
+}
+
+.sliderThumbLine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: white;
+  z-index: 5;
+  pointer-events: none;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -1.5px;
+}
+
+.sliderThumbHandle {
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--deep-charcoal);
+}
+
+.badgeBefore, .badgeAfter {
+  position: absolute;
+  top: 1rem;
+  padding: 0.35rem 0.85rem;
+  background: rgba(0,0,0,0.65);
+  color: white;
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  z-index: 5;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+}
+.badgeBefore { left: 1rem; border: 1px solid rgba(255,255,255,0.2); }
+.badgeAfter { right: 1rem; border: 1px solid rgba(167, 243, 208, 0.4); color: var(--mint-green); }
+
+.configSidebar {
+  width: 340px;
+  background: var(--surface-card);
+  border-radius: var(--radius-bento);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-bento);
+}
+
+.configHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--foreground);
+}
+
+.configHeader h2 {
+  font-size: 1.125rem;
+}
+
+.configBody {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.controlGroup label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.controlGroup strong {
+  color: var(--foreground);
+}
+
+.controlHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kbInput {
+  width: 80px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-align: right;
+  outline: none;
+}
+
+.kbInput:focus {
+  border-color: var(--mint-green);
+}
+
+.rangeSlider {
+  width: 100%;
+  accent-color: var(--mint-green);
+}
+
+.infoBox {
+  display: flex;
+  gap: 0.75rem;
+  background: rgba(0,0,0,0.03);
+  color: var(--text-muted);
+  padding: 1rem;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+
+.configFooter {
+  padding: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.executeBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--mint-green);
+  color: var(--deep-charcoal);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.executeBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(167, 243, 208, 0.4);
+}
+
+.executeBtn:disabled {
+  background: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.resultArea {
+  background: var(--deep-charcoal);
+  color: var(--text-inverse);
+  border-radius: var(--radius-bento);
+  padding: 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-bento);
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.resultDetails {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.resultStat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.statValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-inverse);
+}
+
+.statValueHighlight {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--mint-green);
+}
+
+.statValueHighlightPositive {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--mint-green);
+}
+
+.resultArrow {
+  color: #475569;
+}
+
+.downloadBtn {
+  background: var(--gentle-lilac);
+  color: var(--deep-charcoal);
+  border: none;
+  padding: 1.25rem 2.5rem;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  font-size: 1.125rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.downloadBtn:hover {
+  background: white;
+  transform: translateY(-2px);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ?? AUTO-INJECTED MOBILE OPTIMIZATION */
+@media (max-width: 768px) {
+  .mainWorkspace, .workspace {
+    flex-direction: column-reverse !important;
+    height: auto !important;
+    min-height: auto !important;
+    gap: 1rem !important;
+  }
+  .configSidebar { width: 100% !important; }
+  .previewArea, .canvasArea, .dropZone, .viewerContainer { width: 100% !important; min-height: 250px !important; padding: 1rem !important; margin: 0 !important; }
+  .titleArea { flex-direction: column !important; align-items: flex-start !important; gap: 0.5rem !important; }
+  .title { font-size: 1.25rem !important; }
+  .subtitle { font-size: 0.8rem !important; }
+  .actionBtn, .executeBtn, .downloadBtnLarge, .uploadBtn { height: 48px !important; font-size: 16px !important; }
+  .selectInput, .numberInput, .textInput { font-size: 16px !important; }
+  .toolHeader { flex-direction: column !important; align-items: flex-start !important; }
+}

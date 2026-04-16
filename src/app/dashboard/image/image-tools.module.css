@@ -1,0 +1,50 @@
+.container { display: flex; flex-direction: column; gap: 1.5rem; height: 100%; }
+.header { margin-bottom: 1rem; }
+.headerTitle { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+.headerIcon { color: var(--pixie-teal); }
+.headerTitle h1 { font-size: 2rem; font-weight: 800; color: var(--foreground); }
+.header p { color: var(--text-muted); }
+.workspace { display: flex; gap: 1.5rem; flex: 1; min-height: 500px; }
+.canvasArea { flex: 1; background: var(--surface-card); border-radius: var(--radius-bento); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: var(--shadow-bento); position: relative; }
+.configSidebar { width: 340px; background: var(--surface-card); border-radius: var(--radius-bento); border: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: var(--shadow-bento); }
+.configHeader { display: flex; align-items: center; gap: 0.75rem; padding: 1.5rem; border-bottom: 1px solid var(--border); color: var(--foreground); }
+.configBody { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; }
+.fieldGroup { display: flex; flex-direction: column; gap: 0.5rem; }
+.label { font-size: 0.8125rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.selectInput { padding: 0.75rem 1rem; border-radius: var(--radius-inner); border: 1px solid var(--border); background: var(--pure-white); font-family: inherit; font-size: 0.875rem; outline: none; color: var(--foreground); }
+.selectInput:focus { border-color: var(--mint-green); }
+.rangeLabel { display: flex; justify-content: space-between; align-items: center; }
+.rangeValue { font-weight: 700; color: var(--pixie-teal); font-size: 0.875rem; }
+.rangeInput { width: 100%; accent-color: var(--mint-green); }
+.actionBtn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 1rem; background: var(--mint-green); color: var(--deep-charcoal); border: none; border-radius: var(--radius-pill); font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s; }
+.actionBtn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(167, 243, 208, 0.4); }
+.actionBtn:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+.actionBtnAlt { width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 1rem; background: var(--gentle-lilac); color: var(--deep-charcoal); border: none; border-radius: var(--radius-pill); font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s; }
+.actionBtnAlt:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(196, 181, 253, 0.4); }
+.quickActions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.quickBtn { flex: 1; min-width: 100px; padding: 0.75rem; background: var(--soft-sage); border: 1px solid var(--border); border-radius: var(--radius-inner); font-weight: 600; font-size: 0.8rem; cursor: pointer; text-align: center; transition: all 0.2s; color: var(--foreground); }
+.quickBtn:hover { border-color: var(--pixie-teal); background: rgba(167, 243, 208, 0.15); }
+.quickBtnActive { background: var(--mint-green); color: var(--deep-charcoal); border-color: var(--mint-green); }
+.uploadBtn { padding: 0.75rem 1.5rem; background: transparent; border: 1px dashed var(--border); border-radius: var(--radius-pill); color: var(--text-muted); font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s; }
+.uploadBtn:hover { border-color: var(--pixie-teal); color: var(--foreground); }
+
+@media (max-width: 768px) {
+  .workspace {
+    flex-direction: column-reverse;
+    min-height: auto;
+    gap: 1rem;
+  }
+  .configSidebar {
+    width: 100%;
+  }
+  .canvasArea {
+    width: 100%;
+    min-height: 300px;
+  }
+  .selectInput {
+    font-size: 16px;
+  }
+  .actionBtn, .actionBtnAlt {
+    height: 48px;
+  }
+}

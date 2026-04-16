@@ -1,0 +1,67 @@
+.dropZone {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-bento);
+  margin: 1.5rem;
+  padding: 3rem;
+  background: var(--soft-sage);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  min-height: 200px;
+}
+
+.dropZone:hover {
+  border-color: var(--gentle-lilac);
+  background: rgba(196, 181, 253, 0.1);
+  transform: translateY(-2px);
+}
+
+.dragging {
+  border-color: var(--gentle-lilac);
+  background: rgba(196, 181, 253, 0.2);
+  transform: scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+}
+
+.dropIcon {
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  transition: transform 0.3s;
+}
+
+.dragging .dropIcon {
+  transform: scale(1.2) rotate(10deg);
+  color: var(--gentle-lilac);
+}
+
+.dropZone h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--foreground);
+}
+
+.dropZone p {
+  color: var(--text-muted);
+}
+
+.hiddenInput {
+  display: none;
+}
+
+:global([data-theme="dark"]) .dropZone {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:global([data-theme="dark"]) .dropZone:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+:global([data-theme="dark"]) .dragging {
+  background: rgba(196, 181, 253, 0.1);
+}
