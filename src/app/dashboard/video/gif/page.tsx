@@ -51,6 +51,8 @@ export default function GIFMaker() {
         const blob = new Blob([buffer], { type });
         return URL.createObjectURL(blob);
     };
+    load();
+  }, []);
 
   const handleFiles = (files: File[]) => {
     if (files.length > 0) {
