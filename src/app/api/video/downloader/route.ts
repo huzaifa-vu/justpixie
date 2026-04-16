@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
       noCheckCertificate: true,
       preferFreeFormats: true,
       youtubeSkipDashManifest: true,
-    });
+    } as any);
 
     // If proxy mode is requested, we fetch and pipe the actual video data.
     if (proxy) {
