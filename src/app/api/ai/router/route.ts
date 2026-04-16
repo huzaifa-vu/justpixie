@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
     } else {
       // --- SERVER-SIDE GUEST GUARD ---
       try {
-        const ip = req.ip || req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
+        const ip = (req as any).ip || req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
         const adminSupabase = createAdminClient();
         const { data: usage, error: fetchErr } = await adminSupabase.from("guest_usage").select("*").eq("ip", ip).single();
         
@@ -233,7 +233,7 @@ export async function POST(req: NextRequest) {
       }
     } else if (!user) {
       try {
-        const ip = req.ip || req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
+        const ip = (req as any).ip || req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
         const { data: usage } = await adminSupabase.from("guest_usage").select("*").eq("ip", ip).single();
         
         if (usage && usage.last_date === today) {
