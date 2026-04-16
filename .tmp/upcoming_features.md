@@ -20,5 +20,8 @@ This checklist tracks the upcoming features and improvements planned for the Pix
 
 ## 📦 Future Ideas (Backlog)
 - [ ] Youtube/Instagram/X Videos downloader {make sure to check that there is no web link the prompt area but in the text area}
+- [ ] Audio Downloader for youtube etc too
 - [ ] Mobile/Desktop Implementation
-- [ ] Mobile/Desktop Implementation
+- [ ] there is some responsiveness for screen size between desktop and mobile.
+- [ ] new features/bug request area for community.
+- [ ] the time limiting option. The cooldown option to not let a person use prompt too quick.

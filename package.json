@@ -11,7 +11,7 @@
   "dependencies": {
     "@ffmpeg/ffmpeg": "^0.12.7",
     "@ffmpeg/util": "^0.12.1",
-    "@google/genai": "^1.49.0",
+    "@google/genai": "^1.50.1",
     "@gsap/react": "^2.1.2",
     "@imgly/background-removal": "^1.4.3",
     "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
@@ -36,12 +36,14 @@
     "qrcode": "^1.5.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "react-image-crop": "^11.0.10"
+    "react-image-crop": "^11.0.10",
+    "youtube-dl-exec": "^3.1.5"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.3",
     "typescript": "^5"

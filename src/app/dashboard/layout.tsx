@@ -3,7 +3,7 @@
 import { ReactNode, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Wand2, LayoutDashboard, Image as ImageIcon, FileText, Video, Code, Settings, UserCircle, LogOut, Type, Menu, X, Info, HelpCircle, Sparkles } from "lucide-react";
+import { Wand2, LayoutDashboard, Image as ImageIcon, FileText, Video, Code, Settings, UserCircle, LogOut, Type, Menu, X, Info, HelpCircle, Sparkles, Download } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useQuota } from "@/hooks/useQuota";
 import styles from "./layout.module.css";
@@ -94,6 +94,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
     { name: "Image Magic", href: "/dashboard/image", icon: ImageIcon },
     { name: "PDF Spells", href: "/dashboard/pdf", icon: FileText },
     { name: "Video Alchemy", href: "/dashboard/video", icon: Video },
+    { name: "Download Hub", href: "/dashboard/download", icon: Download },
     { name: "Dev Utilities", href: "/dashboard/dev", icon: Code },
     { name: "Text & Data", href: "/dashboard/text", icon: Type },
   ];
@@ -116,7 +117,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`${styles.navItem} ${pathname === item.href ? styles.active : ""}`}
+                className={`${styles.navItem} ${pathname === item.href || pathname.startsWith(item.href + '/') ? styles.active : ""}`}
               >
                 <item.icon size={20} />
                 {!collapsed && <span>{item.name}</span>}
@@ -190,8 +191,8 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
 
       {/* --- MOBILE BOTTOM NAVIGATION BAR --- */}
       <nav className={styles.mobileBottomBar}>
-        {navItems.slice(0, 4).map((item) => (
-          <Link key={item.href} href={item.href} className={`${styles.mobileTab} ${pathname === item.href ? styles.activeTab : ""}`}>
+        {navItems.slice(0, 5).map((item) => (
+          <Link key={item.href} href={item.href} className={`${styles.mobileTab} ${pathname === item.href || pathname.startsWith(item.href + '/') ? styles.activeTab : ""}`}>
             <item.icon size={24} />
             <span>{item.name === "Dashboard" ? "Home" : item.name.split(" ")[0]}</span>
           </Link>
@@ -215,7 +216,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
         <div className={styles.sheetContent}>
           <div className={styles.navGroup}>
             <span className={styles.groupLabel}>More Tools</span>
-            {navItems.slice(4).map((item) => (
+            {navItems.slice(5).map((item) => (
               <Link key={item.href} href={item.href} className={`${styles.navItem} ${pathname === item.href ? styles.active : ""}`}>
                 <item.icon size={20} />
                 <span>{item.name}</span>

@@ -1,12 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Wand2, Video, Headphones, VolumeX, Shrink, FileVideo, RotateCw, Gauge, Scissors, Camera , ArrowRight } from "lucide-react";
+import { 
+  Video, Headphones, VolumeX, Shrink, FileVideo, 
+  RotateCw, Gauge, Scissors, Camera, ArrowRight, 
+  Plus 
+} from "lucide-react";
 import styles from "../page.module.css";
 import Link from "next/link";
 
 export default function VideoCategoryHome() {
   const tools = [
+    { name: 'A/V Merger', type: 'Utility', desc: 'Locally merge video & audio streams.', href: '/dashboard/video/merge', icon: Plus },
     { name: 'Video to Audio', type: 'Video', desc: 'Extract MP3 directly in browser.', href: '/dashboard/video/audio', icon: Headphones },
     { name: 'Video Silencer', type: 'Video', desc: 'Mute track audio natively.', href: '/dashboard/video/silence', icon: VolumeX },
     { name: 'Compress Video', type: 'Video', desc: 'Lossy size reduction without servers.', href: '/dashboard/video/compress', icon: Shrink },

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wand2, UploadCloud, ArrowRight, FileImage, FileText, Film, Code, Sparkles, Type, Loader2, X, AlertCircle, ChevronDown, Lock, FileCode, LogIn, ArrowDown } from "lucide-react";
+import { Wand2, UploadCloud, ArrowRight, FileImage, FileText, Film, Code, Sparkles, Type, Loader2, X, AlertCircle, ChevronDown, Lock, FileCode, LogIn, ArrowDown, Download } from "lucide-react";
 import styles from "./page.module.css";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -38,8 +38,6 @@ const FilePreview = ({ file, onRemove }: { file: File, onRemove: () => void }) =
   );
 };
 
-
-
 export default function DashboardHome() {
   const [instruction, setInstruction] = useState("");
   const [dataText, setDataText] = useState("");
@@ -52,7 +50,7 @@ export default function DashboardHome() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
-  const { guestUsed, guestLimit, guestRemaining, incrementGuestQuota, syncLimitReached } = useQuota(user);
+  const { guestUsed, guestLimit, guestRemaining, syncLimitReached } = useQuota(user);
   const { setInternalDragging } = useFileDropContext();
 
   // Register with global D&D system
@@ -68,7 +66,6 @@ export default function DashboardHome() {
     const supabase = createClient();
 
     // If user just returned from a successful Lemon Squeezy checkout, force-refresh their JWT token 
-    // so the completely updated user_metadata (Unlimited tier) is instantly synced to the browser!
     if (typeof window !== "undefined" && window.location.search.includes("success=true")) {
       supabase.auth.refreshSession().then(() => {
         // Clean up URL silently
@@ -89,7 +86,6 @@ export default function DashboardHome() {
   // Detect if user accidentally pasted data into the instruction bar
   const dataInPromptWarning = useMemo(() => {
     if (instruction.length < 150) return false;
-    // Check for common data patterns: JSON, CSV, multi-line
     const looksLikeData = /^[\[{]/.test(instruction.trim()) || 
                           instruction.includes("\n") ||
                           (instruction.split(",").length > 4 && instruction.length > 150);
@@ -125,7 +121,6 @@ export default function DashboardHome() {
   };
 
   const handlePromptPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    // Automatically capture pasted image/files in the prompt bar and toss them down to the Payload Zone
     if (e.clipboardData.files && e.clipboardData.files.length > 0) {
       e.preventDefault();
       const newFiles = Array.from(e.clipboardData.files);
@@ -145,11 +140,10 @@ export default function DashboardHome() {
     e?.preventDefault();
     if (!instruction.trim() || isThinking) return;
 
-    // Guest prompt limit check
     if (isLoggedIn === false && guestUsed >= guestLimit) {
       setAiError("");
       setAiMessage("");
-      return; // The UI already shows the login nudge
+      return; 
     }
     
     setIsThinking(true);
@@ -160,7 +154,6 @@ export default function DashboardHome() {
       const res = await fetch("/api/ai/router", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // Only the instruction goes to Gemini — never the data payload
         body: JSON.stringify({ prompt: instruction })
       });
 
@@ -168,24 +161,16 @@ export default function DashboardHome() {
         let friendlyMsg = "Pixie couldn't process that right now. Please try again later.";
         try {
           const errData = await res.json();
-          
           if (res.status === 402) {
-            // Server-side quota block — sync the UI state immediately
-            if (!isLoggedIn) {
-              syncLimitReached();
-            } else {
-              // Force sidebar to refetch auth metadata to show the true used amount
-              window.dispatchEvent(new CustomEvent("pixie_quota_changed"));
-            }
+            if (!isLoggedIn) syncLimitReached();
+            else window.dispatchEvent(new CustomEvent("pixie_quota_changed"));
             friendlyMsg = errData.error || "You've reached your daily limit.";
           } else if (errData.error?.includes("No prompt")) {
             friendlyMsg = "Please enter an instruction for Pixie.";
           } else if (errData.error?.includes("API key")) {
             friendlyMsg = "Pixie AI is temporarily unavailable. All tools still work — browse them below!";
           }
-        } catch {
-          // JSON parse failed
-        }
+        } catch {}
         throw new Error(friendlyMsg);
       }
 
@@ -195,34 +180,19 @@ export default function DashboardHome() {
         throw new Error("Pixie couldn't determine the right tool. Try rephrasing!");
       }
 
-      // Sync quota state across components
       if (typeof window !== 'undefined') {
-        if (isLoggedIn === false) {
-          incrementGuestQuota();
-        } else {
-          // Trigger event for auth users to refresh sidebar metadata
-          window.dispatchEvent(new CustomEvent("pixie_quota_changed"));
-        }
+        if (isLoggedIn === false) incrementGuestQuota();
+        else window.dispatchEvent(new CustomEvent("pixie_quota_changed"));
       }
 
       setAiMessage(data.message || "Routing you to the right tool...");
 
-      // Merge: Gemini's extracted params + local data payload
       const mergedParams = { ...data.params };
-      
-      // If user pasted text in the data zone, inject it as inputText
-      // but don't overwrite if Gemini already set a specific inputText from the instruction
       if (dataText.trim()) {
-        if (!mergedParams.inputText) {
-          mergedParams.inputText = dataText;
-        }
-        // For diff checker — if route targets diff and there's no oldText set
-        if (data.route.includes("/diff") && !mergedParams.oldText) {
-          mergedParams.oldText = dataText;
-        }
+        if (!mergedParams.inputText) mergedParams.inputText = dataText;
+        if (data.route.includes("/diff") && !mergedParams.oldText) mergedParams.oldText = dataText;
       }
 
-      // Inject state into the transfer cache
       setAiState({
         targetRoute: data.route,
         files: selectedFiles,
@@ -230,7 +200,6 @@ export default function DashboardHome() {
         autoExecute: data.autoExecute ?? false
       });
 
-      // Brief delay so user sees the message
       setTimeout(() => {
         router.push(data.route);
       }, 800);
@@ -249,7 +218,8 @@ export default function DashboardHome() {
   const categories = [
     { name: "Image Magic", count: "11 Tools", icon: FileImage, color: "#D0EFFF", text: "#007799", href: "/dashboard/image" },
     { name: "PDF Spells", count: "10 Tools", icon: FileText, color: "#FFE4E6", text: "#E11D48", href: "/dashboard/pdf" },
-    { name: "Video Alchemy", count: "8 Tools", icon: Film, color: "#E0E7FF", text: "#4338CA", href: "/dashboard/video" },
+    { name: "Video Alchemy", count: "9 Tools", icon: Film, color: "#E0E7FF", text: "#4338CA", href: "/dashboard/video" },
+    { name: "Download Hub", count: "4 Tools", icon: Download, color: "#F0FFD4", text: "#4D7C0F", href: "/dashboard/download" },
     { name: "Dev Utilities", count: "14 Tools", icon: Code, color: "#DCFCE7", text: "#15803D", href: "/dashboard/dev" },
     { name: "Text & Data", count: "5 Tools", icon: Type, color: "#FDE8EF", text: "#BE185D", href: "/dashboard/text" },
   ];
@@ -277,7 +247,6 @@ export default function DashboardHome() {
             <span className={styles.aiHeaderTitle}>Pixie AI Core</span>
           </div>
 
-          {/* Zone 1: Instruction Bar */}
           <AnimatePresence>
             {dataInPromptWarning && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={styles.pointerLabel}>
@@ -306,7 +275,6 @@ export default function DashboardHome() {
             </button>
           </div>
 
-          {/* Guest prompt limit nudge */}
           <AnimatePresence>
             {guestLimitReached && (
               <motion.div
@@ -325,7 +293,6 @@ export default function DashboardHome() {
             )}
           </AnimatePresence>
 
-          {/* Guest remaining prompts indicator */}
           {isLoggedIn === false && !guestLimitReached && guestUsed > 0 && (
             <div className={styles.promptCounter}>
               <Sparkles size={12} />
@@ -333,7 +300,6 @@ export default function DashboardHome() {
             </div>
           )}
 
-          {/* Soft Error when user pastes large data in the prompt */}
           <AnimatePresence>
             {dataInPromptWarning && (
               <motion.div 
@@ -354,7 +320,6 @@ export default function DashboardHome() {
             )}
           </AnimatePresence>
 
-          {/* Zone 2: Data Payload Toggle */}
           <button 
             className={styles.dataToggle}
             onClick={() => setDataExpanded(!dataExpanded)}
@@ -369,7 +334,6 @@ export default function DashboardHome() {
             )}
           </button>
 
-          {/* Overlay to dim background when there's a data placement error */}
           <AnimatePresence>
             {dataInPromptWarning && (
               <motion.div 
@@ -381,7 +345,6 @@ export default function DashboardHome() {
             )}
           </AnimatePresence>
 
-          {/* Zone 2: Data Payload Content */}
           <AnimatePresence>
             {dataExpanded && (
               <motion.div
@@ -397,7 +360,6 @@ export default function DashboardHome() {
                   </motion.div>
                 )}
                 <div className={`${styles.dataZone} ${dataInPromptWarning ? styles.dataZoneHighlighted : ''}`}>
-                  {/* Text Payload */}
                   <div className={styles.dataTextPanel}>
                     <div className={styles.dataPanelLabel}>
                       <FileCode size={14} />
@@ -417,7 +379,6 @@ export default function DashboardHome() {
                     )}
                   </div>
 
-                  {/* File Drop Zone */}
                   <div className={styles.dataFilePanel}>
                     <div className={styles.dataPanelLabel}>
                       <UploadCloud size={14} />
@@ -439,7 +400,6 @@ export default function DashboardHome() {
                       multiple
                     />
                     
-                    {/* File chips */}
                     {selectedFiles.length > 0 && (
                       <div className={styles.fileChips}>
                         {selectedFiles.map((f, i) => (
@@ -453,7 +413,6 @@ export default function DashboardHome() {
             )}
           </AnimatePresence>
 
-          {/* AI Status Messages */}
           {aiMessage && (
             <div className={styles.aiStatus}>
               {isThinking && <Loader2 size={16} className={styles.spinIcon} />}
