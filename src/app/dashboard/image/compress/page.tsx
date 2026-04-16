@@ -125,7 +125,7 @@ export default function ImageCompressor() {
     <div className={styles.toolContainer}>
       <header className={styles.toolHeader}>
         <div className={styles.titleArea}>
-          <button onClick={() => router.back()} style={{ background: "transparent", border: "none", cursor: "pointer" }} className={styles.backBtn} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
+          <button onClick={() => router.back()} className={styles.backBtn} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
             <ArrowLeft size={20} />
           </button>
           <div className={styles.iconBox}>

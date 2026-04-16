@@ -13,6 +13,9 @@ interface DropZoneProps {
   subtitle?: string;
   icon?: LucideIcon;
   className?: string;
+  compact?: boolean;
+  previewUrl?: string | null;
+  children?: React.ReactNode;
 }
 
 export function DropZone({
@@ -22,7 +25,10 @@ export function DropZone({
   title = "Drop your file here",
   subtitle = "Or click to browse securely",
   icon: Icon = UploadCloud,
-  className = ""
+  className = "",
+  compact = false,
+  previewUrl = null,
+  children
 }: DropZoneProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLocalDragging, setIsLocalDragging] = useState(false);
@@ -53,15 +59,21 @@ export function DropZone({
 
   return (
     <div
-      className={`${styles.dropZone} ${isLocalDragging ? styles.dragging : ""} ${className}`}
+      className={`${styles.dropZone} ${isLocalDragging ? styles.dragging : ""} ${compact ? styles.compact : ""} ${className}`}
       onClick={() => fileInputRef.current?.click()}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <Icon size={48} className={styles.dropIcon} />
-      <h3>{title}</h3>
-      <p>{subtitle}</p>
+      {children ? (
+        children
+      ) : (
+        <>
+          <Icon size={compact ? 24 : 48} className={styles.dropIcon} />
+          <h3>{title}</h3>
+          {!compact && <p>{subtitle}</p>}
+        </>
+      )}
       
       <input
         type="file"

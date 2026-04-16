@@ -84,7 +84,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
     }
   };
 
-  const fetchChunk = async (targetUrl: string, start: number, end: number, onSubProgress: (received: number) => void) => {
+  const fetchChunk = async (targetUrl: string, start: number, end: number, onSubProgress: (received: number) => void): Promise<ArrayBuffer> => {
     const MAX_RETRIES = 3;
     let attempt = 0;
 
@@ -135,6 +135,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
         await new Promise(r => setTimeout(r, 1000 * attempt));
       }
     }
+    throw new Error(`Failed to fetch chunk after ${MAX_RETRIES} attempts.`);
   };
 
   const fetchStream = async (targetUrl: string, onProgress: (p: number) => void) => {
@@ -231,7 +232,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
           onProgress(Math.round((totalDownloaded / totalSize) * 100));
         });
 
-        if (buffer.byteLength === 0) {
+        if (!buffer || buffer.byteLength === 0) {
           isEOFReached = true;
           break;
         }
@@ -336,7 +337,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
                   if (totalSize > 0) setProgress(Math.round((totalDownloaded / totalSize) * 100));
                 });
 
-                if (buffer.byteLength === 0) {
+                if (!buffer || buffer.byteLength === 0) {
                   isEOFReached = true;
                   break;
                 }
