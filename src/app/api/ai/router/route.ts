@@ -191,7 +191,7 @@ export async function POST(req: NextRequest) {
         systemInstruction: SYSTEM_PROMPT,
         temperature: 0.1,
         maxOutputTokens: 1024,
-        response_mime_type: "application/json",
+        responseMimeType: "application/json",
       }
     });
 
