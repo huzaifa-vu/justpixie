@@ -162,15 +162,21 @@ export default function DashboardHome() {
         try {
           const errData = await res.json();
           if (res.status === 402) {
-            if (!isLoggedIn) syncLimitReached();
-            else window.dispatchEvent(new CustomEvent("pixie_quota_changed"));
+            if (!isLoggedIn) {
+              syncLimitReached();
+            } else {
+              // Trigger event for auth users to refresh sidebar metadata
+              window.dispatchEvent(new CustomEvent("pixie_quota_changed"));
+            }
             friendlyMsg = errData.error || "You've reached your daily limit.";
           } else if (errData.error?.includes("No prompt")) {
             friendlyMsg = "Please enter an instruction for Pixie.";
           } else if (errData.error?.includes("API key")) {
             friendlyMsg = "Pixie AI is temporarily unavailable. All tools still work — browse them below!";
           }
-        } catch {}
+        } catch {
+          // JSON parse failed
+        }
         throw new Error(friendlyMsg);
       }
 
@@ -180,17 +186,31 @@ export default function DashboardHome() {
         throw new Error("Pixie couldn't determine the right tool. Try rephrasing!");
       }
 
+      // Sync quota state across components
       if (typeof window !== 'undefined') {
-        if (isLoggedIn === false) incrementGuestQuota();
-        else window.dispatchEvent(new CustomEvent("pixie_quota_changed"));
+        if (isLoggedIn === false) {
+          syncLimitReached();
+        } else {
+          // Trigger event for auth users to refresh sidebar metadata
+          window.dispatchEvent(new CustomEvent("pixie_quota_changed"));
+        }
       }
 
       setAiMessage(data.message || "Routing you to the right tool...");
 
+      // Merge: Gemini's extracted params + local data payload
       const mergedParams = { ...data.params };
+      
+      // If user pasted text in the data zone, inject it as inputText
+      // but don't overwrite if Gemini already set a specific inputText from the instruction
       if (dataText.trim()) {
-        if (!mergedParams.inputText) mergedParams.inputText = dataText;
-        if (data.route.includes("/diff") && !mergedParams.oldText) mergedParams.oldText = dataText;
+        if (!mergedParams.inputText) {
+          mergedParams.inputText = dataText;
+        }
+        // For diff checker — if route targets diff and there's no oldText set
+        if (data.route.includes("/diff") && !mergedParams.oldText) {
+          mergedParams.oldText = dataText;
+        }
       }
 
       setAiState({

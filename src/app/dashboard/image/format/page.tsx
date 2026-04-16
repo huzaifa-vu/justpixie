@@ -149,7 +149,7 @@ export default function FormatConverter() {
                <Dropdown options={[{ label: "WEBP (Web Optimized)", value: "image/webp" }, { label: "PNG (Lossless Alpha)", value: "image/png" }, { label: "JPEG (Standard Lossy)", value: "image/jpeg" }]} value={targetFormat} onChange={(val) => {
                    setTargetFormat(val);
                    setResultUrl(null); // Force re-render for new format type
-                 } />
+                 }} />
              </div>
 
             {!resultUrl ? (

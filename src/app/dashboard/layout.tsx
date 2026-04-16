@@ -113,16 +113,23 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
         <nav className={styles.navMenu}>
           <div className={styles.navGroup}>
             {!collapsed && <span className={styles.groupLabel}>Tools</span>}
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`${styles.navItem} ${pathname === item.href || pathname.startsWith(item.href + '/') ? styles.active : ""}`}
-              >
-                <item.icon size={20} />
-                {!collapsed && <span>{item.name}</span>}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              // For the root dashboard item, only match the exact path
+              // For all others, match the exact path OR any sub-route
+              const isActive = item.href === '/dashboard'
+                ? pathname === '/dashboard'
+                : pathname === item.href || pathname.startsWith(item.href + '/');
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`${styles.navItem} ${isActive ? styles.active : ""}`}
+                >
+                  <item.icon size={20} />
+                  {!collapsed && <span>{item.name}</span>}
+                </Link>
+              );
+            })}
           </div>
 
           <div className={styles.navGroup} style={{ marginTop: '1.5rem' }}>
