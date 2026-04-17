@@ -35,10 +35,10 @@ const RESOLVER_POOL = [
 // Custom agents to handle SSL-resilience for community instances
 const sslResilientAgent = new https.Agent({ rejectUnauthorized: false });
 
-// Helper: Attempt extraction via Private Bridge (Cloudflare V2)
+// Helper: Attempt extraction via Private Bridge (Cloudflare V3)
 const attemptBridgeExtraction = async (videoId: string) => {
   try {
-    console.log(`Attempting Private Bridge V2: ${PRIVATE_BRIDGE_URL}`);
+    console.log(`Attempting Private Bridge V3: ${PRIVATE_BRIDGE_URL}`);
     const res = await fetch(`${PRIVATE_BRIDGE_URL}?id=${videoId}`, {
       headers: { 'Accept': 'application/json' },
       signal: AbortSignal.timeout(6000)
