@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { create } from 'youtube-dl-exec';
 import path from 'path';
+import fs from 'fs';
 
 // Construct the absolute path to the yt-dlp binary.
 // This fixes ENOENT errors where the binary is not found in the default path.
@@ -25,6 +26,20 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    // Sanity check: verify the binary exists and is not 0 bytes
+    try {
+      const stats = fs.statSync(binPath);
+      if (stats.size < 1024 * 512) { // Less than 512KB is definitely wrong for a standalone binary
+        throw new Error(`Standalone binary is corrupt or too small (${stats.size} bytes).`);
+      }
+    } catch (e: any) {
+      console.error('Binary Access Error:', e);
+      return NextResponse.json({ 
+        error: 'Extractor engine is not ready. Please try again in a moment.', 
+        details: e.message 
+      }, { status: 503 });
+    }
+
     // Extract metadata using yt-dlp
     const info = await youtubeDl(videoUrl, {
       dumpSingleJson: true,
@@ -179,6 +194,11 @@ export async function GET(req: NextRequest) {
       message = 'This video requires authentication or is age-restricted.';
     }
 
-    return NextResponse.json({ error: message, details: error.message }, { status: 500 });
+    return NextResponse.json({ 
+      error: message, 
+      details: error.message,
+      command: error.command, 
+      stderr: error.stderr 
+    }, { status: 500 });
   }
 }
