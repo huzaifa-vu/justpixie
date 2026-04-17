@@ -48,6 +48,7 @@ export async function GET(req: NextRequest) {
       preferFreeFormats: true,
       ignoreConfig: true,
       noCacheDir: true,
+      noplaylist: true,
       extractorArgs: 'youtube:player-client=tv,web_embedded',
       userAgent: 'Mozilla/5.0 (Chromecast; Google TV) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     } as any);
