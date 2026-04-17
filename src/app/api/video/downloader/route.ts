@@ -20,6 +20,8 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const videoUrl = searchParams.get('url');
   const proxy = searchParams.get('proxy') === 'true';
+  const poToken = searchParams.get('poToken');
+  const visitorData = searchParams.get('visitorData');
 
   if (!videoUrl) {
     return NextResponse.json({ error: 'URL is required' }, { status: 400 });
@@ -40,6 +42,11 @@ export async function GET(req: NextRequest) {
       }, { status: 503 });
     }
 
+    // Advanced Extractor Args with PoToken support for YouTube bypass
+    const extractorArgs = videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be') 
+      ? `youtube:player-client=web,tv;${poToken ? `po_token=${poToken};` : ''}${visitorData ? `visitor_data=${visitorData}` : ''}`
+      : undefined;
+
     // Extract metadata using yt-dlp
     const info = await youtubeDl(videoUrl, {
       dumpSingleJson: true,
@@ -48,9 +55,9 @@ export async function GET(req: NextRequest) {
       preferFreeFormats: true,
       ignoreConfig: true,
       noCacheDir: true,
-      noplaylist: true,
-      extractorArgs: 'youtube:player-client=tv,web_embedded',
-      userAgent: 'Mozilla/5.0 (Chromecast; Google TV) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      noPlaylist: true,
+      extractorArgs: extractorArgs,
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     } as any);
 
     // If proxy mode is requested, we fetch and pipe the actual video data.
