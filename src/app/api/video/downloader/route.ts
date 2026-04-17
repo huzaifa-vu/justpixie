@@ -35,20 +35,20 @@ const RESOLVER_POOL = [
 // Custom agents to handle SSL-resilience for community instances
 const sslResilientAgent = new https.Agent({ rejectUnauthorized: false });
 
-// Helper: Attempt extraction via Private Bridge (Cloudflare)
+// Helper: Attempt extraction via Private Bridge (Cloudflare V2)
 const attemptBridgeExtraction = async (videoId: string) => {
   try {
-    console.log(`Attempting Private Bridge: ${PRIVATE_BRIDGE_URL}`);
+    console.log(`Attempting Private Bridge V2: ${PRIVATE_BRIDGE_URL}`);
     const res = await fetch(`${PRIVATE_BRIDGE_URL}?id=${videoId}`, {
       headers: { 'Accept': 'application/json' },
-      signal: AbortSignal.timeout(5000)
+      signal: AbortSignal.timeout(6000)
     });
     if (res.ok) {
       const data = await res.json();
-      return { 
-        type: data.isFromInvidious ? 'invidious' : 'piped', 
-        data 
-      };
+      return { type: 'innertube', data };
+    } else {
+      const errText = await res.text();
+      console.warn(`Bridge returned ${res.status}: ${errText}`);
     }
   } catch (e: any) {
     console.warn(`Private bridge failed: ${e.message}`);
@@ -61,14 +61,12 @@ const attemptPoolExtraction = async (videoId: string) => {
   for (const instance of RESOLVER_POOL) {
     try {
       console.log(`Trying Global Resolver (${instance.type}): ${instance.url}`);
-      
       const res = await fetch(`${instance.url}${videoId}`, {
         headers: { 'Accept': 'application/json' },
         signal: AbortSignal.timeout(3000),
         // @ts-ignore
         agent: sslResilientAgent 
       } as any);
-
       if (res.ok) {
         const data = await res.json();
         if (instance.type === 'piped' && data.videoStreams?.length > 0) return { type: 'piped', data };
@@ -104,40 +102,61 @@ export async function GET(req: NextRequest) {
     let downloadOptions: any[] = [];
     let usedResolver = false;
 
-    // --- PHASE 0: PRIVATE BRIDGE (YOUTUBE ONLY) ---
+    // --- PHASE 0: PRIVATE BRIDGE V2 (YOUTUBE ONLY) ---
     if (isYouTube && videoId) {
       const bridgeResult = await attemptBridgeExtraction(videoId);
       if (bridgeResult) {
         usedResolver = true;
-        const { type, data } = bridgeResult;
-        console.log(`Private Bridge Success (${type})!`);
+        const { data } = bridgeResult;
+        console.log(`Private Bridge V2 Success!`);
         
-        info = { title: data.title || 'YouTube Video', thumbnail: data.thumbnailUrl || data.videoThumbnails?.[0]?.url || '', duration: data.duration || 0, original_url: videoUrl };
+        info = { title: data.title || 'YouTube Video', thumbnail: data.thumbnailUrl || '', duration: data.duration || 0, original_url: videoUrl };
 
-        if (type === 'piped') {
-          const allStreams = [...(data.videoStreams || []), ...(data.audioStreams || [])];
-          const qualityMap: Record<string, any> = {};
-          allStreams.forEach((s: any) => {
-            if (s.videoOnly) return; 
-            const isAudio = s.mimeType?.startsWith('audio/');
-            const q = isAudio ? 'Audio' : (s.quality || '720p');
-            if (!qualityMap[q] || (s.bitrate > qualityMap[q].bitrate)) {
-              qualityMap[q] = { id: `br-${isAudio ? 'audio' : s.quality}`, quality: q, ext: s.format === 'MPEG_4' ? 'mp4' : (isAudio ? 'm4a' : 'webm'), isCombined: true, url: s.url, bitrate: s.bitrate };
-            }
-          });
-          downloadOptions = Object.values(qualityMap).sort((a: any, b: any) => {
-              if (a.quality === 'Audio') return -1;
-              if (b.quality === 'Audio') return 1;
-              return parseInt(b.quality) - parseInt(a.quality);
-          });
-        } else if (type === 'invidious') {
-          downloadOptions = (data.formatStreams || []).map((s: any) => ({ id: `br-${s.qualityLabel || s.resolution}`, quality: s.qualityLabel || s.quality || 'HD', ext: s.container || 'mp4', isCombined: true, url: s.url, bitrate: s.bitrate || 0 })).sort((a: any, b: any) => parseInt(b.quality) - parseInt(a.quality));
+        const formats = data.formatStreams || [];
+        const adaptive = data.adaptiveFormats || [];
+        
+        // Find best audio-only stream
+        const bestAudio = adaptive
+          .filter((f: any) => f.mimeType?.includes('audio/'))
+          .sort((a: any, b: any) => (parseInt(b.bitrate) || 0) - (parseInt(a.bitrate) || 0))[0];
+
+        const qualityMap: Record<string, any> = {};
+        
+        // Process combined formats (direct download)
+        formats.forEach((f: any) => {
+          const q = f.qualityLabel || '720p';
+          qualityMap[q] = { id: `br-${f.itag}`, quality: q, ext: 'mp4', isCombined: true, url: f.url, bitrate: f.bitrate };
+        });
+
+        // Process adaptive formats (high resolution)
+        adaptive.forEach((f: any) => {
+          if (!f.qualityLabel) return;
+          const q = f.qualityLabel;
+          // Prefer adaptive if combined is not available or if this is higher quality
+          if (!qualityMap[q]) {
+            qualityMap[q] = {
+              id: `br-${f.itag}`,
+              quality: q,
+              ext: f.mimeType?.includes('video/webm') ? 'webm' : 'mp4',
+              isCombined: false,
+              url: f.url,
+              bitrate: f.bitrate,
+              audioUrl: bestAudio?.url,
+              audioSize: 0
+            };
+          }
+        });
+
+        downloadOptions = Object.values(qualityMap).sort((a: any, b: any) => parseInt(b.quality) - parseInt(a.quality));
+        if (bestAudio) {
+            downloadOptions.unshift({ id: `br-audio`, quality: 'Audio', ext: 'm4a', isCombined: true, url: bestAudio.url, bitrate: bestAudio.bitrate });
         }
       }
     }
 
     // --- PHASE 1: GLOBAL RESOLVER POOL FALLBACK ---
     if (isYouTube && videoId && !usedResolver) {
+...
       const poolResult = await attemptPoolExtraction(videoId);
       if (poolResult) {
         usedResolver = true;
