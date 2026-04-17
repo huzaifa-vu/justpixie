@@ -156,7 +156,6 @@ export async function GET(req: NextRequest) {
 
     // --- PHASE 1: GLOBAL RESOLVER POOL FALLBACK ---
     if (isYouTube && videoId && !usedResolver) {
-...
       const poolResult = await attemptPoolExtraction(videoId);
       if (poolResult) {
         usedResolver = true;
