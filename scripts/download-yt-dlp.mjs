@@ -8,7 +8,7 @@ const rootDir = path.join(__dirname, '..');
 const binDir = path.join(rootDir, 'bin');
 
 const URLS = {
-  linux: 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp',
+  linux: 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux',
   win32: 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe',
   darwin: 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos'
 };
@@ -40,10 +40,10 @@ function downloadFile(url, dest) {
       file.on('finish', () => {
         file.close();
         
-        // Validate file size (yt-dlp standalone should be at least 10MB)
+        // Validate file size (yt-dlp standalone starts at ~15MB)
         const stats = fs.statSync(dest);
-        if (stats.size < 1024 * 1024 * 5) { // 5MB threshold
-            return reject(new Error(`Downloaded file is too small (${stats.size} bytes). Download likely failed.`));
+        if (stats.size < 1024 * 1024 * 12) { // 12MB threshold
+            return reject(new Error(`Downloaded file is too small (${stats.size} bytes). This is likely the zipimport version, but we need the standalone binary.`));
         }
         
         resolve();
