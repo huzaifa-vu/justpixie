@@ -80,36 +80,65 @@ export async function GET(req: NextRequest) {
   const isYouTube = videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be');
   const videoId = isYouTube ? extractVideoId(videoUrl) : null;
 
-  try {
-    let result: any = null;
+    console.log(`[API] Downloader process started for: ${videoUrl}`);
 
     if (isYouTube && videoId) {
       // --- LEVEL 1: PRIVATE BRIDGE ---
-      const bridgeData = await attemptBridgeExtraction(videoId);
-      if (bridgeData && bridgeData.formatStreams) {
-        console.log('Level 1 Success: Private Bridge');
-        result = transformBridgeData(bridgeData, videoUrl);
+      try {
+        console.log(`[Level 1] Attempting Private Bridge for ${videoId}`);
+        const bridgeData = await attemptBridgeExtraction(videoId);
+        if (bridgeData && (bridgeData.formatStreams || bridgeData.adaptiveFormats)) {
+          console.log('Level 1 Success: Private Bridge');
+          result = transformBridgeData(bridgeData, videoUrl);
+        }
+      } catch (e: any) {
+        console.warn(`[Level 1] Bridge Failed: ${e.message}`);
       }
 
       // --- LEVEL 2: YT-DOWN PROXY ---
       if (!result) {
-        const ytdownResult = await resolveYtDown(videoUrl);
-        if (ytdownResult && ytdownResult.downloadOptions.length > 0) {
-          console.log('Level 2 Success: ytdown.to');
-          result = ytdownResult;
+        try {
+          console.log(`[Level 2] Attempting ytdown.to`);
+          const ytdownResult = await resolveYtDown(videoUrl);
+          if (ytdownResult && ytdownResult.downloadOptions.length > 0) {
+            console.log('Level 2 Success: ytdown.to');
+            result = ytdownResult;
+          }
+        } catch (e: any) {
+          console.warn(`[Level 2] ytdown failed: ${e.message}`);
         }
       }
 
       // --- LEVEL 3: GLOBAL POOL ---
       if (!result) {
-        const poolData = await attemptPoolExtraction(videoId);
-        if (poolData) {
-          console.log(`Level 3 Success: Pool (${poolData.type})`);
-          result = transformPoolData(poolData, videoUrl);
+        try {
+          console.log(`[Level 3] Attempting Global Resolver Pool`);
+          const poolData = await attemptPoolExtraction(videoId);
+          if (poolData) {
+            console.log(`Level 3 Success: Pool (${poolData.type})`);
+            result = transformPoolData(poolData, videoUrl);
+          }
+        } catch (e: any) {
+          console.warn(`[Level 3] Pool failed: ${e.message}`);
+        }
+      }
+
+      // --- LEVEL 4: COBALT FALLBACK ---
+      if (!result) {
+        try {
+          console.log(`[Level 4] Attempting Cobalt fallback`);
+          const cobaltResult = await resolveCobalt(videoUrl);
+          if (cobaltResult && cobaltResult.downloadOptions.length > 0) {
+            console.log('Level 4 Success: Cobalt');
+            result = cobaltResult;
+          }
+        } catch (e: any) {
+          console.warn(`[Level 4] Cobalt failed: ${e.message}`);
         }
       }
     } else {
       // Non-YouTube fallback to yt-dlp
+      console.log(`[Fallback] Running yt-dlp for non-YouTube URL`);
       const info = await youtubeDl(videoUrl, {
         dumpSingleJson: true,
         noWarnings: true,
@@ -124,7 +153,8 @@ export async function GET(req: NextRequest) {
     }
 
     if (!result) {
-      throw new Error('All download resolvers failed for this video.');
+      console.error(`[ERROR] All resolvers failed for ${videoUrl}`);
+      throw new Error('All download resolvers failed for this video. This video might be region-locked or our server IPs are blocked.');
     }
 
     // Proxy logic
@@ -132,10 +162,11 @@ export async function GET(req: NextRequest) {
       return handleProxyRequest(req, result, videoUrl);
     }
 
+    console.log(`[API] Successfully resolved metadata for: ${result.title}`);
     return NextResponse.json(result);
   } catch (error: any) {
-    console.error('Final Bridge Resolver Error:', error);
-    return NextResponse.json({ error: 'Download failed after all attempts.', details: error.message }, { status: 500 });
+    console.error('[API] Fatal Error:', error.message);
+    return NextResponse.json({ error: 'Download engine failure.', details: error.message }, { status: 500 });
   }
 }
 

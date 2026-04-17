@@ -20,6 +20,7 @@ export interface DownloadOption {
 
 export async function resolveYtDown(videoUrl: string): Promise<ResolverResult | null> {
   try {
+    console.log(`[Level 2] Attempting ytdown.to: ${videoUrl}`);
     const res = await fetch('https://app.ytdown.to/proxy.php', {
       method: 'POST',
       headers: {
@@ -34,30 +35,39 @@ export async function resolveYtDown(videoUrl: string): Promise<ResolverResult | 
       signal: AbortSignal.timeout(10000)
     });
 
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.warn(`[Level 2] ytdown.to HTTP error: ${res.status}`);
+      return null;
+    }
 
-    const data = await res.json();
-    if (!data.mediaItems || !Array.isArray(data.mediaItems)) return null;
+    const rawData = await res.json();
+    console.log(`[Level 2] ytdown.to JSON received. Status: ${rawData?.api?.status}`);
+    
+    // Support both wrapped 'api' structure and direct structure just in case
+    const apiData = rawData.api || rawData;
+    const mediaItems = apiData.mediaItems;
 
-    const downloadOptions: DownloadOption[] = data.mediaItems.map((item: any, index: number) => {
+    if (!mediaItems || !Array.isArray(mediaItems)) {
+      console.warn(`[Level 2] ytdown.to: No mediaItems found in response`, JSON.stringify(rawData).substring(0, 200));
+      return null;
+    }
+
+    const downloadOptions: DownloadOption[] = mediaItems.map((item: any, index: number) => {
       const isAudio = item.type === 'Audio';
       return {
         id: `ytd-${index}-${item.mediaQuality}`,
         quality: item.mediaQuality,
         ext: item.mediaExtension?.toLowerCase() || (isAudio ? 'm4a' : 'mp4'),
         isCombined: item.mediaTask === 'download' || item.type === 'Audio',
-        // For 'merge' tasks, the mediaUrl is the conversion endpoint
-        // For 'download' tasks or audio, mediaPreviewUrl is often the direct link
         url: item.mediaUrl,
         size: parseSize(item.mediaFileSize),
-        // Additional info for merged files if needed, but ytdown handles merging server-side
       };
     });
 
     return {
-      title: data.mediaItems[0]?.name || 'YouTube Video',
-      thumbnail: data.mediaItems[0]?.mediaThumbnail || '',
-      duration: parseDuration(data.mediaItems[0]?.mediaDuration),
+      title: apiData.title || mediaItems[0]?.name || 'YouTube Video',
+      thumbnail: mediaItems[0]?.mediaThumbnail || '',
+      duration: parseDuration(mediaItems[0]?.mediaDuration),
       original_url: videoUrl,
       downloadOptions: downloadOptions.sort((a, b) => {
         if (a.quality === 'Audio') return 1;
@@ -65,8 +75,8 @@ export async function resolveYtDown(videoUrl: string): Promise<ResolverResult | 
         return parseInt(b.quality) - parseInt(a.quality);
       })
     };
-  } catch (error) {
-    console.warn('ytdown resolver failed:', error);
+  } catch (error: any) {
+    console.warn('[Level 2] ytdown resolver error:', error.message);
     return null;
   }
 }
