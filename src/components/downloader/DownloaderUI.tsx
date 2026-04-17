@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import styles from "./DownloaderUI.module.css";
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
-import { getYouTubePoToken } from '@/lib/youtube-token';
 
 interface DownloaderUIProps {
   platform: 'youtube' | 'instagram' | 'twitter' | 'facebook';
@@ -72,15 +71,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
     setMetadata(null);
 
     try {
-      let tokenParams = '';
-      if (platform === 'youtube') {
-        const tokens = await getYouTubePoToken();
-        if (tokens) {
-          tokenParams = `&poToken=${encodeURIComponent(tokens.poToken)}&visitorData=${encodeURIComponent(tokens.visitorData)}`;
-        }
-      }
-
-      const response = await fetch(`/api/video/downloader?url=${encodeURIComponent(url)}${tokenParams}`);
+      const response = await fetch(`/api/video/downloader?url=${encodeURIComponent(url)}`);
       const data = await response.json();
       
       if (data.error) throw new Error(data.error);
