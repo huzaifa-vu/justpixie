@@ -80,7 +80,9 @@ export async function GET(req: NextRequest) {
   const isYouTube = videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be');
   const videoId = isYouTube ? extractVideoId(videoUrl) : null;
 
+  try {
     console.log(`[API] Downloader process started for: ${videoUrl}`);
+    let result: any = null;
 
     if (isYouTube && videoId) {
       // --- LEVEL 1: PRIVATE BRIDGE ---
