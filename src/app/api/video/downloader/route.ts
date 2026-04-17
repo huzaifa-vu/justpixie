@@ -44,10 +44,9 @@ export async function GET(req: NextRequest) {
     const info = await youtubeDl(videoUrl, {
       dumpSingleJson: true,
       noWarnings: true,
-      noCallHome: true,
       noCheckCertificate: true,
       preferFreeFormats: true,
-      youtubeSkipDashManifest: true,
+      extractorArgs: 'youtube:player-client=ios,web',
     } as any);
 
     // If proxy mode is requested, we fetch and pipe the actual video data.
