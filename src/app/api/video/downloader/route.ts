@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { create } from 'youtube-dl-exec';
 import path from 'path';
 import fs from 'fs';
+import https from 'https';
 
 // Construct the absolute path to the yt-dlp binary.
 // This fixes ENOENT errors where the binary is not found in the default path.
