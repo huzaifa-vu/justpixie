@@ -296,11 +296,22 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
       }
 
       const baseUrl = `/api/video/downloader?url=${encodeURIComponent(url)}&proxy=true`;
+      const targetUrl = `${baseUrl}&formatId=${option.id}`;
       const totalSize = option.size || 0;
+
+      // --- NEW: HANDLE EXTERNAL DIRECT DOWNLOADS (ytdown, cobalt, etc) ---
+      if (option.isExternal) {
+        setStatusMsg("🚀 Elite speed enabled. Starting direct download...");
+        triggerDownload(targetUrl, fileName);
+        setTimeout(() => {
+          setIsProcessing(false);
+          setShowSuccess(true);
+          setTimeout(() => setShowSuccess(false), 5000);
+        }, 1500);
+        return;
+      }
       
       if (option.isCombined) {
-        setStatusMsg(isAudio ? "Downloading Audio Track..." : `Downloading ${option.quality} Video...`);
-        const targetUrl = `${baseUrl}&formatId=${option.id}`;
         
         if (writable) {
             const CHUNK_SIZE = 10 * 1024 * 1024;

@@ -12,6 +12,7 @@ export interface DownloadOption {
   ext: string;
   isCombined: boolean;
   url: string;
+  isExternal?: boolean; // New flag for direct download
   bitrate?: number;
   size?: number;
   audioUrl?: string;
@@ -58,8 +59,10 @@ export async function resolveYtDown(videoUrl: string): Promise<ResolverResult | 
         id: `ytd-${index}-${item.mediaQuality}`,
         quality: item.mediaQuality,
         ext: item.mediaExtension?.toLowerCase() || (isAudio ? 'm4a' : 'mp4'),
-        isCombined: item.mediaTask === 'download' || item.type === 'Audio',
+        // ytdown.to handles merging for 'merge' and 'render' tasks
+        isCombined: item.mediaTask === 'download' || item.type === 'Audio' || item.mediaTask === 'merge' || item.mediaTask === 'render',
         url: item.mediaUrl,
+        isExternal: true, // ytdown links are always external
         size: parseSize(item.mediaFileSize),
       };
     });

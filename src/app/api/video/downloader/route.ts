@@ -184,7 +184,7 @@ function transformBridgeData(data: any, videoUrl: string) {
   const qualityMap: Record<string, any> = {};
   formats.forEach((f: any) => {
     const q = f.qualityLabel || '720p';
-    qualityMap[q] = { id: `br-${f.itag}`, quality: q, ext: 'mp4', isCombined: true, url: f.url, bitrate: f.bitrate };
+    qualityMap[q] = { id: `br-${f.itag}`, quality: q, ext: 'mp4', isCombined: true, url: f.url, bitrate: f.bitrate, isExternal: false };
   });
 
   adaptive.forEach((f: any) => {
@@ -233,11 +233,11 @@ function transformYtDlpData(info: any, videoUrl: string) {
     const q = `${f.height}p`;
     const isCombined = f.vcodec !== 'none' && f.acodec !== 'none';
     if (!qualityMap[q] || (isCombined && !qualityMap[q].isCombined)) {
-      qualityMap[q] = { id: f.format_id, quality: q, ext: f.ext, isCombined, size: f.filesize || f.filesize_approx, url: f.url, audioUrl: isCombined ? null : bestAudio?.url };
+      qualityMap[q] = { id: f.format_id, quality: q, ext: f.ext, isCombined, size: f.filesize || f.filesize_approx, url: f.url, audioUrl: isCombined ? null : bestAudio?.url, isExternal: false };
     }
   });
   const options = Object.values(qualityMap).sort((a: any, b: any) => parseInt(b.quality) - parseInt(a.quality));
-  if (bestAudio) options.unshift({ id: bestAudio.format_id, quality: 'Audio', ext: bestAudio.ext || 'm4a', isCombined: true, size: bestAudio.filesize || bestAudio.filesize_approx, url: bestAudio.url });
+  if (bestAudio) options.unshift({ id: bestAudio.format_id, quality: 'Audio', ext: bestAudio.ext || 'm4a', isCombined: true, size: bestAudio.filesize || bestAudio.filesize_approx, url: bestAudio.url, isExternal: false });
   return { title: info.title || 'Video', thumbnail: info.thumbnail || '', duration: info.duration || 0, original_url: videoUrl, downloadOptions: options };
 }
 
