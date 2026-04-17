@@ -245,11 +245,25 @@ async function handleProxyRequest(req: NextRequest, result: any, videoUrl: strin
   const { searchParams } = new URL(req.url);
   const formatId = searchParams.get('formatId');
   const range = req.headers.get('range');
+  
   const opt = result.downloadOptions.find((o: any) => o.id === formatId) || result.downloadOptions[0];
+  if (!opt) throw new Error(`Format ID ${formatId} not found and no default available.`);
+  
   const streamUrl = opt?.url;
+  if (!streamUrl) throw new Error('Stream URL not found in format options.');
+
+  // --- REDIRECT STRATEGY FOR THIRD-PARTY PROXIES ---
+  // ytdown.to and cobalt links should be REDIRECTED, not streamed. 
+  // This bypasses Vercel's 60s timeout and fixes 416 Range issues.
+  const isExternalProxy = streamUrl.includes('worker03.com') || streamUrl.includes('ytdown.to') || streamUrl.includes('cobalt.tools');
   
-  if (!streamUrl) throw new Error('Stream URL not found.');
-  
+  if (isExternalProxy) {
+    console.log(`[Proxy] Redirecting to external stream: ${streamUrl.substring(0, 50)}...`);
+    return NextResponse.redirect(streamUrl);
+  }
+
+  // --- STREAMING STRATEGY (FALLBACK) ---
+  console.log(`[Proxy] Streaming through Vercel: ${streamUrl.substring(0, 50)}...`);
   const response = await fetch(streamUrl, {
     headers: { 
       ...(range ? { Range: range } : {}), 
