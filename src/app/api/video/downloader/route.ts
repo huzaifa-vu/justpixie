@@ -46,8 +46,9 @@ export async function GET(req: NextRequest) {
       noWarnings: true,
       noCheckCertificate: true,
       preferFreeFormats: true,
-      extractorArgs: 'youtube:player-client=android,web;innertube_host=www.youtube.com',
-      userAgent: 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36'
+      noPreferences: true,
+      extractorArgs: 'youtube:player-client=tv,web_embedded',
+      userAgent: 'Mozilla/5.0 (Chromecast; Google TV) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     } as any);
 
     // If proxy mode is requested, we fetch and pipe the actual video data.
