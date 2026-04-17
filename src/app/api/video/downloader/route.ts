@@ -6,8 +6,6 @@ import path from 'path';
 // This fixes ENOENT errors where the binary is not found in the default path.
 const binPath = path.join(
   process.cwd(), 
-  'node_modules', 
-  'youtube-dl-exec', 
   'bin', 
   process.platform === 'win32' ? 'yt-dlp.exe' : 'yt-dlp'
 );

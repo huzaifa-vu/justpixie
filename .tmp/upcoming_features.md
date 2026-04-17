@@ -25,3 +25,10 @@ This checklist tracks the upcoming features and improvements planned for the Pix
 - [ ] there is some responsiveness for screen size between desktop and mobile.
 - [ ] new features/bug request area for community.
 - [ ] the time limiting option. The cooldown option to not let a person use prompt too quick.
+- [ ] .ico and more formats for image conversions.
+- [ ] one click further edits like further compress, or crop.
+- [ ] the quota card is not working the same for logged in and guest.
+- [ ] more svg features.
+- [ ] ocr
+- [ ] about section more personalized
+- [ ] add proper loaders so users don't get frustrated..
