@@ -16,38 +16,61 @@ const youtubeDl = create(binPath);
 // This API route acts as a metadata resolver for video platforms.
 // It leverages yt-dlp on the server-side to extract direct stream URLs.
 
+import http from 'http';
+import https from 'https';
+
+// --- CONFIGURATION ---
+const RESOLVER_POOL = [
+  // Piped Instances (Fast, High Quality)
+  { url: 'https://pipedapi.kavin.rocks/streams/', type: 'piped' },
+  { url: 'https://api-piped.mha.fi/streams/', type: 'piped' },
+  { url: 'https://piped-api.lunar.icu/streams/', type: 'piped' },
+  { url: 'https://pipedapi.oxitane.it/streams/', type: 'piped' },
+  // Invidious Instances (Stable)
+  { url: 'https://yewtu.be/api/v1/videos/', type: 'invidious' },
+  { url: 'https://invidious.projectsegfau.lt/api/v1/videos/', type: 'invidious' },
+  { url: 'https://iv.ggtyler.dev/api/v1/videos/', type: 'invidious' }
+];
+
+// Custom agents to handle SSL-resilience for community instances
+const sslResilientAgent = new https.Agent({ rejectUnauthorized: false });
+
+// Helper: Attempt Global Instance Pool extraction
+const attemptPoolExtraction = async (videoId: string) => {
+  for (const instance of RESOLVER_POOL) {
+    try {
+      console.log(`Trying Global Resolver (${instance.type}): ${instance.url}`);
+      
+      const res = await fetch(`${instance.url}${videoId}`, {
+        headers: { 'Accept': 'application/json' },
+        // Use timeout to fail fast and move to next instance
+        signal: AbortSignal.timeout(3000),
+        // @ts-ignore - Handle older/expired SSL certs on community nodes
+        agent: sslResilientAgent 
+      } as any);
+
+      if (res.ok) {
+        const data = await res.json();
+        
+        if (instance.type === 'piped' && data.videoStreams?.length > 0) {
+          return { type: 'piped', data };
+        }
+        
+        if (instance.type === 'invidious' && (data.formatStreams?.length > 0 || data.adaptiveFormats?.length > 0)) {
+          return { type: 'invidious', data };
+        }
+      }
+    } catch (e: any) {
+      console.warn(`Resolver ${instance.url} skipped: ${e.message}`);
+    }
+  }
+  return null;
+};
+
 // Helper: Extract YouTube video ID
 const extractVideoId = (url: string) => {
   const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
   return match?.[1] || null;
-};
-
-// Helper: Attempt Piped API extraction
-const fetchPiped = async (videoId: string) => {
-  const instances = [
-    'https://pipedapi.kavin.rocks',
-    'https://api-piped.mha.fi',
-    'https://piped-api.lunar.icu'
-  ];
-
-  for (const instance of instances) {
-    try {
-      console.log(`Trying Piped Instance: ${instance}`);
-      const res = await fetch(`${instance}/streams/${videoId}`, {
-        headers: { 'Accept': 'application/json' },
-        next: { revalidate: 3600 }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.videoStreams && data.videoStreams.length > 0) {
-          return data;
-        }
-      }
-    } catch (e) {
-      console.warn(`Piped instance ${instance} failed.`, e);
-    }
-  }
-  return null;
 };
 
 export async function GET(req: NextRequest) {
@@ -67,57 +90,66 @@ export async function GET(req: NextRequest) {
     let downloadOptions: any[] = [];
     let usedResolver = false;
 
-    // --- PHASE 1: PIPED RESOLVER (YOUTUBE ONLY) ---
+    // --- PHASE 1: GLOBAL RESOLVER POOL (YOUTUBE ONLY) ---
     if (isYouTube && videoId) {
-      const pipedData = await fetchPiped(videoId);
-      if (pipedData) {
+      const result = await attemptPoolExtraction(videoId);
+      if (result) {
         usedResolver = true;
-        console.log('Piped Resolver Success!');
+        const { type, data } = result;
+        console.log(`Global Resolver Success (${type})!`);
         
         info = {
-          title: pipedData.title || 'YouTube Video',
-          thumbnail: pipedData.thumbnailUrl || '',
-          duration: pipedData.duration || 0,
+          title: data.title || 'YouTube Video',
+          thumbnail: data.thumbnailUrl || data.videoThumbnails?.[0]?.url || '',
+          duration: data.duration || 0,
           original_url: videoUrl
         };
 
-        // Map streams: prioritize MPEG_4 (combined)
-        const allStreams = [...(pipedData.videoStreams || []), ...(pipedData.audioStreams || [])];
-        
-        const qualityMap: Record<string, any> = {};
-        allStreams.forEach((s: any) => {
-          if (s.videoOnly) return; 
-
-          const isAudio = s.mimeType?.startsWith('audio/');
-          const q = isAudio ? 'Audio' : (s.quality || '720p');
-          
-          if (!qualityMap[q] || (s.bitrate > qualityMap[q].bitrate)) {
-            qualityMap[q] = {
-              id: `piped-${isAudio ? 'audio' : s.quality}`,
-              quality: q,
-              ext: s.format === 'MPEG_4' ? 'mp4' : (isAudio ? 'm4a' : 'webm'),
-              isCombined: true,
-              size: 0,
-              url: s.url,
-              bitrate: s.bitrate
-            };
-          }
-        });
-        
-        downloadOptions = Object.values(qualityMap).sort((a: any, b: any) => {
-            if (a.quality === 'Audio') return -1;
-            if (b.quality === 'Audio') return 1;
-            return parseInt(b.quality) - parseInt(a.quality);
-        });
+        if (type === 'piped') {
+          const allStreams = [...(data.videoStreams || []), ...(data.audioStreams || [])];
+          const qualityMap: Record<string, any> = {};
+          allStreams.forEach((s: any) => {
+            if (s.videoOnly) return; 
+            const isAudio = s.mimeType?.startsWith('audio/');
+            const q = isAudio ? 'Audio' : (s.quality || '720p');
+            if (!qualityMap[q] || (s.bitrate > qualityMap[q].bitrate)) {
+              qualityMap[q] = {
+                id: `res-${isAudio ? 'audio' : s.quality}`,
+                quality: q,
+                ext: s.format === 'MPEG_4' ? 'mp4' : (isAudio ? 'm4a' : 'webm'),
+                isCombined: true,
+                url: s.url,
+                bitrate: s.bitrate
+              };
+            }
+          });
+          downloadOptions = Object.values(qualityMap).sort((a: any, b: any) => {
+              if (a.quality === 'Audio') return -1;
+              if (b.quality === 'Audio') return 1;
+              return parseInt(b.quality) - parseInt(a.quality);
+          });
+        } else if (type === 'invidious') {
+          const streams = data.formatStreams || [];
+          downloadOptions = streams.map((s: any) => ({
+            id: `res-${s.qualityLabel || s.resolution}`,
+            quality: s.qualityLabel || s.quality || 'HD',
+            ext: s.container || 'mp4',
+            isCombined: true,
+            url: s.url,
+            bitrate: s.bitrate || 0
+          })).sort((a: any, b: any) => parseInt(b.quality) - parseInt(a.quality));
+        }
       }
     }
 
-    // --- PHASE 2: FALLBACK TO YT-DLP (IOS CLIENT BYPASS) ---
+    // --- PHASE 2: FALLBACK TO YT-DLP (HARDENED BYPASS) ---
     if (!usedResolver) {
-      console.log('Falling back to yt-dlp (ios bypass)...');
-      // Sanity check for binary
+      console.log('Falling back to hardened yt-dlp extraction...');
       const stats = fs.statSync(binPath);
       if (stats.size < 1024 * 512) throw new Error('Standalone binary invalid.');
+
+      // Spoof a random residential IP to help bypass data-center blocks
+      const randomIP = `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
 
       info = await youtubeDl(videoUrl, {
         dumpSingleJson: true,
@@ -127,7 +159,8 @@ export async function GET(req: NextRequest) {
         ignoreConfig: true,
         noCacheDir: true,
         noPlaylist: true,
-        // The 'ios' client is currently the strongest bypass for data-center IPs
+        forceIpv4: true,
+        geoBypass: true,
         extractorArgs: isYouTube ? 'youtube:player-client=ios,tv' : undefined,
         userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1'
       } as any);
@@ -141,13 +174,10 @@ export async function GET(req: NextRequest) {
       rawFormats.forEach((f: any) => {
         if (!f.height || f.height < 144) return;
         if (f.format_id?.startsWith('sb') || f.vcodec === 'mhtml' || f.protocol === 'mhtml') return;
-        
         const q = `${f.height}p`;
         const current = qualityMap[q];
         const isCombined = f.vcodec !== 'none' && f.acodec !== 'none';
-        
         let isBetter = !current || (isCombined && !current.isCombined) || (isCombined === current.isCombined && f.tbr > current.tbr);
-
         if (isBetter) {
           qualityMap[q] = {
             id: f.format_id,
@@ -180,23 +210,22 @@ export async function GET(req: NextRequest) {
     if (proxy) {
       const formatId = searchParams.get('formatId');
       const range = req.headers.get('range');
-      
-      let streamUrl = '';
       const opt = downloadOptions.find(o => o.id === formatId) || downloadOptions[0];
-      streamUrl = opt?.url;
+      const streamUrl = opt?.url;
 
       if (!streamUrl) throw new Error('Stream URL not found.');
 
-      const title = info.title || 'video';
-      const cleanTitle = title.replace(/[^\x00-\x7F]/g, "").replace(/[\\/:*?"<>|]/g, "_");
+      const cleanTitle = (info.title || 'video').replace(/[^\x00-\x7F]/g, "").replace(/[\\/:*?"<>|]/g, "_");
 
       const response = await fetch(streamUrl, {
         headers: {
           ...(range ? { Range: range } : {}),
           'User-Agent': isYouTube ? 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Referer': isYouTube ? 'https://www.youtube.com/' : 'https://www.google.com/',
+          'Referer': 'https://www.youtube.com/',
         },
-      });
+        // @ts-ignore
+        agent: sslResilientAgent
+      } as any);
       
       const headers = new Headers();
       headers.set('Content-Type', response.headers.get('Content-Type') || 'video/mp4');
@@ -216,9 +245,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ...info, downloadOptions });
 
   } catch (error: any) {
-    console.error('Resilient Resolver Error:', error);
+    console.error('Global Pool Resolver Error:', error);
     return NextResponse.json({ 
-      error: 'Metadata extraction failed on all levels.', 
+      error: 'Metadata extraction failed after all attempts.', 
       details: error.message 
     }, { status: 500 });
   }
