@@ -164,10 +164,15 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
               <>
                 <div className={styles.quotaHeader}>
                   <span>Daily Quota</span>
-                  <span>{isUnlimited ? '∞' : `${authPromptsUsed} / ${authLimit}`}</span>
+                  <span>{isUnlimited ? '∞' : `${authLimit - authPromptsUsed} / ${authLimit} Left`}</span>
                 </div>
                 <div className={styles.quotaBar}>
-                  <div className={styles.quotaFill} style={{ width: isUnlimited ? '100%' : `${Math.min(100, (authPromptsUsed / authLimit) * 100)}%` }}></div>
+                  <div 
+                    className={styles.quotaFill} 
+                    style={{ 
+                      width: isUnlimited ? '100%' : `${Math.max(0, ((authLimit - authPromptsUsed) / authLimit) * 100)}%` 
+                    }}
+                  ></div>
                 </div>
                 {!isUnlimited && (
                   <Link href="/dashboard/upgrade" style={{ width: '100%' }}>
@@ -237,10 +242,15 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
                 <>
                   <div className={styles.quotaHeader}>
                     <span>Daily Quota</span>
-                    <span>{isUnlimited ? '∞' : `${authPromptsUsed} / ${authLimit}`}</span>
+                    <span>{isUnlimited ? '∞' : `${authLimit - authPromptsUsed} / ${authLimit} Left`}</span>
                   </div>
                   <div className={styles.quotaBar}>
-                    <div className={styles.quotaFill} style={{ width: isUnlimited ? '100%' : `${Math.min(100, (authPromptsUsed / authLimit) * 100)}%` }}></div>
+                    <div 
+                      className={styles.quotaFill} 
+                      style={{ 
+                        width: isUnlimited ? '100%' : `${Math.max(0, ((authLimit - authPromptsUsed) / authLimit) * 100)}%` 
+                      }}
+                    ></div>
                   </div>
                   {!isUnlimited && (
                     <Link href="/dashboard/upgrade" style={{ width: '100%' }}>

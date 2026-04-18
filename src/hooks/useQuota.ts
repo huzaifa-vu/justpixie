@@ -1,72 +1,68 @@
 import { useState, useEffect, useCallback } from 'react';
 
 export const GUEST_PROMPT_LIMIT = 3;
-const PROMPT_STORAGE_KEY = "pixie_guest_prompts_used";
 const QUOTA_CHANGED_EVENT = "pixie_quota_changed";
 
 export function useQuota(user?: any) {
-  const [guestUsed, setGuestUsed] = useState(0);
+  const [quotaData, setQuotaData] = useState({
+    used: 0,
+    limit: 100,
+    remaining: 100,
+    isUnlimited: false,
+    loading: true
+  });
 
-  const refreshGuestQuota = useCallback(() => {
-    if (typeof window === 'undefined') return;
+  const fetchQuota = useCallback(async () => {
     try {
-      const val = parseInt(localStorage.getItem(PROMPT_STORAGE_KEY) || "0", 10);
-      setGuestUsed(val);
-    } catch {
-      setGuestUsed(0);
+      const res = await fetch('/api/user/quota');
+      if (res.ok) {
+        const data = await res.json();
+        setQuotaData({
+          used: data.used,
+          limit: data.limit,
+          remaining: data.remaining,
+          isUnlimited: data.isUnlimited,
+          loading: false
+        });
+      }
+    } catch (err) {
+      console.error("Failed to fetch fresh quota:", err);
     }
   }, []);
 
   useEffect(() => {
-    refreshGuestQuota();
+    fetchQuota();
 
-    const handleUpdate = () => refreshGuestQuota();
+    const handleUpdate = () => fetchQuota();
     window.addEventListener(QUOTA_CHANGED_EVENT, handleUpdate);
     
-    // Also listen for changes from other tabs
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === PROMPT_STORAGE_KEY) refreshGuestQuota();
-    };
-    window.addEventListener('storage', handleStorage);
-
     return () => {
       window.removeEventListener(QUOTA_CHANGED_EVENT, handleUpdate);
-      window.removeEventListener('storage', handleStorage);
     };
-  }, [refreshGuestQuota]);
-
-  const incrementGuestQuota = useCallback(() => {
-    if (typeof window === 'undefined') return;
-    const current = parseInt(localStorage.getItem(PROMPT_STORAGE_KEY) || "0", 10);
-    const next = current + 1;
-    localStorage.setItem(PROMPT_STORAGE_KEY, String(next));
-    setGuestUsed(next);
-    window.dispatchEvent(new CustomEvent(QUOTA_CHANGED_EVENT));
-    return next;
-  }, []);
+  }, [fetchQuota, user?.id]); // Re-fetch if user ID changes (login/logout)
 
   const syncLimitReached = useCallback(() => {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem(PROMPT_STORAGE_KEY, String(GUEST_PROMPT_LIMIT));
-    setGuestUsed(GUEST_PROMPT_LIMIT);
+    // Optimistic local update before server re-fetch
+    setQuotaData(prev => ({ 
+      ...prev, 
+      used: prev.limit, 
+      remaining: 0 
+    }));
     window.dispatchEvent(new CustomEvent(QUOTA_CHANGED_EVENT));
   }, []);
 
-  // Auth user metadata logic (shared with layout)
-  const metadata = user?.user_metadata || {};
-  const isUnlimited = metadata.tier === 'unlimited';
-  const today = new Date().toISOString().split('T')[0];
-  const currentUsage = metadata.last_prompt_date === today ? (metadata.prompts_used || 0) : 0;
-  const currentLimit = 100;
-
   return {
-    guestUsed,
-    guestLimit: GUEST_PROMPT_LIMIT,
-    guestRemaining: Math.max(0, GUEST_PROMPT_LIMIT - guestUsed),
-    incrementGuestQuota,
+    used: quotaData.used,
+    limit: quotaData.limit,
+    remaining: quotaData.remaining,
+    isUnlimited: quotaData.isUnlimited,
+    loading: quotaData.loading,
     syncLimitReached,
-    authPromptsUsed: currentUsage,
-    isUnlimited,
-    authLimit: currentLimit
+    // Aliases for compatibility with existing layout code
+    guestUsed: quotaData.limit - quotaData.remaining,
+    guestLimit: GUEST_PROMPT_LIMIT,
+    guestRemaining: quotaData.remaining,
+    authPromptsUsed: quotaData.used,
+    authLimit: quotaData.limit,
   };
 }

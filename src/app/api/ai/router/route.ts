@@ -153,6 +153,21 @@ export async function POST(req: NextRequest) {
           error: "You have reached your daily limit of 100 free AI prompts. Come back tomorrow or upgrade to Unlimited forever!" 
         }, { status: 402 }); // 402 Payment Required
       }
+
+      // --- INCREMENT AUTH QUOTA BEFORE PROCESSING ---
+      if (!isUnlimited) {
+        try {
+          const adminSupabase = createAdminClient();
+          await adminSupabase.auth.admin.updateUserById(user.id, {
+            user_metadata: { 
+              prompts_used: promptsUsed + 1,
+              last_prompt_date: today
+            }
+          });
+        } catch (adminErr) {
+          console.error("Failed to pre-increment user quota:", adminErr);
+        }
+      }
     } else {
       // --- SERVER-SIDE GUEST GUARD ---
       try {
@@ -168,6 +183,17 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ 
             error: "Your guest limit has been reached for today. Sign in for unlimited spells!" 
           }, { status: 402 });
+        }
+
+        // --- INCREMENT GUEST QUOTA BEFORE PROCESSING ---
+        try {
+          if (usage && usage.last_date === today) {
+            await adminSupabase.from("guest_usage").update({ count: usage.count + 1 }).eq("ip", ip);
+          } else {
+            await adminSupabase.from("guest_usage").upsert({ ip, count: 1, last_date: today });
+          }
+        } catch (incErr) {
+          console.error("Guest increment logic failed:", incErr);
         }
       } catch (checkErr) {
         console.error("Guest guard check failed:", checkErr);
@@ -218,35 +244,7 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // --- INCREMENT QUOTA ---
-    const adminSupabase = createAdminClient();
-    if (user && !isUnlimited) {
-      try {
-        await adminSupabase.auth.admin.updateUserById(user.id, {
-          user_metadata: { 
-            prompts_used: promptsUsed + 1,
-            last_prompt_date: today
-          }
-        });
-      } catch (adminErr) {
-        console.error("Failed to increment user quota:", adminErr);
-      }
-    } else if (!user) {
-      try {
-        const ip = (req as any).ip || req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
-        const { data: usage } = await adminSupabase.from("guest_usage").select("*").eq("ip", ip).single();
-        
-        if (usage && usage.last_date === today) {
-          const { error: updErr } = await adminSupabase.from("guest_usage").update({ count: usage.count + 1 }).eq("ip", ip);
-          if (updErr) console.error("Guest increment update failed:", updErr);
-        } else {
-          const { error: insErr } = await adminSupabase.from("guest_usage").upsert({ ip, count: 1, last_date: today });
-          if (insErr) console.error("Guest increment insert failed:", insErr);
-        }
-      } catch (guestErr) {
-        console.error("Failed to increment guest quota:", guestErr);
-      }
-    }
+    // Quota incremented at start of request for security
 
     return NextResponse.json(parsed);
   } catch (err: any) {

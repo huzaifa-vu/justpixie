@@ -78,9 +78,9 @@
   box-shadow: var(--shadow-bento);
   overflow: hidden;
   display: flex;
-  min-height: 380px;
-  max-height: 480px; /* Cap height to prevent vertical bloat from vertical thumbnails */
+  min-height: 420px;
   height: auto;
+  align-items: stretch;
 }
 
 .thumbnailArea {
@@ -116,8 +116,7 @@
   padding: 2.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  overflow-y: auto; /* Allow scrolling if title or formats overflow the max-height */
+  gap: 2rem;
 }
 
 .videoTitle {
