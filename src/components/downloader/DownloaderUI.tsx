@@ -26,6 +26,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
   const [downloadStats, setDownloadStats] = useState({ speed: 0, downloaded: 0, total: 0 });
   const [boostLevel, setBoostLevel] = useState(1); // 1, 4, 8, 16
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isPopupBlocked, setIsPopupBlocked] = useState(false);
   const [manualDownloadUrl, setManualDownloadUrl] = useState<string | null>(null);
   const [isExternalDownload, setIsExternalDownload] = useState(false);
   const boostLevelRef = useRef(1);
@@ -159,14 +160,16 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
   };
 
   const triggerDownload = (url: string, filename: string, isExternal: boolean = false) => {
-    // For external high-speed links (ytdown/cobalt), window.open is the most 
-    // stable method. It allows IDM to catch the link and protects the Pixie tab.
     if (isExternal) {
-      window.open(url, '_blank');
-      return;
+      const win = window.open(url, '_blank');
+      // Detect if popup was blocked
+      if (!win || win.closed || typeof win.closed === 'undefined') {
+        setStatusMsg("⚠️ Popup Blocked! Please allow popups.");
+        return false;
+      }
+      return true;
     }
 
-    // For local streams (blob), use the standard <a> tag method
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;
@@ -176,6 +179,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
     if (url.startsWith('blob:')) {
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
+    return true;
   };
 
   const toggleBoost = () => {
@@ -285,6 +289,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
     setError(null);
     setManualDownloadUrl(null);
     setIsExternalDownload(!!option.isExternal);
+    setIsPopupBlocked(false);
     setDownloadStats({ speed: 0, downloaded: 0, total: option.size || 0 });
 
     let writable: any = null;
@@ -330,7 +335,8 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
             const contentType = checkRes.headers.get('content-type') || '';
             
             if (!contentType.includes('application/json')) {
-              triggerDownload(targetUrl, fileName, true);
+              const success = triggerDownload(targetUrl, fileName, true);
+              if (!success) setIsPopupBlocked(true);
               setManualDownloadUrl(targetUrl);
               polling = false;
               setIsProcessing(false);
@@ -349,7 +355,8 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
               await new Promise(r => setTimeout(r, 5000));
             } else if (statusJson.status === 'completed' || statusJson.fileUrl) {
                 const finalLink = statusJson.fileUrl || targetUrl;
-                triggerDownload(finalLink, fileName, true);
+                const success = triggerDownload(finalLink, fileName, true);
+                if (!success) setIsPopupBlocked(true);
                 setManualDownloadUrl(finalLink);
                 polling = false;
                 setIsProcessing(false);
@@ -357,7 +364,8 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
                 return;
             } else { pollCount++; await new Promise(r => setTimeout(r, 5000)); }
           } catch (pollErr: any) {
-            triggerDownload(targetUrl, fileName, true);
+            const success = triggerDownload(targetUrl, fileName, true);
+            if (!success) setIsPopupBlocked(true);
             setManualDownloadUrl(targetUrl);
             polling = false;
             setIsProcessing(false);
@@ -508,12 +516,14 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className={styles.successOverlay}
+            onClick={() => setShowSuccess(false)}
           >
             <motion.div 
               initial={{ scale: 0.8, opacity: 0, y: 30 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.8, opacity: 0, y: 30 }}
               className={styles.successCard}
+              onClick={(e) => e.stopPropagation()}
             >
               <div className={styles.confettiContainer}>
                 {[...Array(24)].map((_, i) => (
@@ -539,10 +549,36 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
               >
                 🎉
               </motion.div>
-              <h2>Success!</h2>
-              <p>Download complete. Your file is ready with Elite Reliability.</p>
+              <h2>Download Ready!</h2>
+              <p>Your high-quality video is ready. If it didn't start automatically, use the button below.</p>
               
-              <button onClick={() => setShowSuccess(false)} className={styles.closeSuccess}>Awesome!</button>
+              {manualDownloadUrl && (
+                <div style={{ marginBottom: '2.2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.8rem' }}>
+                  <button 
+                    className={styles.readyBtn}
+                    onClick={() => {
+                      window.open(manualDownloadUrl, '_blank');
+                    }}
+                    style={{ borderColor: accentColor }}
+                  >
+                    <Flame className={styles.pulseIcon} size={20} fill={accentColor} />
+                    <span>Download Now</span>
+                  </button>
+                  <a 
+                    href={manualDownloadUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className={styles.manualLink}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    📥 Click here if download didn't start
+                  </a>
+                </div>
+              )}
+
+              <button className={styles.closeSuccess} onClick={() => setShowSuccess(false)}>
+                Awesome!
+              </button>
             </motion.div>
           </motion.div>
         )}
@@ -658,15 +694,19 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
                       </div>
                     )}
 
-                    {/* Creative Tip for Popups */}
+                    {/* Creative Tip/Warning for Popups */}
                     {isExternalDownload && isProcessing && (
                       <motion.div 
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className={styles.popupTip}
+                        className={isPopupBlocked ? styles.popupWarning : styles.popupTip}
                       >
-                        <Zap size={14} fill="var(--gentle-lilac)" />
-                        <span>💡 Tip: If prompted, please allow popups for the best experience.</span>
+                        {isPopupBlocked ? <ShieldAlert size={16} /> : <Zap size={14} fill="var(--gentle-lilac)" />}
+                        <span>
+                          {isPopupBlocked 
+                            ? "⚠️ Popups Blocked! Please click the icon in your address bar to allow them." 
+                            : "💡 Tip: If prompted, please allow popups for the best experience."}
+                        </span>
                       </motion.div>
                     )}
 
