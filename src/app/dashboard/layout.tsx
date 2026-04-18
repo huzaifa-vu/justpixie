@@ -29,7 +29,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
   const profileRef = useRef<HTMLDivElement>(null);
   const [user, setUser] = useState<any>(null);
   const supabase = createClient();
-  const { guestUsed, guestLimit, guestRemaining, authPromptsUsed, isUnlimited, authLimit } = useQuota(user);
+  const { guestUsed, guestLimit, guestRemaining, authPromptsUsed, isUnlimited, authLimit, loading } = useQuota(user);
 
   useEffect(() => {
     // Get initial session (wrapped in try/catch for guest mode)
