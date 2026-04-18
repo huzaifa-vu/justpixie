@@ -26,6 +26,8 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
   const [downloadStats, setDownloadStats] = useState({ speed: 0, downloaded: 0, total: 0 });
   const [boostLevel, setBoostLevel] = useState(1); // 1, 4, 8, 16
   const [showSuccess, setShowSuccess] = useState(false);
+  const [manualDownloadUrl, setManualDownloadUrl] = useState<string | null>(null);
+  const [isExternalDownload, setIsExternalDownload] = useState(false);
   const boostLevelRef = useRef(1);
   const activeWorkersRef = useRef(0);
   const spawnerRef = useRef<(() => void) | null>(null);
@@ -281,6 +283,8 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
     setIsProcessing(true);
     setProgress(0);
     setError(null);
+    setManualDownloadUrl(null);
+    setIsExternalDownload(!!option.isExternal);
     setDownloadStats({ speed: 0, downloaded: 0, total: option.size || 0 });
 
     let writable: any = null;
@@ -327,10 +331,10 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
             
             if (!contentType.includes('application/json')) {
               triggerDownload(targetUrl, fileName, true);
+              setManualDownloadUrl(targetUrl);
               polling = false;
               setIsProcessing(false);
               setShowSuccess(true);
-              setTimeout(() => setShowSuccess(false), 8000);
               return;
             }
 
@@ -344,17 +348,20 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
               pollCount++;
               await new Promise(r => setTimeout(r, 5000));
             } else if (statusJson.status === 'completed' || statusJson.fileUrl) {
-                // Use the high-speed file link directly
-                triggerDownload(statusJson.fileUrl || targetUrl, fileName, true);
+                const finalLink = statusJson.fileUrl || targetUrl;
+                triggerDownload(finalLink, fileName, true);
+                setManualDownloadUrl(finalLink);
                 polling = false;
                 setIsProcessing(false);
                 setShowSuccess(true);
                 return;
             } else { pollCount++; await new Promise(r => setTimeout(r, 5000)); }
           } catch (pollErr: any) {
-            triggerDownload(targetUrl, fileName);
+            triggerDownload(targetUrl, fileName, true);
+            setManualDownloadUrl(targetUrl);
             polling = false;
             setIsProcessing(false);
+            setShowSuccess(true);
             return;
           }
         }
@@ -649,6 +656,37 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
                           <span>{boostLevel > 1 ? `Boost Active (${boostLevel} Threads)` : "Boost Speed"}</span>
                         </button>
                       </div>
+                    )}
+
+                    {/* Creative Tip for Popups */}
+                    {isExternalDownload && isProcessing && (
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className={styles.popupTip}
+                      >
+                        <Zap size={14} fill="var(--gentle-lilac)" />
+                        <span>💡 Tip: If prompted, please allow popups for the best experience.</span>
+                      </motion.div>
+                    )}
+
+                    {/* Manual Fallback / Success Button */}
+                    {manualDownloadUrl && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={styles.readyContainer}
+                      >
+                        <button 
+                          className={styles.readyBtn}
+                          onClick={() => window.open(manualDownloadUrl, '_blank')}
+                          style={{ borderColor: accentColor }}
+                        >
+                          <Flame className={styles.pulseIcon} size={20} fill={accentColor} />
+                          <span>Download Ready</span>
+                        </button>
+                        <p className={styles.fallbackText}>Didn't start? Click the button above.</p>
+                      </motion.div>
                     )}
 
                     <motion.div 
