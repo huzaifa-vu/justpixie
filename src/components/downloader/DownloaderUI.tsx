@@ -679,6 +679,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
                       <ShieldAlert size={16} />
                       <span>Download active. Do not close or refresh this tab.</span>
                     </motion.div>
+                  </div>
                 ) : (
                   <div className={styles.qualityContainer}>
                     {/* Render Video Options */}
@@ -746,10 +747,9 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
                         </div>
                       </div>
                     )}
-                  </div>
                 )}
-                <p className={styles.disclaimer}>Downloaded files are processed locally for maximum privacy and 4K capability.</p>
               </div>
+              <p className={styles.disclaimer}>Downloaded files are processed locally for maximum privacy and 4K capability.</p>
             </div>
           </motion.div>
         )}
