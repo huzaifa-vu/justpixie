@@ -157,13 +157,18 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
   };
 
   const triggerDownload = (url: string, filename: string) => {
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setTimeout(() => URL.revokeObjectURL(url), 100);
+    // Using a hidden iframe is the industry standard for triggering downloads 
+    // while keeping the page stable and allowing IDM to catch the link.
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+    
+    // Clean up
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+      if (url.startsWith('blob:')) URL.revokeObjectURL(url);
+    }, 1000);
   };
 
   const toggleBoost = () => {
@@ -334,6 +339,8 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
               pollCount++;
               await new Promise(r => setTimeout(r, 5000));
             } else if (statusJson.status === 'completed' || statusJson.fileUrl) {
+                // IMPORTANT: Use the final fileUrl directly if provided to bypass the proxy for the final file
+                console.log("[Frontend] Conversion finished. Using final download link.");
                 triggerDownload(statusJson.fileUrl || targetUrl, fileName);
                 polling = false;
                 setIsProcessing(false);

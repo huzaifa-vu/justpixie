@@ -198,7 +198,8 @@ function transformBridgeData(data: any, videoUrl: string) {
 
   const downloadOptions = Object.values(qualityMap).sort((a: any, b: any) => parseInt(b.quality) - parseInt(a.quality));
   if (bestAudio) {
-    downloadOptions.unshift({ id: `br-audio`, quality: 'Audio', ext: 'm4a', isCombined: true, url: bestAudio.url, bitrate: bestAudio.bitrate });
+    const q = `Audio (${bestAudio.bitrate ? Math.round(bestAudio.bitrate / 1000) + 'k' : 'Standard'})`;
+    downloadOptions.unshift({ id: `br-audio`, quality: q, ext: 'm4a', isCombined: true, url: bestAudio.url, bitrate: bestAudio.bitrate, isExternal: false });
   }
 
   return { title: data.title || 'Video', thumbnail: data.thumbnailUrl || '', duration: data.duration || 0, original_url: videoUrl, downloadOptions };
@@ -214,7 +215,8 @@ function transformPoolData(pool: any, videoUrl: string) {
       if (s.videoOnly) return; 
       const isAudio = s.mimeType?.startsWith('audio/');
       const rawQ = isAudio ? 'Audio' : (s.quality || '720p');
-      const q = rawQ.replace('FHD', '1080p').replace('QHD', '1440p').replace('4K', '2160p').replace('HD', '720p').replace('SD', '480p');
+      let q = rawQ.replace('FHD', '1080p').replace('QHD', '1440p').replace('4K', '2160p').replace('HD', '720p').replace('SD', '480p');
+      if (isAudio && !q.includes('Audio')) q = `${q} (Audio)`;
       if (!qualityMap[q] || (s.bitrate > qualityMap[q].bitrate)) {
         qualityMap[q] = { id: `res-${isAudio ? 'audio' : s.quality}`, quality: q, ext: s.format === 'MPEG_4' ? 'mp4' : (isAudio ? 'm4a' : 'webm'), isCombined: true, url: s.url, bitrate: s.bitrate, isExternal: false };
       }
@@ -239,7 +241,10 @@ function transformYtDlpData(info: any, videoUrl: string) {
     }
   });
   const options = Object.values(qualityMap).sort((a: any, b: any) => parseInt(b.quality) - parseInt(a.quality));
-  if (bestAudio) options.unshift({ id: bestAudio.format_id, quality: 'Audio', ext: bestAudio.ext || 'm4a', isCombined: true, size: bestAudio.filesize || bestAudio.filesize_approx, url: bestAudio.url, isExternal: false });
+  if (bestAudio) {
+    const q = `${bestAudio.abr ? Math.round(bestAudio.abr) + 'k' : 'Standard'} (Audio)`;
+    options.unshift({ id: bestAudio.format_id, quality: q, ext: bestAudio.ext || 'm4a', isCombined: true, size: bestAudio.filesize || bestAudio.filesize_approx, url: bestAudio.url, isExternal: false });
+  }
   return { title: info.title || 'Video', thumbnail: info.thumbnail || '', duration: info.duration || 0, original_url: videoUrl, downloadOptions: options };
 }
 
