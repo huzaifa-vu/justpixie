@@ -54,6 +54,7 @@ export async function resolveYtDown(videoUrl: string): Promise<ResolverResult | 
     }
 
     const downloadOptions: DownloadOption[] = mediaItems.map((item: any, index: number) => {
+      const isAudio = item.type === 'Audio';
       let q = item.mediaQuality || (isAudio ? 'Audio' : '720p');
       q = q.replace('FHD', '1080p').replace('QHD', '1440p').replace('4K', '2160p').replace('HD', '720p').replace('SD', '480p');
 
