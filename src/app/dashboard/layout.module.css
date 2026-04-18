@@ -114,6 +114,7 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
+.navMenu {
   flex: 1;
   padding: 1rem;
   overflow-y: auto;
@@ -556,6 +557,7 @@
   background: linear-gradient(135deg, #f87171, #ef4444);
 }
 
+.workspace {
   flex: 1;
   overflow-y: auto;
   padding: 3rem;
