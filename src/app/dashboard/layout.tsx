@@ -164,7 +164,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
               <>
                 <div className={styles.quotaHeader}>
                   <span>Daily Quota</span>
-                  <span>{isUnlimited ? '∞' : `${authLimit - authPromptsUsed} / ${authLimit} Left`}</span>
+                  <span>{loading ? '...' : (isUnlimited ? '∞' : `${authLimit - authPromptsUsed} / ${authLimit} Left`)}</span>
                 </div>
                 <div className={styles.quotaBar}>
                   <div 
@@ -185,7 +185,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
                <>
                  <div className={styles.quotaHeader}>
                    <span>Guest Quota</span>
-                   <span>{guestRemaining} / {guestLimit} Left</span>
+                   <span>{loading ? '...' : `${guestRemaining} / ${guestLimit} Left`}</span>
                  </div>
                  <div className={styles.quotaBar}>
                    <div className={styles.quotaFill} style={{ width: `${(guestRemaining / guestLimit) * 100}%` }}></div>
@@ -242,7 +242,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
                 <>
                   <div className={styles.quotaHeader}>
                     <span>Daily Quota</span>
-                    <span>{isUnlimited ? '∞' : `${authLimit - authPromptsUsed} / ${authLimit} Left`}</span>
+                    <span>{loading ? '...' : (isUnlimited ? '∞' : `${authLimit - authPromptsUsed} / ${authLimit} Left`)}</span>
                   </div>
                   <div className={styles.quotaBar}>
                     <div 
@@ -262,7 +262,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
                 <>
                   <div className={styles.quotaHeader}>
                     <span>Guest Quota</span>
-                    <span>{guestRemaining} / {guestLimit} Left</span>
+                    <span>{loading ? '...' : `${guestRemaining} / ${guestLimit} Left`}</span>
                   </div>
                   <div className={styles.quotaBar}>
                     <div className={styles.quotaFill} style={{ width: `${(guestRemaining / guestLimit) * 100}%` }}></div>

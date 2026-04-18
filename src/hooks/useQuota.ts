@@ -6,8 +6,8 @@ const QUOTA_CHANGED_EVENT = "pixie_quota_changed";
 export function useQuota(user?: any) {
   const [quotaData, setQuotaData] = useState({
     used: 0,
-    limit: 100,
-    remaining: 100,
+    limit: user ? 100 : GUEST_PROMPT_LIMIT,
+    remaining: user ? 100 : GUEST_PROMPT_LIMIT,
     isUnlimited: false,
     loading: true
   });
