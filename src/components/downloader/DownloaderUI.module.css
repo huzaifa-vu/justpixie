@@ -499,6 +499,77 @@
   font-size: 0.6rem;
 }
 
+.formatSection {
+  margin-bottom: 2rem;
+}
+
+.formatCategory {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.qualityList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.audioRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: var(--soft-sage);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.audioRow:hover {
+  background: white;
+  border-color: var(--gentle-lilac);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.audioInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.audioQuality {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--deep-charcoal);
+}
+
+.audioExt {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: rgba(0,0,0,0.05);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.audioMeta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
 .popupTip {
   display: flex;
   align-items: center;

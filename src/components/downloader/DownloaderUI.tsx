@@ -549,21 +549,11 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
               >
                 🎉
               </motion.div>
-              <h2>Download Ready!</h2>
-              <p>Your high-quality video is ready. If it didn't start automatically, use the button below.</p>
+              <h2>Success!</h2>
+              <p>Your high-quality media is ready. If it didn't start automatically, use the fallback link below.</p>
               
               {manualDownloadUrl && (
-                <div style={{ marginBottom: '2.2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.8rem' }}>
-                  <button 
-                    className={styles.readyBtn}
-                    onClick={() => {
-                      window.open(manualDownloadUrl, '_blank');
-                    }}
-                    style={{ borderColor: accentColor }}
-                  >
-                    <Flame className={styles.pulseIcon} size={20} fill={accentColor} />
-                    <span>Download Now</span>
-                  </button>
+                <div style={{ marginBottom: '2.5rem' }}>
                   <a 
                     href={manualDownloadUrl} 
                     target="_blank" 
@@ -571,7 +561,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
                     className={styles.manualLink}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    📥 Click here if download didn't start
+                    📥 Click here if your browser blocked the download
                   </a>
                 </div>
               )}
@@ -680,54 +670,6 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
                       </div>
                     </div>
 
-                    {/* Show boost controls only for fragmented local downloads */}
-                    {!metadata.downloadOptions.find((o: any) => o.id === (isProcessing ? 'current' : null))?.isExternal && (
-                      <div className={styles.boostControl}>
-                        <button 
-                          className={`${styles.boostBtn} ${boostLevel > 1 ? styles.boostActive : ''}`} 
-                          onClick={toggleBoost}
-                          title="Increase download threads (IDM Style)"
-                        >
-                          <Zap size={16} fill={boostLevel > 1 ? "var(--deep-charcoal)" : "none"} />
-                          <span>{boostLevel > 1 ? `Boost Active (${boostLevel} Threads)` : "Boost Speed"}</span>
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Creative Tip/Warning for Popups */}
-                    {isExternalDownload && isProcessing && (
-                      <motion.div 
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className={isPopupBlocked ? styles.popupWarning : styles.popupTip}
-                      >
-                        {isPopupBlocked ? <ShieldAlert size={16} /> : <Zap size={14} fill="var(--gentle-lilac)" />}
-                        <span>
-                          {isPopupBlocked 
-                            ? "⚠️ Popups Blocked! Please click the icon in your address bar to allow them." 
-                            : "💡 Tip: If prompted, please allow popups for the best experience."}
-                        </span>
-                      </motion.div>
-                    )}
-
-                    {/* Manual Fallback / Success Button */}
-                    {manualDownloadUrl && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className={styles.readyContainer}
-                      >
-                        <button 
-                          className={styles.readyBtn}
-                          onClick={() => window.open(manualDownloadUrl, '_blank')}
-                          style={{ borderColor: accentColor }}
-                        >
-                          <Flame className={styles.pulseIcon} size={20} fill={accentColor} />
-                          <span>Download Ready</span>
-                        </button>
-                        <p className={styles.fallbackText}>Didn't start? Click the button above.</p>
-                      </motion.div>
-                    )}
 
                     <motion.div 
                       animate={{ opacity: [0.6, 1, 0.6] }}
@@ -737,38 +679,73 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
                       <ShieldAlert size={16} />
                       <span>Download active. Do not close or refresh this tab.</span>
                     </motion.div>
-                  </div>
                 ) : (
                   <div className={styles.qualityContainer}>
-                    <span className={styles.optionLabel}>Available Formats:</span>
-                    <div className={styles.qualityGrid}>
-                      {(metadata.downloadOptions || []).map((opt: any) => {
-                          const isUltra = opt.isCombined;
-                          const isFast = !opt.isCombined && parseInt(opt.quality) < 1080;
-                          const tagClass = isUltra ? styles.tagUltra : (isFast ? styles.tagFast : styles.tagNormal);
-                          const tagText = isUltra ? "ULTRA FAST" : (isFast ? "FAST" : "NORMAL");
-                          
-                          return (
-                            <button 
-                              key={opt.id} 
-                              className={styles.qualityBtn} 
-                              onClick={() => handleDownload(opt)}
-                              style={{ '--hover-color': accentColor } as any}
-                            >
-                              <span className={`${styles.speedTag} ${tagClass}`}>{tagText}</span>
-                              <div className={styles.qualityMain}>
-                                {opt.quality === 'Audio' ? <Zap size={16} /> : <Download size={16} />}
-                                <span>{opt.quality}</span>
-                              </div>
-                              <div className={styles.qualityDetails}>
-                                <span>{opt.ext.toUpperCase()}</span>
-                                <span className={styles.dot}>•</span>
-                                <span>{opt.size ? formatBytes(opt.size) : '---'}</span>
-                              </div>
-                            </button>
-                          );
-                      })}
-                    </div>
+                    {/* Render Video Options */}
+                    {metadata.downloadOptions.filter((o: any) => o.quality !== 'Audio' && !o.quality.includes('Audio')).length > 0 && (
+                      <div className={styles.formatSection}>
+                        <span className={styles.formatCategory}>📺 Video Quality</span>
+                        <div className={styles.qualityGrid}>
+                          {metadata.downloadOptions
+                            .filter((o: any) => o.quality !== 'Audio' && !o.quality.includes('Audio'))
+                            .map((opt: any) => {
+                              const isUltra = opt.isCombined;
+                              const tagClass = isUltra ? styles.tagUltra : styles.tagNormal;
+                              const tagText = isUltra ? "ULTRA" : "HQ";
+                              return (
+                                <button 
+                                  key={opt.id} 
+                                  className={styles.qualityBtn} 
+                                  onClick={() => handleDownload(opt)}
+                                  style={{ '--hover-color': accentColor } as any}
+                                >
+                                  <span className={`${styles.speedTag} ${tagClass}`}>{tagText}</span>
+                                  <div className={styles.qualityMain}>
+                                    <Download size={14} />
+                                    <span>{opt.quality.replace(/\s*\(Audio\)/, '')}</span>
+                                  </div>
+                                  <div className={styles.qualityDetails}>
+                                    <span>{opt.ext.toUpperCase()}</span>
+                                    <span className={styles.dot}>•</span>
+                                    <span>{opt.size ? formatBytes(opt.size) : '---'}</span>
+                                  </div>
+                                </button>
+                              );
+                            })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Render Audio Options */}
+                    {metadata.downloadOptions.filter((o: any) => o.quality === 'Audio' || o.quality.includes('Audio')).length > 0 && (
+                      <div className={styles.formatSection}>
+                        <span className={styles.formatCategory}>🎵 Audio Only</span>
+                        <div className={styles.qualityList}>
+                          {metadata.downloadOptions
+                            .filter((o: any) => o.quality === 'Audio' || o.quality.includes('Audio'))
+                            .map((opt: any) => (
+                              <button 
+                                key={opt.id} 
+                                className={styles.audioRow} 
+                                onClick={() => handleDownload(opt)}
+                                style={{ '--hover-color': accentColor } as any}
+                              >
+                                <div className={styles.audioInfo}>
+                                  <Zap size={14} fill={accentColor} stroke={accentColor} />
+                                  <span className={styles.audioQuality}>
+                                    {opt.quality.replace(' (Audio)', '').replace('Audio (', '').replace(')', '') || 'High'}
+                                  </span>
+                                  <span className={styles.audioExt}>{opt.ext.toUpperCase()}</span>
+                                </div>
+                                <div className={styles.audioMeta}>
+                                  <span>{opt.size ? formatBytes(opt.size) : '---'}</span>
+                                  <Download size={14} />
+                                </div>
+                              </button>
+                            ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
                 <p className={styles.disclaimer}>Downloaded files are processed locally for maximum privacy and 4K capability.</p>
