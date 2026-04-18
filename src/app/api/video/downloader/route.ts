@@ -198,7 +198,7 @@ function transformBridgeData(data: any, videoUrl: string) {
 
   const downloadOptions = Object.values(qualityMap).sort((a: any, b: any) => parseInt(b.quality) - parseInt(a.quality));
   if (bestAudio) {
-    const q = `Audio (${bestAudio.bitrate ? Math.round(bestAudio.bitrate / 1000) + 'k' : 'Standard'})`;
+    const q = `Audio (${bestAudio.bitrate ? Math.round(bestAudio.bitrate / 1000) + 'k' : 'Standard'}) (Audio)`;
     downloadOptions.unshift({ id: `br-audio`, quality: q, ext: 'm4a', isCombined: true, url: bestAudio.url, bitrate: bestAudio.bitrate, isExternal: false });
   }
 
@@ -213,7 +213,6 @@ function transformPoolData(pool: any, videoUrl: string) {
     const qualityMap: Record<string, any> = {};
     allStreams.forEach((s: any) => {
       if (s.videoOnly) return; 
-      const isAudio = s.mimeType?.startsWith('audio/');
       const rawQ = isAudio ? 'Audio' : (s.quality || '720p');
       let q = rawQ.replace('FHD', '1080p').replace('QHD', '1440p').replace('4K', '2160p').replace('HD', '720p').replace('SD', '480p');
       if (isAudio && !q.includes('Audio')) q = `${q} (Audio)`;

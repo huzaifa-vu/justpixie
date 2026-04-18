@@ -64,7 +64,7 @@ export async function resolveYtDown(videoUrl: string): Promise<ResolverResult | 
       }
 
       q = q.replace('FHD', '1080p').replace('QHD', '1440p').replace('4K', '2160p').replace('HD', '720p').replace('SD', '480p');
-      if (isAudio && !q.includes('Audio')) q = `${q} (Audio)`;
+      if (isAudio) q = `${q.replace(' (Audio)', '')} (Audio)`;
 
       return {
         id: `ytd-${index}-${q.replace(/\s+/g, '_')}`,

@@ -156,19 +156,24 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
     return new Blob(chunks);
   };
 
-  const triggerDownload = (url: string, filename: string) => {
-    // Using a hidden iframe is the industry standard for triggering downloads 
-    // while keeping the page stable and allowing IDM to catch the link.
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = url;
-    document.body.appendChild(iframe);
-    
-    // Clean up
-    setTimeout(() => {
-      document.body.removeChild(iframe);
-      if (url.startsWith('blob:')) URL.revokeObjectURL(url);
-    }, 1000);
+  const triggerDownload = (url: string, filename: string, isExternal: boolean = false) => {
+    // For external high-speed links (ytdown/cobalt), window.open is the most 
+    // stable method. It allows IDM to catch the link and protects the Pixie tab.
+    if (isExternal) {
+      window.open(url, '_blank');
+      return;
+    }
+
+    // For local streams (blob), use the standard <a> tag method
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    if (url.startsWith('blob:')) {
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
   };
 
   const toggleBoost = () => {
@@ -321,7 +326,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
             const contentType = checkRes.headers.get('content-type') || '';
             
             if (!contentType.includes('application/json')) {
-              triggerDownload(targetUrl, fileName);
+              triggerDownload(targetUrl, fileName, true);
               polling = false;
               setIsProcessing(false);
               setShowSuccess(true);
@@ -339,9 +344,8 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
               pollCount++;
               await new Promise(r => setTimeout(r, 5000));
             } else if (statusJson.status === 'completed' || statusJson.fileUrl) {
-                // IMPORTANT: Use the final fileUrl directly if provided to bypass the proxy for the final file
-                console.log("[Frontend] Conversion finished. Using final download link.");
-                triggerDownload(statusJson.fileUrl || targetUrl, fileName);
+                // Use the high-speed file link directly
+                triggerDownload(statusJson.fileUrl || targetUrl, fileName, true);
                 polling = false;
                 setIsProcessing(false);
                 setShowSuccess(true);
@@ -360,10 +364,10 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
       
       // Mode B: Combined stream (Single direct download)
       if (option.isCombined) {
-        // If we don't need local merging, just trigger the browser download directly
+        // If we don't need local merging (ffmpeg), just trigger the browser download directly
         if (!needsLocalMerging) {
            setStatusMsg("🚀 Direct Download Started...");
-           triggerDownload(targetUrl, fileName);
+           triggerDownload(targetUrl, fileName, option.isExternal);
            setTimeout(() => {
              setIsProcessing(false);
              setShowSuccess(true);
