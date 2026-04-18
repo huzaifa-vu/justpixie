@@ -54,10 +54,12 @@ export async function resolveYtDown(videoUrl: string): Promise<ResolverResult | 
     }
 
     const downloadOptions: DownloadOption[] = mediaItems.map((item: any, index: number) => {
-      const isAudio = item.type === 'Audio';
+      let q = item.mediaQuality || (isAudio ? 'Audio' : '720p');
+      q = q.replace('FHD', '1080p').replace('QHD', '1440p').replace('4K', '2160p').replace('HD', '720p').replace('SD', '480p');
+
       return {
-        id: `ytd-${index}-${item.mediaQuality}`,
-        quality: item.mediaQuality,
+        id: `ytd-${index}-${q}`,
+        quality: q,
         ext: item.mediaExtension?.toLowerCase() || (isAudio ? 'm4a' : 'mp4'),
         // ytdown.to handles merging for 'merge' and 'render' tasks
         isCombined: item.mediaTask === 'download' || item.type === 'Audio' || item.mediaTask === 'merge' || item.mediaTask === 'render',

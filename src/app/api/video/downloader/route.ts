@@ -183,7 +183,8 @@ function transformBridgeData(data: any, videoUrl: string) {
 
   const qualityMap: Record<string, any> = {};
   formats.forEach((f: any) => {
-    const q = f.qualityLabel || '720p';
+    const rawQ = f.qualityLabel || '720p';
+    const q = rawQ.replace('FHD', '1080p').replace('QHD', '1440p').replace('4K', '2160p').replace('HD', '720p').replace('SD', '480p');
     qualityMap[q] = { id: `br-${f.itag}`, quality: q, ext: 'mp4', isCombined: true, url: f.url, bitrate: f.bitrate, isExternal: false };
   });
 
@@ -212,9 +213,10 @@ function transformPoolData(pool: any, videoUrl: string) {
     allStreams.forEach((s: any) => {
       if (s.videoOnly) return; 
       const isAudio = s.mimeType?.startsWith('audio/');
-      const q = isAudio ? 'Audio' : (s.quality || '720p');
+      const rawQ = isAudio ? 'Audio' : (s.quality || '720p');
+      const q = rawQ.replace('FHD', '1080p').replace('QHD', '1440p').replace('4K', '2160p').replace('HD', '720p').replace('SD', '480p');
       if (!qualityMap[q] || (s.bitrate > qualityMap[q].bitrate)) {
-        qualityMap[q] = { id: `res-${isAudio ? 'audio' : s.quality}`, quality: q, ext: s.format === 'MPEG_4' ? 'mp4' : (isAudio ? 'm4a' : 'webm'), isCombined: true, url: s.url, bitrate: s.bitrate };
+        qualityMap[q] = { id: `res-${isAudio ? 'audio' : s.quality}`, quality: q, ext: s.format === 'MPEG_4' ? 'mp4' : (isAudio ? 'm4a' : 'webm'), isCombined: true, url: s.url, bitrate: s.bitrate, isExternal: false };
       }
     });
     downloadOptions = Object.values(qualityMap);

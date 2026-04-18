@@ -281,7 +281,10 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
       const ext = isAudio ? (option.ext || 'm4a') : 'mp4';
       const fileName = `${metadata.title}_${isAudio ? 'audio' : option.quality}.${ext}`;
       
-      if (isFileSystemSupported) {
+      // Only use File System API for split streams (local merging)
+      const needsLocalMerging = !option.isCombined && !option.isExternal;
+      
+      if (isFileSystemSupported && needsLocalMerging) {
         try {
           setStatusMsg("Awaiting destination...");
           const handle = await (window as any).showSaveFilePicker({
@@ -299,22 +302,20 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
       const targetUrl = `${baseUrl}&formatId=${option.id}`;
       const totalSize = option.size || 0;
 
-      // --- NEW: HANDLE EXTERNAL DIRECT DOWNLOADS (ytdown, cobalt, etc) ---
+      // Mode A: External Redirect (ytdown, cobalt)
       if (option.isExternal) {
         setStatusMsg("🚀 Elite speed enabled. Checking server status...");
         
         let polling = true;
         let pollCount = 0;
-        const maxPolls = 100; // ~8 minutes at 5s intervals
+        const maxPolls = 100; // ~8 minutes 
 
         while (polling && pollCount < maxPolls) {
           try {
             const checkRes = await fetch(targetUrl);
             const contentType = checkRes.headers.get('content-type') || '';
             
-            // If it's the final file (redirect or binary), trigger the download
             if (!contentType.includes('application/json')) {
-              console.log("[Frontend] Conversion complete! Triggering download.");
               triggerDownload(targetUrl, fileName);
               polling = false;
               setIsProcessing(false);
@@ -323,53 +324,46 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
               return;
             }
 
-            // If it's a JSON status (Queued/Merging)
             const statusJson = await checkRes.json();
             if (statusJson.status === 'queued' || statusJson.status === 'processing' || statusJson.status === 'merging') {
               const progressStr = statusJson.progress || statusJson.percent || "0%";
               const posStr = statusJson.position ? ` (Position: ${statusJson.position})` : "";
-              setStatusMsg(`⏳ Remote Server: Merging Video & Audio... ${progressStr}${posStr}`);
-              
-              // Update progress bar subtly if possible
+              setStatusMsg(`⏳ Remote Server: Merging... ${progressStr}${posStr}`);
               const p = parseInt(progressStr) || 0;
               if (p > 0) setProgress(p);
-              
               pollCount++;
-              await new Promise(r => setTimeout(r, 5000)); // Poll every 5 seconds
+              await new Promise(r => setTimeout(r, 5000));
             } else if (statusJson.status === 'completed' || statusJson.fileUrl) {
-                // If it's finished but returned a JSON with a link
                 triggerDownload(statusJson.fileUrl || targetUrl, fileName);
                 polling = false;
                 setIsProcessing(false);
                 setShowSuccess(true);
-                setTimeout(() => setShowSuccess(false), 8000);
                 return;
-            } else if (statusJson.status === 'error') {
-               throw new Error(statusJson.message || "Remote server failed to process video.");
-            } else {
-              // Unknown status but still JSON? Assume it's still working
-              pollCount++;
-              await new Promise(r => setTimeout(r, 5000));
-            }
+            } else { pollCount++; await new Promise(r => setTimeout(r, 5000)); }
           } catch (pollErr: any) {
-            console.warn("[Frontend] Polling error:", pollErr.message);
-            // If we hit an error, try to fallback to a direct trigger once
             triggerDownload(targetUrl, fileName);
             polling = false;
             setIsProcessing(false);
             return;
           }
         }
-
-        if (pollCount >= maxPolls) {
-          setError("Server-side processing is taking too long. Please try again later.");
-        }
-        
         setIsProcessing(false);
         return;
       }
       
+      // Mode B: Combined stream (Single direct download)
       if (option.isCombined) {
+        // If we don't need local merging, just trigger the browser download directly
+        if (!needsLocalMerging) {
+           setStatusMsg("🚀 Direct Download Started...");
+           triggerDownload(targetUrl, fileName);
+           setTimeout(() => {
+             setIsProcessing(false);
+             setShowSuccess(true);
+             setTimeout(() => setShowSuccess(false), 5000);
+           }, 1500);
+           return;
+        }
         
         if (writable) {
             const CHUNK_SIZE = 10 * 1024 * 1024;
@@ -632,16 +626,19 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
                       </div>
                     </div>
 
-                    <div className={styles.boostControl}>
-                      <button 
-                        className={`${styles.boostBtn} ${boostLevel > 1 ? styles.boostActive : ''}`} 
-                        onClick={toggleBoost}
-                        title="Increase download threads (IDM Style)"
-                      >
-                        <Zap size={16} fill={boostLevel > 1 ? "var(--deep-charcoal)" : "none"} />
-                        <span>{boostLevel > 1 ? `Boost Active (${boostLevel} Threads)` : "Boost Speed"}</span>
-                      </button>
-                    </div>
+                    {/* Show boost controls only for fragmented local downloads */}
+                    {!metadata.downloadOptions.find((o: any) => o.id === (isProcessing ? 'current' : null))?.isExternal && (
+                      <div className={styles.boostControl}>
+                        <button 
+                          className={`${styles.boostBtn} ${boostLevel > 1 ? styles.boostActive : ''}`} 
+                          onClick={toggleBoost}
+                          title="Increase download threads (IDM Style)"
+                        >
+                          <Zap size={16} fill={boostLevel > 1 ? "var(--deep-charcoal)" : "none"} />
+                          <span>{boostLevel > 1 ? `Boost Active (${boostLevel} Threads)` : "Boost Speed"}</span>
+                        </button>
+                      </div>
+                    )}
 
                     <motion.div 
                       animate={{ opacity: [0.6, 1, 0.6] }}
