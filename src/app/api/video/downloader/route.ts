@@ -64,8 +64,18 @@ const attemptPoolExtraction = async (videoId: string) => {
 };
 
 const extractVideoId = (url: string) => {
-  const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
-  return match?.[1] || null;
+  // Enhanced pattern to catch normal videos, shorts, live streams, and embeds
+  const patterns = [
+    /(?:v=|\/)([0-9A-Za-z_-]{11})(?:[%#?&]|$)/,
+    /(?:embed|v|shorts|live)\/([0-9A-Za-z_-]{11})(?:[%#?&]|$)/,
+    /youtu\.be\/([0-9A-Za-z_-]{11})(?:[%#?&]|$)/
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match?.[1]) return match[1];
+  }
+  return null;
 };
 
 export async function GET(req: NextRequest) {
