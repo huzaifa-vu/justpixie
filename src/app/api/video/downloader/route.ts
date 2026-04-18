@@ -252,13 +252,47 @@ async function handleProxyRequest(req: NextRequest, result: any, videoUrl: strin
   const streamUrl = opt?.url;
   if (!streamUrl) throw new Error('Stream URL not found in format options.');
 
-  // --- REDIRECT STRATEGY FOR THIRD-PARTY PROXIES ---
-  // ytdown.to and cobalt links should be REDIRECTED, not streamed. 
-  // This bypasses Vercel's 60s timeout and fixes 416 Range issues.
+  // --- EXTERNAL WORKER HANDLING (ytdown, cobalt, etc) ---
   const isExternalProxy = streamUrl.includes('worker03.com') || streamUrl.includes('ytdown.to') || streamUrl.includes('cobalt.tools');
   
   if (isExternalProxy) {
-    console.log(`[Proxy] Redirecting to external stream: ${streamUrl.substring(0, 50)}...`);
+    console.log(`[Proxy] Checking external worker status: ${streamUrl}`);
+    
+    // Fetch the URL to see if it's a JSON status or a redirect to a file
+    const upstreamRes = await fetch(streamUrl, {
+      redirect: 'manual', // Specifically handle the redirect ourselves if needed
+      headers: { 
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    });
+
+    // Case 1: Direct File Download or Redirect
+    if (upstreamRes.status >= 300 && upstreamRes.status < 400) {
+      const location = upstreamRes.headers.get('location');
+      if (location) {
+        console.log(`[Proxy] External worker redirected directly to: ${location}`);
+        return NextResponse.redirect(location);
+      }
+    }
+
+    const contentType = upstreamRes.headers.get('content-type') || '';
+    
+    // Case 2: Status JSON (Queued/Merging)
+    if (contentType.includes('application/json')) {
+      const statusJson = await upstreamRes.json();
+      console.log(`[Proxy] External worker returned status: ${statusJson.status || 'unknown'}`);
+      return NextResponse.json(statusJson);
+    }
+
+    // Case 3: Binary/File body (if it returned the file directly instead of a redirect)
+    if (!contentType.includes('text/html')) {
+       console.log(`[Proxy] External worker returned direct file body (${contentType})`);
+       return NextResponse.redirect(streamUrl);
+    }
+
+    // Default: Just redirect to let browser handle it
+    console.log(`[Proxy] Defaulting to redirect for external stream`);
     return NextResponse.redirect(streamUrl);
   }
 

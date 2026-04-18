@@ -301,13 +301,71 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
 
       // --- NEW: HANDLE EXTERNAL DIRECT DOWNLOADS (ytdown, cobalt, etc) ---
       if (option.isExternal) {
-        setStatusMsg("🚀 Elite speed enabled. Starting direct download...");
-        triggerDownload(targetUrl, fileName);
-        setTimeout(() => {
-          setIsProcessing(false);
-          setShowSuccess(true);
-          setTimeout(() => setShowSuccess(false), 5000);
-        }, 1500);
+        setStatusMsg("🚀 Elite speed enabled. Checking server status...");
+        
+        let polling = true;
+        let pollCount = 0;
+        const maxPolls = 100; // ~8 minutes at 5s intervals
+
+        while (polling && pollCount < maxPolls) {
+          try {
+            const checkRes = await fetch(targetUrl);
+            const contentType = checkRes.headers.get('content-type') || '';
+            
+            // If it's the final file (redirect or binary), trigger the download
+            if (!contentType.includes('application/json')) {
+              console.log("[Frontend] Conversion complete! Triggering download.");
+              triggerDownload(targetUrl, fileName);
+              polling = false;
+              setIsProcessing(false);
+              setShowSuccess(true);
+              setTimeout(() => setShowSuccess(false), 8000);
+              return;
+            }
+
+            // If it's a JSON status (Queued/Merging)
+            const statusJson = await checkRes.json();
+            if (statusJson.status === 'queued' || statusJson.status === 'processing' || statusJson.status === 'merging') {
+              const progressStr = statusJson.progress || statusJson.percent || "0%";
+              const posStr = statusJson.position ? ` (Position: ${statusJson.position})` : "";
+              setStatusMsg(`⏳ Remote Server: Merging Video & Audio... ${progressStr}${posStr}`);
+              
+              // Update progress bar subtly if possible
+              const p = parseInt(progressStr) || 0;
+              if (p > 0) setProgress(p);
+              
+              pollCount++;
+              await new Promise(r => setTimeout(r, 5000)); // Poll every 5 seconds
+            } else if (statusJson.status === 'completed' || statusJson.fileUrl) {
+                // If it's finished but returned a JSON with a link
+                triggerDownload(statusJson.fileUrl || targetUrl, fileName);
+                polling = false;
+                setIsProcessing(false);
+                setShowSuccess(true);
+                setTimeout(() => setShowSuccess(false), 8000);
+                return;
+            } else if (statusJson.status === 'error') {
+               throw new Error(statusJson.message || "Remote server failed to process video.");
+            } else {
+              // Unknown status but still JSON? Assume it's still working
+              pollCount++;
+              await new Promise(r => setTimeout(r, 5000));
+            }
+          } catch (pollErr: any) {
+            console.warn("[Frontend] Polling error:", pollErr.message);
+            // If we hit an error, try to fallback to a direct trigger once
+            triggerDownload(targetUrl, fileName);
+            polling = false;
+            setIsProcessing(false);
+            return;
+          }
+        }
+
+        if (pollCount >= maxPolls) {
+          setError("Server-side processing is taking too long. Please try again later.");
+        }
+        
+        setIsProcessing(false);
         return;
       }
       
