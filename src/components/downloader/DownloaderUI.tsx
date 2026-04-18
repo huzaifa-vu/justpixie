@@ -747,6 +747,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
                         </div>
                       </div>
                     )}
+                  </div>
                 )}
               </div>
               <p className={styles.disclaimer}>Downloaded files are processed locally for maximum privacy and 4K capability.</p>
