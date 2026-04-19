@@ -148,8 +148,7 @@ export default function ImageFilters() {
   };
 
   const resetAll = () => {
-    resetControls();
-    pushHistoryState();
+    setCurrentIndex(0);
   };
 
   const handleDownload = () => {
