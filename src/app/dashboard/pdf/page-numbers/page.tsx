@@ -1,10 +1,8 @@
-"use client";
-import { useEffect, useState } from "react";
-import { FileDigit, Download, RefreshCw, Trash2, CheckCircle, Info } from "lucide-react";
-import Dropdown from "@/components/Dropdown";
+import { useEffect, useState, useRef } from "react";
+import { FileDigit, Download, RefreshCw, Trash2, CheckCircle, Info, Settings2, Palette } from "lucide-react";
 import ToolWrapper from "@/components/ToolWrapper";
 import styles from "../pdf-pro.module.css";
-import { PDFDocument, rgb } from "pdf-lib";
+import { PDFDocument, rgb, hexToRgb } from "pdf-lib";
 import { useAiHydration } from "@/hooks/useAiHydration";
 import { useSettings } from "@/hooks/useSettings";
 import { DropZone } from "@/components/DropZone";
@@ -18,9 +16,14 @@ export default function PdfPageNumbers() {
   const { settings } = useSettings();
   const [autoRun, setAutoRun] = useState(false);
   
+  // Studio State
   const [startNum, setStartNum] = useState(1);
-  const [position, setPosition] = useState("bottom-right");
-  const [textSize, setTextSize] = useState("medium");
+  const [xPos, setXPos] = useState(90); // 0-100 percentage
+  const [yPos, setYPos] = useState(5);  // 0-100 percentage
+  const [textSize, setTextSize] = useState(14);
+  const [color, setColor] = useState("#000000");
+
+  const thumbnailRef = useRef<HTMLDivElement>(null);
 
   const handleFiles = async (files: File[]) => {
     if (files.length > 0) {
@@ -55,15 +58,25 @@ export default function PdfPageNumbers() {
     }
   };
 
+  const parseHex = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16) / 255,
+      g: parseInt(result[2], 16) / 255,
+      b: parseInt(result[3], 16) / 255,
+    } : { r: 0, g: 0, b: 0 };
+  };
+
   const handleProcess = async () => {
     if (!file) return;
     setIsProcessing(true);
-    setStatus("Analyzing layout...");
+    setStatus("Opening document...");
     
     try {
       const arrayBuffer = await file.arrayBuffer();
       const pdfDoc = await PDFDocument.load(arrayBuffer);
       const pages = pdfDoc.getPages();
+      const { r, g, b } = parseHex(color);
       
       let currNum = startNum;
       for (let i = 0; i < pages.length; i++) {
@@ -71,25 +84,19 @@ export default function PdfPageNumbers() {
         const page = pages[i];
         const { width, height } = page.getSize();
         
-        let x = width - 50;
-        let y = 30;
-        
-        if (position === 'bottom-center') x = width / 2 - 10;
-        else if (position === 'bottom-left') x = 30;
-        else if (position === 'top-right') y = height - 30;
-
-        const sizeMap = { small: 10, medium: 14, large: 20 };
-        const finalSize = sizeMap[textSize as keyof typeof sizeMap] || 14;
+        // Map 0-100% to actual dimensions
+        const x = (xPos / 100) * width;
+        const y = (yPos / 100) * height;
 
         page.drawText(`${currNum}`, {
           x, y,
-          size: finalSize,
-          color: rgb(0, 0, 0),
+          size: textSize,
+          color: rgb(r, g, b),
         });
         currNum++;
       }
       
-      setStatus("Finalizing document...");
+      setStatus("Saving studio result...");
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
@@ -104,7 +111,7 @@ export default function PdfPageNumbers() {
       }
     } catch (err) {
       console.error(err);
-      setStatus("Failed to process.");
+      setStatus("Studio export failed.");
     } finally {
       setIsProcessing(false);
     }
@@ -122,8 +129,6 @@ export default function PdfPageNumbers() {
   useAiHydration(({ files, params, autoExecute }) => {
     if (files && files.length > 0) handleFiles([files[0]]);
     if (params?.startNum) setStartNum(Number(params.startNum));
-    if (params?.position) setPosition(params.position);
-    if (params?.textSize) setTextSize(params.textSize);
     if (autoExecute) setAutoRun(true);
   }, "/dashboard/pdf/page-numbers");
 
@@ -135,71 +140,91 @@ export default function PdfPageNumbers() {
   }, [autoRun, file, isProcessing]);
 
   return (
-    <ToolWrapper title="Add Page Numbers" description="Inject serialized page numbers universally across a document." icon={FileDigit}>
+    <ToolWrapper title="Page Numbers Studio" description="Interactive visual placement of serialized page numbers." icon={FileDigit}>
       <div className={styles.workspace}>
         <div className={styles.previewArea}>
           {file ? (
-            <div className={styles.thumbnailContainer}>
-               {thumbnailUrl ? (
-                 <img src={thumbnailUrl} className={styles.thumbnail} alt="PDF Preview" />
-               ) : (
-                 <div className={styles.thumbnail} style={{ width: 300, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#222' }}>
-                    <RefreshCw size={40} className={styles.spin} style={{ color: '#444' }} />
-                 </div>
-               )}
-               <div className={styles.thumbnailBadge}>{file.name}</div>
+            <div className={styles.tabletFrame}>
+              <div ref={thumbnailRef} style={{ position: 'relative' }}>
+                {thumbnailUrl ? (
+                  <img src={thumbnailUrl} className={styles.thumbnail} alt="PDF Proof" />
+                ) : (
+                  <div className={styles.thumbnail} style={{ width: 300, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#222' }}>
+                     <RefreshCw size={40} className={styles.spin} style={{ color: '#444' }} />
+                  </div>
+                )}
+                
+                {/* Live Preview Badge */}
+                <div 
+                  className={styles.livePreviewBadge}
+                  style={{ 
+                    left: `${xPos}%`, 
+                    bottom: `${yPos}%`, 
+                    color: color,
+                    fontSize: `${textSize}px`,
+                    transform: 'translate(-50%, 50%)'
+                  }}
+                >
+                  {startNum}
+                </div>
+              </div>
             </div>
           ) : (
             <DropZone 
               onFilesSelected={handleFiles} 
               accept="application/pdf"
               title="Select PDF"
-              subtitle="Numbers will be previewed before being permanently injected"
+              subtitle="Numbers will be proofed on a live tablet mockup"
             />
           )}
         </div>
         
         <div className={styles.configSidebar}>
-          <div className={styles.configHeader}><FileDigit size={20} /><h2>Numbering Manager</h2></div>
+          <div className={styles.configHeader}><FileDigit size={20} /><h2>Studio Manager</h2></div>
           <div className={styles.configBody}>
             <div className={styles.infoBox}>
                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', color: 'var(--foreground)', fontWeight: 700 }}>
                  <Info size={14} />
-                 <span>Instruction</span>
+                 <span>Studio Tip</span>
               </div>
-              Serialized numbers will be added to every page. You can customize the starting index and placement.
+              Drag the sliders below to adjust the exact position of the page numbers. The preview updates in real-time.
             </div>
 
             <div className={styles.fieldGroup}>
-              <span className={styles.label}>Start Number From</span>
-              <input type="number" min="1" value={startNum} onChange={(e) => { setStartNum(Number(e.target.value)); setOutputUrl(null); }} className={styles.textInput} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Settings2 size={14} className={styles.label} />
+                <span className={styles.label}>Coordination</span>
+              </div>
+              <div className={styles.rangeGroup}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem' }}>
+                   <span>X: {xPos}%</span>
+                   <span>Y: {yPos}%</span>
+                </div>
+                <input type="range" min="0" max="100" value={xPos} onChange={(e) => setXPos(Number(e.target.value))} className={styles.rangeInput} />
+                <input type="range" min="0" max="100" value={yPos} onChange={(e) => setYPos(Number(e.target.value))} className={styles.rangeInput} />
+              </div>
             </div>
 
             <div className={styles.fieldGroup}>
-              <span className={styles.label}>Position</span>
-              <Dropdown 
-                options={[
-                  { label: "Bottom Right", value: "bottom-right" }, 
-                  { label: "Bottom Center", value: "bottom-center" }, 
-                  { label: "Bottom Left", value: "bottom-left" }, 
-                  { label: "Top Right", value: "top-right" }
-                ]} 
-                value={position} 
-                onChange={(val) => { setPosition(val); setOutputUrl(null); }} 
-              />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Palette size={14} className={styles.label} />
+                <span className={styles.label}>Aesthetics</span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div style={{ flex: 1 }}>
+                   <span style={{ fontSize: '0.7rem', display: 'block', marginBottom: '0.25rem' }}>Text Color</span>
+                   <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className={styles.colorInput} />
+                </div>
+                <div style={{ width: '80px' }}>
+                   <span style={{ fontSize: '0.7rem', display: 'block', marginBottom: '0.25rem' }}>Size (pt)</span>
+                   <input type="number" value={textSize} onChange={(e) => setTextSize(Number(e.target.value))} className={styles.textInput} />
+                </div>
+              </div>
             </div>
 
             <div className={styles.fieldGroup}>
-              <span className={styles.label}>Text Size</span>
-              <Dropdown 
-                options={[
-                  { label: "Small (10pt)", value: "small" },
-                  { label: "Medium (14pt)", value: "medium" },
-                  { label: "Large (20pt)", value: "large" }
-                ]} 
-                value={textSize} 
-                onChange={(val) => { setTextSize(val); setOutputUrl(null); }} 
-              />
+               <span className={styles.label}>Sequence Start</span>
+               <input type="number" min="1" value={startNum} onChange={(e) => { setStartNum(Number(e.target.value)); setOutputUrl(null); }} className={styles.textInput} />
             </div>
 
             {isProcessing && (
@@ -216,15 +241,15 @@ export default function PdfPageNumbers() {
                <div className={styles.statusCard}>
                   <CheckCircle size={18} style={{ color: 'var(--mint-green)' }} />
                   <div className={styles.statusInfo}>
-                     <div className={styles.statusTitle}>Export Ready</div>
-                     <div className={styles.statusText}>Numbers Injected</div>
+                     <div className={styles.statusTitle}>Studio Ready</div>
+                     <div className={styles.statusText}>Export Successful</div>
                   </div>
                </div>
             )}
             
             {!outputUrl ? (
               <button className={styles.executeBtn} onClick={handleProcess} disabled={!file || isProcessing}>
-                {isProcessing ? <><RefreshCw size={18} className={styles.spin} /> Working...</> : <><FileDigit size={18} /> Inject Numbers</>}
+                {isProcessing ? <><RefreshCw size={18} className={styles.spin} /> Processing...</> : <><Download size={18} /> Finalize & Download</>}
               </button>
             ) : (
               <a 
@@ -237,7 +262,7 @@ export default function PdfPageNumbers() {
             )}
 
             <button className={styles.resetBtn} onClick={resetAll}>
-               <Trash2 size={16} /> Clear Selection
+               <Trash2 size={16} /> Discard & Reset
             </button>
           </div>
         </div>
