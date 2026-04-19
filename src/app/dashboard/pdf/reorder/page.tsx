@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { UploadCloud, RefreshCw, Wand2, Download, ListOrdered, GripVertical, Trash2, ArrowUp, ArrowDown, Info, CheckCircle } from "lucide-react";
+import { UploadCloud, RefreshCw, Wand2, Download, ListOrdered, Trash2, ArrowUp, ArrowDown, Info, CheckCircle } from "lucide-react";
 import ToolWrapper from "@/components/ToolWrapper";
 import { DropZone } from "@/components/DropZone";
-import { Reorder, AnimatePresence } from "framer-motion";
 import { PDFDocument } from 'pdf-lib';
 import styles from "../pdf-pro.module.css";
 import { useAiHydration } from "@/hooks/useAiHydration";
@@ -179,53 +178,41 @@ export default function ReorderPdf() {
                  <div className={styles.thumbnailBadge}>{pages.length} Pages</div>
               </div>
 
-              <Reorder.Group 
-                axis="y" 
-                values={pages} 
-                onReorder={setPages} 
-                className={styles.pageGrid}
-              >
-                <AnimatePresence initial={false}>
-                  {pages.map((page, screenIndex) => (
-                    <Reorder.Item 
-                      key={page.id} 
-                      value={page}
-                      className={styles.pageCard}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                    >
-                      <div className={styles.gripHandle}><GripVertical size={14} /></div>
-                      
-                      {thumbnails[page.index] ? (
-                        <img src={thumbnails[page.index]} className={styles.pageThumb} alt={`Page ${page.index + 1}`} />
-                      ) : (
-                        <div className={styles.pageThumb} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                           <RefreshCw size={24} className={styles.spin} style={{ opacity: 0.2 }} />
-                        </div>
-                      )}
-
-                      <div className={styles.cardFooter}>
-                        <div className={styles.cardInfo}>
-                           <span className={styles.cardLabel}>Position {screenIndex + 1}</span>
-                           <span className={styles.cardIndex}>Original: {page.index + 1}</span>
-                        </div>
-                        <div className={styles.cardActions}>
-                           <button className={styles.cardBtn} onClick={() => movePage(screenIndex, 'up')} disabled={screenIndex === 0} title="Move Up">
-                              <ArrowUp size={16} />
-                           </button>
-                           <button className={styles.cardBtn} onClick={() => movePage(screenIndex, 'down')} disabled={screenIndex === pages.length - 1} title="Move Down">
-                              <ArrowDown size={16} />
-                           </button>
-                           <button className={`${styles.cardBtn} ${styles.cardBtnDanger}`} onClick={() => handleDeletePage(page.id)} title="Remove Page">
-                              <Trash2 size={16} />
-                           </button>
-                        </div>
+              <div className={styles.pageGrid}>
+                {pages.map((page, screenIndex) => (
+                  <div 
+                    key={page.id} 
+                    className={styles.pageCard}
+                    style={{ cursor: 'default' }}
+                  >
+                    {thumbnails[page.index] ? (
+                      <img src={thumbnails[page.index]} className={styles.pageThumb} alt={`Page ${page.index + 1}`} />
+                    ) : (
+                      <div className={styles.pageThumb} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                         <RefreshCw size={24} className={styles.spin} style={{ opacity: 0.2 }} />
                       </div>
-                    </Reorder.Item>
-                  ))}
-                </AnimatePresence>
-              </Reorder.Group>
+                    )}
+
+                    <div className={styles.cardFooter}>
+                      <div className={styles.cardInfo}>
+                         <span className={styles.cardLabel}>Position {screenIndex + 1}</span>
+                         <span className={styles.cardIndex}>Original: {page.index + 1}</span>
+                      </div>
+                      <div className={styles.cardActions}>
+                         <button className={styles.cardBtn} onClick={() => movePage(screenIndex, 'up')} disabled={screenIndex === 0} title="Move Up">
+                            <ArrowUp size={16} />
+                         </button>
+                         <button className={styles.cardBtn} onClick={() => movePage(screenIndex, 'down')} disabled={screenIndex === pages.length - 1} title="Move Down">
+                            <ArrowDown size={16} />
+                         </button>
+                         <button className={`${styles.cardBtn} ${styles.cardBtnDanger}`} onClick={() => handleDeletePage(page.id)} title="Remove Page">
+                            <Trash2 size={16} />
+                         </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
