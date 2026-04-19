@@ -259,6 +259,7 @@
   justify-content: space-between;
   align-items: center;
   box-shadow: var(--shadow-bento);
+  margin-top: 1.5rem;
   animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

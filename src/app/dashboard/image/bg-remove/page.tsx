@@ -177,7 +177,13 @@ export default function BackgroundRemover() {
             {isProcessing && (
               <div className={styles.progressContainer}>
                 <div className={styles.progressLabel}>
-                  <span>Extracting Dimensions...</span>
+                  <span>
+                    {progress < 20 && "Initializing AI Engine..."}
+                    {progress >= 20 && progress < 50 && "Identifying Subject..."}
+                    {progress >= 50 && progress < 80 && "Extracting subject edges..."}
+                    {progress >= 80 && progress < 100 && "Polishing cutout..."}
+                    {progress === 100 && "Magic Complete!"}
+                  </span>
                   <span>{progress}%</span>
                 </div>
                 <div className={styles.progressBar}>
