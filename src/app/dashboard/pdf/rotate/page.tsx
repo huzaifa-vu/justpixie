@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { RotateCcw, Download, RefreshCw, Trash2, CheckCircle, Info } from "lucide-react";
-import Dropdown from "@/components/Dropdown";
+import { RotateCcw, Download, RefreshCw, Trash2, CheckCircle, Info, RotateCw } from "lucide-react";
 import ToolWrapper from "@/components/ToolWrapper";
 import styles from "../pdf-pro.module.css";
 import { PDFDocument, degrees } from "pdf-lib";
@@ -11,7 +10,7 @@ import { DropZone } from "@/components/DropZone";
 
 export default function PdfRotate() {
   const [file, setFile] = useState<File | null>(null);
-  const [angle, setAngle] = useState(90);
+  const [visualRotation, setVisualRotation] = useState(0);
   const [outputUrl, setOutputUrl] = useState<string | null>(null);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -24,6 +23,7 @@ export default function PdfRotate() {
       const f = files[0];
       setFile(f);
       setOutputUrl(null);
+      setVisualRotation(0);
       setStatus("");
       
       if (thumbnailUrl) URL.revokeObjectURL(thumbnailUrl);
@@ -52,6 +52,11 @@ export default function PdfRotate() {
     }
   };
 
+  const rotate = (dir: 'left' | 'right') => {
+    setVisualRotation(prev => (prev + (dir === 'right' ? 90 : -90)));
+    setOutputUrl(null);
+  };
+
   const handleProcess = async () => {
     if (!file) return;
     setIsProcessing(true);
@@ -62,10 +67,13 @@ export default function PdfRotate() {
       const pdfDoc = await PDFDocument.load(arrayBuffer);
       const pages = pdfDoc.getPages();
       
-      setStatus(`Rotating ${pages.length} pages...`);
+      // Calculate effective rotation (0-360)
+      const effectiveAngle = ((visualRotation % 360) + 360) % 360;
+
+      setStatus(`Applying ${effectiveAngle}° rotation to ${pages.length} pages...`);
       for (const page of pages) {
         const currentRot = page.getRotation().angle;
-        const newRot = (currentRot + angle) % 360;
+        const newRot = (currentRot + effectiveAngle) % 360;
         page.setRotation(degrees(newRot));
       }
       
@@ -95,13 +103,14 @@ export default function PdfRotate() {
     setFile(null);
     setOutputUrl(null);
     setThumbnailUrl(null);
+    setVisualRotation(0);
     setStatus("");
   };
 
   useAiHydration(({ files, params, autoExecute }) => {
     if (files && files.length > 0) {
       handleFiles([files[0]]);
-      if (params?.angle) setAngle(Number(params.angle));
+      if (params?.angle) setVisualRotation(Number(params.angle));
     }
     if (autoExecute) setAutoRun(true);
   }, "/dashboard/pdf/rotate");
@@ -114,26 +123,40 @@ export default function PdfRotate() {
   }, [autoRun, file, isProcessing]);
 
   return (
-    <ToolWrapper title="Rotate PDF" description="Rotate all pages in a PDF document simultaneously." icon={RotateCcw}>
+    <ToolWrapper title="Rotate PDF" description="Interactive visual rotation for all pages in a PDF document." icon={RotateCcw}>
       <div className={styles.workspace}>
         <div className={styles.previewArea}>
           {file ? (
-            <div className={styles.thumbnailContainer}>
-               {thumbnailUrl ? (
-                 <img src={thumbnailUrl} className={styles.thumbnail} alt="PDF Preview" />
-               ) : (
-                 <div className={styles.thumbnail} style={{ width: 300, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#222' }}>
-                    <RefreshCw size={40} className={styles.spin} style={{ color: '#444' }} />
-                 </div>
-               )}
-               <div className={styles.thumbnailBadge}>{file.name}</div>
-            </div>
+            <>
+              <div className={styles.canvasToolbar}>
+                <button className={styles.canvasBtn} onClick={() => rotate('left')} title="Rotate Left">
+                    <RotateCcw size={20} />
+                </button>
+                <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)', margin: '0 0.5rem' }}></div>
+                <button className={styles.canvasBtn} onClick={() => rotate('right')} title="Rotate Right">
+                    <RotateCw size={20} />
+                </button>
+              </div>
+
+              <div className={styles.thumbnailContainer}>
+                <div className={styles.previewWrapper} style={{ transform: `rotate(${visualRotation}deg)` }}>
+                  {thumbnailUrl ? (
+                    <img src={thumbnailUrl} className={styles.thumbnail} alt="PDF Preview" />
+                  ) : (
+                    <div className={styles.thumbnail} style={{ width: 300, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#222' }}>
+                        <RefreshCw size={40} className={styles.spin} style={{ color: '#444' }} />
+                    </div>
+                  )}
+                </div>
+                <div className={styles.thumbnailBadge}>{file.name} ({visualRotation}°)</div>
+              </div>
+            </>
           ) : (
             <DropZone 
               onFilesSelected={handleFiles} 
               accept="application/pdf"
               title="Select PDF"
-              subtitle="The document will be proofed before rotation"
+              subtitle="Use the canvas buttons for live visual rotation"
             />
           )}
         </div>
@@ -144,22 +167,9 @@ export default function PdfRotate() {
             <div className={styles.infoBox}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', color: 'var(--foreground)', fontWeight: 700 }}>
                  <Info size={14} />
-                 <span>Instruction</span>
+                 <span>Studio Mode</span>
               </div>
-              Choose a rotation angle. Every page in the PDF will be rotated by this amount from its current orientation.
-            </div>
-
-            <div className={styles.fieldGroup}>
-              <span className={styles.label}>Rotation Angle</span>
-              <Dropdown 
-                options={[
-                  { label: "Clockwise (90°)", value: 90 }, 
-                  { label: "Upside Down (180°)", value: 180 }, 
-                  { label: "Counter-Clockwise (270°)", value: 270 }
-                ]} 
-                value={angle} 
-                onChange={(val) => { setAngle(Number(val)); setOutputUrl(null); }} 
-              />
+              Use the **floating controls** on the document preview to rotate. The degree indicator helps track cumulative changes.
             </div>
 
             {isProcessing && (
@@ -184,7 +194,7 @@ export default function PdfRotate() {
             
             {!outputUrl ? (
               <button className={styles.executeBtn} onClick={handleProcess} disabled={!file || isProcessing}>
-                {isProcessing ? <><RefreshCw size={18} className={styles.spin} /> Processing...</> : <><RotateCcw size={18} /> Apply Rotation</>}
+                {isProcessing ? <><RefreshCw size={18} className={styles.spin} /> Processing...</> : <><Download size={18} /> Download Rotated PDF</>}
               </button>
             ) : (
               <a 
@@ -197,7 +207,7 @@ export default function PdfRotate() {
             )}
 
             <button className={styles.resetBtn} onClick={resetAll}>
-               <Trash2 size={16} /> Clear Selection
+               <Trash2 size={16} /> Discard & Reset
             </button>
           </div>
         </div>

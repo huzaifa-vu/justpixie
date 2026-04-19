@@ -223,6 +223,59 @@
   to { transform: rotate(360deg); }
 }
 
+.canvasToolbar {
+  position: absolute;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.75rem;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+  padding: 0.5rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  z-index: 10;
+}
+
+.canvasBtn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.canvasBtn:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--mint-green);
+}
+
+.canvasBtn.primary {
+  background: var(--mint-green);
+  color: var(--deep-charcoal);
+}
+
+.canvasBtn.primary:hover {
+  background: var(--primary-accent);
+  color: white;
+}
+
+.previewWrapper {
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 @media (max-width: 768px) {
   .workspace {
     flex-direction: column-reverse;
