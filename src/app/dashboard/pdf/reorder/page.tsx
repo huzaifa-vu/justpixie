@@ -1,20 +1,27 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { UploadCloud, RefreshCw, Wand2, Download, ListOrdered, GripVertical, Trash2 } from "lucide-react";
+import { UploadCloud, RefreshCw, Wand2, Download, ListOrdered, GripVertical, Trash2, ArrowUp, ArrowDown, Info, CheckCircle } from "lucide-react";
 import ToolWrapper from "@/components/ToolWrapper";
 import { DropZone } from "@/components/DropZone";
-import { Reorder } from "framer-motion";
+import { Reorder, AnimatePresence } from "framer-motion";
 import { PDFDocument } from 'pdf-lib';
-import styles from "../../dev/dev.module.css"; // Reuse general workspace layout or we can use local styles
+import styles from "../pdf-pro.module.css";
 import { useAiHydration } from "@/hooks/useAiHydration";
 import { useSettings } from "@/hooks/useSettings";
 
+interface PdfPage {
+  id: string;
+  index: number; // Original index
+}
+
 export default function ReorderPdf() {
   const [selectedPdf, setSelectedPdf] = useState<File | null>(null);
-  const [pages, setPages] = useState<{ id: string, index: number }[]>([]);
+  const [pages, setPages] = useState<PdfPage[]>([]);
+  const [thumbnails, setThumbnails] = useState<Record<number, string>>({});
   const [pdfDoc, setPdfDoc] = useState<PDFDocument | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [status, setStatus] = useState("");
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const { settings } = useSettings();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -22,6 +29,12 @@ export default function ReorderPdf() {
   const loadPdf = async (file: File) => {
     setSelectedPdf(file);
     setIsProcessing(true);
+    setStatus("Loading document architecture...");
+    
+    // Clear old thumbnails
+    Object.values(thumbnails).forEach(url => URL.revokeObjectURL(url));
+    setThumbnails({});
+    
     try {
       const arrayBuffer = await file.arrayBuffer();
       const doc = await PDFDocument.load(arrayBuffer);
@@ -29,22 +42,111 @@ export default function ReorderPdf() {
       
       const pageCount = doc.getPageCount();
       const initialPages = Array.from({ length: pageCount }).map((_, i) => ({
-        id: `page-${i}`,
+        id: `page-${Math.random().toString(36).substr(2, 9)}`,
         index: i
       }));
       setPages(initialPages);
+
+      // Start thumbnail generation
+      generateThumbnails(arrayBuffer, pageCount);
     } catch (err) {
       console.error(err);
-      alert("Failed to load PDF.");
+      setStatus("Failed to load PDF.");
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      loadPdf(e.target.files[0]);
+  const generateThumbnails = async (buffer: ArrayBuffer, count: number) => {
+    try {
+      const { GlobalWorkerOptions, getDocument } = await import("pdfjs-dist");
+      GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+      
+      const loadingTask = getDocument({ data: buffer });
+      const pdf = await loadingTask.promise;
+
+      for (let i = 0; i < count; i++) {
+        setStatus(`Rendering page ${i + 1} of ${count}...`);
+        const page = await pdf.getPage(i + 1);
+        const viewport = page.getViewport({ scale: 0.3 });
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+          await page.render({ canvasContext: ctx, viewport }).promise;
+          const blob = await new Promise<Blob | null>(res => canvas.toBlob(res, "image/jpeg", 0.7));
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            setThumbnails(prev => ({ ...prev, [i]: url }));
+          }
+        }
+      }
+      setStatus("Gallery ready.");
+    } catch (err) {
+      console.error("Thumbnail error:", err);
     }
+  };
+
+  const movePage = (currentIndex: number, direction: 'up' | 'down') => {
+    const newPages = [...pages];
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    
+    if (targetIndex < 0 || targetIndex >= newPages.length) return;
+    
+    const temp = newPages[currentIndex];
+    newPages[currentIndex] = newPages[targetIndex];
+    newPages[targetIndex] = temp;
+    
+    setPages(newPages);
+    setResultUrl(null);
+  };
+
+  const handleDeletePage = (id: string) => {
+    if (pages.length <= 1) return;
+    setPages(pages.filter(p => p.id !== id));
+    setResultUrl(null);
+  };
+
+  const executeReorder = async () => {
+    if (!pdfDoc || !selectedPdf) return;
+    setIsProcessing(true);
+    setStatus("Building new PDF structure...");
+    try {
+      const newDoc = await PDFDocument.create();
+      const indices = pages.map(p => p.index);
+      const copiedPages = await newDoc.copyPages(pdfDoc, indices);
+      copiedPages.forEach(page => newDoc.addPage(page));
+      
+      const pdfBytes = await newDoc.save();
+      const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      setResultUrl(url);
+      setStatus("Done!");
+
+      if (settings.autoDownload) {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `reordered-${selectedPdf.name}`;
+        link.click();
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus("Export failed.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const resetAll = () => {
+    Object.values(thumbnails).forEach(url => URL.revokeObjectURL(url));
+    if (resultUrl) URL.revokeObjectURL(resultUrl);
+    setResultUrl(null);
+    setSelectedPdf(null);
+    setPdfDoc(null);
+    setPages([]);
+    setThumbnails({});
+    setStatus("");
   };
 
   useAiHydration(({ files }) => {
@@ -54,139 +156,140 @@ export default function ReorderPdf() {
     }
   }, "/dashboard/pdf/reorder");
 
-  const executeReorder = async () => {
-    if (!pdfDoc || !selectedPdf) return;
-    setIsProcessing(true);
-    try {
-      const newDoc = await PDFDocument.create();
-      
-      const indices = pages.map(p => p.index);
-      const copiedPages = await newDoc.copyPages(pdfDoc, indices);
-      
-      copiedPages.forEach(page => newDoc.addPage(page));
-      
-      const pdfBytes = await newDoc.save();
-      const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
-      setResultUrl(URL.createObjectURL(blob));
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  useEffect(() => {
-    if (resultUrl && settings.autoDownload && !isProcessing) {
-      const timer = setTimeout(() => {
-        const link = document.createElement("a");
-        link.href = resultUrl;
-        link.download = `pixie-${Date.now()}.pdf`;
-        link.click();
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [resultUrl, settings.autoDownload, isProcessing]);
-
-  const handleDeletePage = (id: string) => {
-    if (pages.length <= 1) return;
-    setPages(pages.filter(p => p.id !== id));
-  };
-
   return (
-    <ToolWrapper title="Reorder PDF" description="Visually drag-and-drop pages to change their order, or delete unwanted pages before exporting." icon={ListOrdered}>
-
+    <ToolWrapper title="Reorder PDF Gallery" description="Visually organize, duplicate, or remove pages with a professional gallery interface." icon={ListOrdered}>
       <div className={styles.workspace}>
-        <div className={styles.editorArea} style={{ flex: 1 }}>
+        <div className={styles.previewArea} style={{ flex: 1, padding: '2rem', display: 'block', overflowY: 'auto' }}>
           {!selectedPdf ? (
-            <DropZone 
-              onFilesSelected={(files) => loadPdf(files[0])} 
-              accept="application/pdf"
-              title="Load a PDF Document"
-              subtitle="Analyzed entirely in your browser"
-            />
+            <div style={{ maxWidth: '600px', margin: '4rem auto' }}>
+              <DropZone 
+                onFilesSelected={(files) => loadPdf(files[0])} 
+                accept="application/pdf"
+                title="Select PDF Document"
+                subtitle="High-fidelity thumbnails will be generated for every page"
+              />
+            </div>
           ) : (
-            <div style={{ background: 'var(--surface-card)', padding: '2rem', borderRadius: 'var(--radius-bento)', border: '1px solid var(--border)', flex: 1, overflowY: 'auto' }}>
-               <h3 style={{ color: 'var(--foreground)', marginBottom: '1rem' }}>Pages ({pages.length})</h3>
-               <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '0.875rem' }}>Drag by the grip handle to reorder.</p>
-               
-               <Reorder.Group axis="y" values={pages} onReorder={setPages} style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                 {pages.map((page, screenIndex) => (
+            <div style={{ width: '100%' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                 <div>
+                    <h3 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 700 }}>Document Gallery</h3>
+                    <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.875rem' }}>Drag cards or use arrows for rapid organization.</p>
+                 </div>
+                 <div className={styles.thumbnailBadge}>{pages.length} Pages</div>
+              </div>
+
+              <Reorder.Group 
+                axis="y" 
+                values={pages} 
+                onReorder={setPages} 
+                className={styles.pageGrid}
+              >
+                <AnimatePresence initial={false}>
+                  {pages.map((page, screenIndex) => (
                     <Reorder.Item 
                       key={page.id} 
                       value={page}
-                      style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        background: 'var(--background)', 
-                        padding: '1rem', 
-                        borderRadius: 'var(--radius-inner)', 
-                        border: '1px solid var(--border)',
-                        boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
-                      }}
+                      className={styles.pageCard}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
                     >
-                      <GripVertical size={20} style={{ color: 'var(--text-muted)', cursor: 'grab', marginRight: '1rem' }} />
-                      <div style={{ flex: 1, display: 'flex', gap: '2rem' }}>
-                         <span style={{ fontWeight: 'bold' }}>New Pos: {screenIndex + 1}</span>
-                         <span style={{ color: 'var(--text-muted)' }}>Original Page: {page.index + 1}</span>
+                      <div className={styles.gripHandle}><GripVertical size={14} /></div>
+                      
+                      {thumbnails[page.index] ? (
+                        <img src={thumbnails[page.index]} className={styles.pageThumb} alt={`Page ${page.index + 1}`} />
+                      ) : (
+                        <div className={styles.pageThumb} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                           <RefreshCw size={24} className={styles.spin} style={{ opacity: 0.2 }} />
+                        </div>
+                      )}
+
+                      <div className={styles.cardFooter}>
+                        <div className={styles.cardInfo}>
+                           <span className={styles.cardLabel}>Position {screenIndex + 1}</span>
+                           <span className={styles.cardIndex}>Original: {page.index + 1}</span>
+                        </div>
+                        <div className={styles.cardActions}>
+                           <button className={styles.cardBtn} onClick={() => movePage(screenIndex, 'up')} disabled={screenIndex === 0} title="Move Up">
+                              <ArrowUp size={16} />
+                           </button>
+                           <button className={styles.cardBtn} onClick={() => movePage(screenIndex, 'down')} disabled={screenIndex === pages.length - 1} title="Move Down">
+                              <ArrowDown size={16} />
+                           </button>
+                           <button className={`${styles.cardBtn} ${styles.cardBtnDanger}`} onClick={() => handleDeletePage(page.id)} title="Remove Page">
+                              <Trash2 size={16} />
+                           </button>
+                        </div>
                       </div>
-                      <button 
-                        onClick={() => handleDeletePage(page.id)}
-                        style={{ background: 'none', color: '#fca5a5', border: 'none', cursor: 'pointer', padding: '0.5rem' }}
-                      >
-                         <Trash2 size={18} />
-                      </button>
                     </Reorder.Item>
-                 ))}
-               </Reorder.Group>
+                  ))}
+                </AnimatePresence>
+              </Reorder.Group>
             </div>
           )}
-          <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="application/pdf" onChange={handleFileChange} />
         </div>
 
         <div className={styles.configSidebar}>
           <div className={styles.configHeader}>
-            <Wand2 size={20} />
-            <h2>Export Options</h2>
+            <ListOrdered size={20} />
+            <h2>Studio Manager</h2>
           </div>
           <div className={styles.configBody}>
+            <div className={styles.infoBox}>
+               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', color: 'var(--mint-green)', fontWeight: 700 }}>
+                 <Info size={14} />
+                 <span>Organize Efficiently</span>
+              </div>
+              Drag-and-drop cards to change order, or use the arrows for precise control. Click 'Build New PDF' to finalize your document structure.
+            </div>
 
-            {!resultUrl ? (
-               <button 
-                 className={styles.actionBtnAlt} 
-                 onClick={executeReorder} 
-                 disabled={!selectedPdf || isProcessing}
-                 style={{ background: 'var(--gentle-lilac)' }}
-               >
-                 {isProcessing ? <><RefreshCw size={20} className={styles.spin} /> Processing...</> : <><ListOrdered size={20} /> Build New PDF</>}
-               </button>
-            ) : (
-               <a 
-                 href={resultUrl} 
-                 download={`reordered-${selectedPdf?.name}`} 
-                 className={styles.actionBtnAlt}
-                 style={{ backgroundColor: 'var(--mint-green)', textDecoration: 'none' }}
-               >
-                 <Download size={20} /> Download PDF
-               </a>
+            {status && (
+              <div className={styles.statusCard}>
+                <RefreshCw size={18} className={status === "Done!" ? "" : styles.spin} style={{ color: 'var(--mint-green)' }} />
+                <div className={styles.statusInfo}>
+                  <div className={styles.statusTitle}>Studio Status</div>
+                  <div className={styles.statusText}>{status}</div>
+                </div>
+              </div>
             )}
 
-            <button 
-              className={styles.copyBtn} 
-              onClick={() => {
-                setResultUrl(null);
-                setSelectedPdf(null);
-                setPdfDoc(null);
-                setPages([]);
-                if (fileInputRef.current) fileInputRef.current.value = '';
-              }}
-              style={{ marginTop: 'auto' }}
-            >
-              Clear Workspace
-            </button>
+            {resultUrl && (
+              <div className={styles.statusCard}>
+                <CheckCircle size={18} style={{ color: 'var(--mint-green)' }} />
+                <div className={styles.statusInfo}>
+                  <div className={styles.statusTitle}>Structure Finalized</div>
+                  <div className={styles.statusText}>Ready to Download</div>
+                </div>
+              </div>
+            )}
+
+            <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {!resultUrl ? (
+                <button 
+                  className={styles.executeBtn} 
+                  onClick={executeReorder} 
+                  disabled={!selectedPdf || isProcessing || pages.length === 0}
+                >
+                  {isProcessing ? <><RefreshCw size={20} className={styles.spin} /> Processing...</> : <><Wand2 size={20} /> Build New PDF</>}
+                </button>
+              ) : (
+                <a 
+                  href={resultUrl} 
+                  download={`reordered-${selectedPdf?.name}`} 
+                  className={styles.downloadBtnLarge}
+                >
+                  <Download size={20} /> Download PDF
+                </a>
+              )}
+
+              <button className={styles.resetBtn} onClick={resetAll}>
+                <Trash2 size={16} /> Clear Workspace
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </ToolWrapper>
   );
 }
-

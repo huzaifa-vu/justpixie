@@ -399,3 +399,117 @@
     width: 100%;
   }
 }
+
+/* Page Gallery Styles */
+.pageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.5rem;
+  padding: 0.5rem;
+}
+
+.pageCard {
+  background: white;
+  border-radius: var(--radius-inner);
+  border: 4px solid transparent;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: grab;
+  user-select: none;
+}
+
+.pageCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+  border-color: var(--mint-green);
+}
+
+.pageThumb {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  background: #f8f8f8;
+  display: block;
+}
+
+.cardFooter {
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fafafa;
+  border-top: 1px solid var(--border);
+}
+
+.cardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.cardLabel {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cardIndex {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--foreground);
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.cardBtn {
+  padding: 0.4rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardBtn:hover {
+  background: var(--soft-sage);
+  color: var(--foreground);
+}
+
+.cardBtnDanger {
+  color: #fca5a5;
+}
+
+.cardBtnDanger:hover {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.gripHandle {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.35rem;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  border-radius: 6px;
+  color: white;
+  cursor: grab;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.pageCard:hover .gripHandle {
+  opacity: 1;
+}
