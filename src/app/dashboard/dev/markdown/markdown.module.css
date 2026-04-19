@@ -1,9 +1,33 @@
 .studioWrapper {
   display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex: 1;
+  height: calc(100vh - 200px);
+}
+
+.actionRibbon {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 2rem;
+  background: var(--surface-card);
+  border-radius: var(--radius-inner);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-bento);
+}
+
+.ribbonSection {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.workspaceStages {
+  display: flex;
   gap: 1.5rem;
   flex: 1;
   min-height: 0;
-  height: calc(100vh - 200px);
 }
 
 .editorStage {
@@ -66,7 +90,7 @@
 
 .previewContent {
   flex: 1;
-  padding: 2.5rem;
+  padding: 3rem;
   overflow-y: auto;
   line-height: 1.7;
   color: var(--foreground);
@@ -120,7 +144,9 @@
 
 @media (max-width: 1024px) {
   .studioWrapper {
-    flex-direction: column;
     height: auto;
+  }
+  .workspaceStages {
+    flex-direction: column;
   }
 }
