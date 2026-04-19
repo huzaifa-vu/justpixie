@@ -326,4 +326,4 @@ export default function WatermarkWizard() {
       </div>
     </ToolWrapper>
   );
-
+}
