@@ -299,7 +299,7 @@ export default function PdfPageNumbers() {
                </div>
             )}
             
-            {!outputUrl ? (
+            {(!outputUrl || !file) ? (
               <button className={styles.executeBtn} onClick={handleProcess} disabled={!file || isProcessing}>
                 {isProcessing ? <><RefreshCw size={18} className={styles.spin} /> Processing...</> : <><Download size={18} /> Finalize & Download</>}
               </button>
