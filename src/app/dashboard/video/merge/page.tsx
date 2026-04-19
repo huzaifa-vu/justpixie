@@ -13,6 +13,7 @@ import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
 import { useAiHydration } from "@/hooks/useAiHydration";
 import { useSettings } from "@/hooks/useSettings";
+import { useFileDrop } from "@/hooks/useFileDrop";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function VideoAudioMerger() {
@@ -151,6 +152,9 @@ export default function VideoAudioMerger() {
       setResultUrl(null);
     }
   };
+
+  // Keep listener active throughout the entire session
+  useFileDrop({ onDrop: handleDrop, accept: "video/*,audio/*" });
 
   useAiHydration(({ files }) => {
     if (files && files.length > 0) {
