@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { 
   UploadCloud, FileText, Wand2, RefreshCw, Download, ShieldCheck, 
   Eye, EyeOff, Scissors, Layers, Info, ToggleLeft, ToggleRight 
