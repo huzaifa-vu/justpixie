@@ -315,14 +315,14 @@
   line-height: 1;
 }
 
-/* Hide native HTML number arrows */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
+/* Hide native HTML number arrows - Scoped to avoid Next.js purity error */
+.textInput::-webkit-outer-spin-button,
+.textInput::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type=number] {
+.textInput[type=number] {
   -moz-appearance: textfield;
 }
 
