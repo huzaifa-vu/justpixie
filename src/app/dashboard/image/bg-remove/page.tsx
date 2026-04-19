@@ -137,7 +137,7 @@ export default function BackgroundRemover() {
           ) : (
             <div className={styles.viewerContainer}>
               <div className={styles.viewerTop}>
-                <span>Target Image</span>
+                <span>{resultUrl ? "Magic Cut Result" : "Target Image"}</span>
                 <button 
                   className={styles.clearBtn}
                   onClick={() => {
@@ -149,10 +149,10 @@ export default function BackgroundRemover() {
                   Clear Canvas
                 </button>
               </div>
-              <div className={styles.imageBox}>
+              <div className={`${styles.imageBox} ${resultUrl ? styles.checkerBackground : ""}`}>
                 <Image
-                  src={originalUrl}
-                  alt="Original"
+                  src={resultUrl || originalUrl}
+                  alt={resultUrl ? "Cutout Result" : "Original"}
                   fill
                   style={{ objectFit: 'contain' }}
                 />
