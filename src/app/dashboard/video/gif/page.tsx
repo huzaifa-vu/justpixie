@@ -97,42 +97,59 @@ export default function GIFMaker() {
     try {
       const ffmpeg = ffmpegRef.current;
       
+      console.log("[GIF Studio] Initializing synthesis workspace...");
       // Cleanup previous files if any
       const files = ['input.mp4', 'palette.png', 'output.gif'];
       for (const f of files) {
           try { await ffmpeg.deleteFile(f); } catch(e) {}
       }
 
+      console.log("[GIF Studio] Writing stream to buffer: input.mp4");
       await ffmpeg.writeFile('input.mp4', await fetchFile(selectedVideo));
       
       // Pass 1: Palette Generation (0-50%)
       setCurrentPass(1);
       passRef.current = 1;
-      await ffmpeg.exec([
+      console.log("[GIF Studio] Stage 1: Palette Extraction starting...");
+      
+      const code1 = await ffmpeg.exec([
         '-i', 'input.mp4', 
         '-vf', 'fps=10,scale=500:-1:flags=lanczos,palettegen', 
         'palette.png'
       ]);
+
+      if (code1 !== 0) {
+        throw new Error(`Palette extraction failed with exit code ${code1}`);
+      }
       
+      console.log("[GIF Studio] Stage 1 complete. High-fidelity palette generated.");
       setProgress(50);
 
       // Pass 2: GIF Encoding (50-100%)
       setCurrentPass(2);
       passRef.current = 2;
-      await ffmpeg.exec([
+      console.log("[GIF Studio] Stage 2: Synthesis encoding starting...");
+
+      const code2 = await ffmpeg.exec([
         '-i', 'input.mp4', 
         '-i', 'palette.png', 
         '-filter_complex', 'fps=10,scale=500:-1:flags=lanczos[x];[x][1:p]paletteuse', 
         '-loop', '0', 
         'output.gif'
       ]);
+
+      if (code2 !== 0) {
+        throw new Error(`GIF synthesis failed with exit code ${code2}`);
+      }
       
+      console.log("[GIF Studio] Stage 2 complete. Reading final stream...");
       const data = await ffmpeg.readFile('output.gif');
       const uint8data = new Uint8Array(data as ArrayBuffer);
       const blob = new Blob([uint8data.buffer], { type: 'image/gif' });
       const url = URL.createObjectURL(blob);
       
       setResultUrl(url);
+      console.log("[GIF Studio] Synthesis successful! Result URL generated.");
       
       if (settings.autoDownload) {
         const link = document.createElement("a");
@@ -141,7 +158,7 @@ export default function GIFMaker() {
         link.click();
       }
     } catch (error) {
-      console.error(error);
+      console.error("[GIF Studio] Fatal Engine Error:", error);
     } finally {
       setIsProcessing(false);
       setProgress(100);
