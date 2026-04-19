@@ -125,8 +125,8 @@
 }
 
 .miniActionBtn {
-  background: var(--pixie-teal);
-  color: white;
+  background: var(--mint-green);
+  color: var(--deep-charcoal);
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -141,8 +141,8 @@
 
 .miniActionBtn:hover {
   transform: scale(1.1);
-  background: var(--mint-green);
-  color: var(--deep-charcoal);
+  background: var(--primary-accent);
+  color: white;
 }
 
 .configSidebar {
@@ -244,8 +244,8 @@
   justify-content: center;
   gap: 0.75rem;
   padding: 1.25rem;
-  background: var(--pixie-teal);
-  color: white !important; /* Ensure visibility */
+  background: var(--mint-green);
+  color: var(--deep-charcoal) !important;
   border: none;
   border-radius: var(--radius-pill);
   font-weight: 700;
@@ -256,7 +256,7 @@
 
 .executeBtn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(29, 78, 216, 0.4);
+  box-shadow: 0 10px 20px rgba(167, 243, 208, 0.4);
 }
 
 .executeBtn:disabled {
