@@ -137,12 +137,24 @@ export default function VideoAudioMerger() {
     setProgress(0);
   };
 
+  const handleDrop = (files: File[]) => {
+    const vid = files.find(f => f.type.startsWith("video/"));
+    const aud = files.find(f => f.type.startsWith("audio/"));
+    if (vid) {
+      setSelectedVideo(vid);
+      if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl);
+      setVideoPreviewUrl(URL.createObjectURL(vid));
+      setResultUrl(null);
+    }
+    if (aud) {
+      setSelectedAudio(aud);
+      setResultUrl(null);
+    }
+  };
+
   useAiHydration(({ files }) => {
     if (files && files.length > 0) {
-      const vid = files.find(f => f.type.startsWith("video/"));
-      const aud = files.find(f => f.type.startsWith("audio/"));
-      if (vid) handleVideoSelect({ target: { files: [vid] } } as any);
-      if (aud) handleAudioSelect({ target: { files: [aud] } } as any);
+      handleDrop(files);
     }
   }, "/dashboard/video/merge");
 
