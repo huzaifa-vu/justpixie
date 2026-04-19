@@ -1,0 +1,229 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+.workspace {
+  display: flex;
+  gap: 1.5rem;
+  height: calc(100vh - 250px);
+  min-height: 500px;
+}
+
+.previewArea {
+  flex: 1;
+  background: #111;
+  background-image: 
+    conic-gradient(#1a1a1a 90deg, #161616 90deg 180deg, #1a1a1a 180deg 270deg, #161616 270deg);
+  background-size: 32px 32px;
+  border-radius: var(--radius-bento);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-bento);
+}
+
+.thumbnailContainer {
+  max-width: 90%;
+  max-height: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  z-index: 2;
+}
+
+.thumbnail {
+  max-width: 100%;
+  max-height: 70vh;
+  border-radius: 8px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+  background: white;
+}
+
+.thumbnailBadge {
+  background: var(--pixie-teal);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  box-shadow: 0 5px 15px rgba(29, 78, 216, 0.3);
+}
+
+.configSidebar {
+  width: 340px;
+  background: var(--surface-card);
+  border-radius: var(--radius-bento);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-bento);
+}
+
+.configHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--foreground);
+}
+
+.configHeader h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.configBody {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.infoBox {
+  background: rgba(0,0,0,0.03);
+  color: var(--text-muted);
+  padding: 1rem;
+  border-radius: var(--radius-inner);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.infoBox strong {
+  color: var(--foreground);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.statusCard {
+  background: var(--soft-sage);
+  border: 1px solid var(--mint-green);
+  padding: 1rem;
+  border-radius: var(--radius-inner);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.statusInfo {
+  flex: 1;
+}
+
+.statusTitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--mint-green);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statusText {
+  font-size: 0.875rem;
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.executeBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--pixie-teal);
+  color: white;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.executeBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(29, 78, 216, 0.3);
+}
+
+.executeBtn:disabled {
+  background: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.downloadBtnLarge {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--mint-green);
+  color: var(--deep-charcoal);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.downloadBtnLarge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(167, 243, 208, 0.4);
+}
+
+.resetBtn {
+  width: 100%;
+  padding: 1rem;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.resetBtn:hover {
+  background: var(--soft-sage);
+  color: var(--foreground);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: rgba(255,255,255,0.3);
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .workspace {
+    flex-direction: column-reverse;
+    height: auto;
+  }
+  .configSidebar {
+    width: 100%;
+  }
+}
