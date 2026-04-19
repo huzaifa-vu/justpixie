@@ -92,16 +92,35 @@ export default function PdfWatermark() {
         setStatus(`Watermarking page ${i + 1} of ${pages.length}...`);
         const page = pages[i];
         const { width, height } = page.getSize();
+        const pageRotation = page.getRotation().angle;
         
-        const x = (xPos / 100) * width;
-        const y = (yPos / 100) * height;
+        // Map 0-100% to actual dimensions accounting for page rotation
+        // The viewer (pdf.js) shows the rotated page, so we transform back to raw coordinates
+        let x = 0;
+        let y = 0;
+        const xPerc = xPos / 100;
+        const yPerc = yPos / 100;
+
+        if (pageRotation === 90) {
+          x = height * yPerc;
+          y = width * (1 - xPerc);
+        } else if (pageRotation === 180) {
+          x = width * (1 - xPerc);
+          y = height * (1 - yPerc);
+        } else if (pageRotation === 270) {
+          x = height * (1 - yPerc);
+          y = width * xPerc;
+        } else {
+          x = width * xPerc;
+          y = height * yPerc;
+        }
 
         page.drawText(text, {
           x, y,
           size: fontSize,
           color: rgb(r, g, b),
           opacity: opacity,
-          rotate: degrees(rotation),
+          rotate: degrees(rotation - pageRotation),
         });
       }
       

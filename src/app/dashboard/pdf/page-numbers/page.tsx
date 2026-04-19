@@ -91,15 +91,33 @@ export default function PdfPageNumbers() {
         setStatus(`Stamping page ${i + 1} of ${pages.length}...`);
         const page = pages[i];
         const { width, height } = page.getSize();
+        const pageRotation = page.getRotation().angle;
         
-        // Map 0-100% to actual dimensions
-        const x = (xPos / 100) * width;
-        const y = (yPos / 100) * height;
+        // Map 0-100% to actual dimensions accounting for page rotation
+        let x = 0;
+        let y = 0;
+        const xPerc = xPos / 100;
+        const yPerc = yPos / 100;
+
+        if (pageRotation === 90) {
+          x = height * yPerc;
+          y = width * (1 - xPerc);
+        } else if (pageRotation === 180) {
+          x = width * (1 - xPerc);
+          y = height * (1 - yPerc);
+        } else if (pageRotation === 270) {
+          x = height * (1 - yPerc);
+          y = width * xPerc;
+        } else {
+          x = width * xPerc;
+          y = height * yPerc;
+        }
 
         page.drawText(`${currNum}`, {
           x, y,
           size: textSize,
           color: rgb(r, g, b),
+          rotate: degrees(-pageRotation), // Keep page numbers upright relative to the content
         });
         currNum++;
       }
