@@ -7,6 +7,7 @@ import {
   Play, Volume2, Clock, Trash2 
 } from "lucide-react";
 import ToolWrapper from "@/components/ToolWrapper";
+import { DropZone } from "@/components/DropZone";
 import styles from "./page.module.css";
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
@@ -153,69 +154,94 @@ export default function VideoAudioMerger() {
     >
       <div className={styles.workspace}>
         <div className={styles.previewArea}>
-          <div className={styles.studioStage}>
-            <div className={styles.uploadGrid}>
-              <AnimatePresence mode="wait">
-                <motion.div 
-                  key={selectedVideo ? "active-video" : "empty-video"}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`${styles.fileSlot} ${selectedVideo ? styles.fileSlotActive : ''}`}
-                  onClick={() => !selectedVideo && videoInputRef.current?.click()}
-                >
-                  {!selectedVideo ? (
-                    <>
-                      <div className={styles.fileIcon} style={{ color: 'var(--gentle-lilac)' }}><Film size={40} /></div>
-                      <span className={styles.fileTitle}>Base Video Track</span>
-                      <span className={styles.fileDesc}>Select the visual stream source</span>
-                    </>
-                  ) : (
-                    <div style={{ width: '100%' }}>
-                       <video src={videoPreviewUrl!} className={styles.videoPreview} controls muted />
-                       <div className={styles.audioBadge} style={{ marginTop: '1rem' }}>
-                          <CheckCircle size={14} /> Video Stream Loaded
-                       </div>
-                    </div>
-                  )}
-                  <input type="file" ref={videoInputRef} onChange={handleVideoSelect} accept="video/*" hidden />
-                </motion.div>
-
-                <motion.div 
-                   key={selectedAudio ? "active-audio" : "empty-audio"}
-                   initial={{ opacity: 0, y: 20 }}
-                   animate={{ opacity: 1, y: 0 }}
-                   className={`${styles.fileSlot} ${selectedAudio ? styles.fileSlotActive : ''}`}
-                   onClick={() => !selectedAudio && audioInputRef.current?.click()}
-                >
-                  {!selectedAudio ? (
-                    <>
-                      <div className={styles.fileIcon} style={{ color: 'var(--mint-green)' }}><Music size={40} /></div>
-                      <span className={styles.fileTitle}>New Audio Track</span>
-                      <span className={styles.fileDesc}>Select the sound stream source</span>
-                    </>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                       <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--mint-green)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--deep-charcoal)' }}>
-                          <Volume2 size={32} />
-                       </div>
-                       <div className={styles.audioBadge}>{selectedAudio.name}</div>
-                       <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>Ready to Overlay</span>
-                    </div>
-                  )}
-                  <input type="file" ref={audioInputRef} onChange={handleAudioSelect} accept="audio/*" hidden />
-                </motion.div>
-              </AnimatePresence>
+          {!selectedVideo && !selectedAudio ? (
+            <div style={{ width: '100%', maxWidth: '600px' }}>
+              <DropZone 
+                onFilesSelected={handleDrop}
+                accept="video/*,audio/*"
+                title="Synchronize Media Streams"
+                subtitle="Drop both a video and an audio track to begin"
+              />
             </div>
-            
-            {resultUrl && (
-               <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-                  <div className={styles.infoBox} style={{ textAlign: 'center', border: '1px solid var(--mint-green)', background: 'rgba(167, 243, 208, 0.05)' }}>
-                     <h3 style={{ color: 'var(--mint-green)', marginBottom: '0.5rem' }}>Merge Complete!</h3>
-                     <p>Your combined streams are ready for download below.</p>
-                  </div>
-               </motion.div>
-            )}
-          </div>
+          ) : (
+            <div className={styles.studioStage}>
+              <div className={styles.uploadGrid}>
+                <AnimatePresence mode="wait">
+                  <motion.div 
+                    key={selectedVideo ? "active-video" : "empty-video"}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`${styles.fileSlot} ${selectedVideo ? styles.fileSlotActive : ''}`}
+                    onClick={() => !selectedVideo && videoInputRef.current?.click()}
+                    style={{ position: 'relative' }}
+                  >
+                    {!selectedVideo ? (
+                      <>
+                        <div className={styles.fileIcon} style={{ color: 'var(--gentle-lilac)' }}><Film size={40} /></div>
+                        <span className={styles.fileTitle}>Base Video Track</span>
+                        <span className={styles.fileDesc}>Select the visual stream source</span>
+                      </>
+                    ) : (
+                      <div style={{ width: '100%' }}>
+                         <video src={videoPreviewUrl!} className={styles.videoPreview} controls muted />
+                         <div className={styles.audioBadge} style={{ marginTop: '1rem' }}>
+                            <CheckCircle size={14} /> Video Stream Loaded
+                         </div>
+                         <button 
+                           onClick={(e) => { e.stopPropagation(); setSelectedVideo(null); setVideoPreviewUrl(null); }}
+                           style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%', padding: '5px', color: 'white', cursor: 'pointer' }}
+                         >
+                            <Trash2 size={16} />
+                         </button>
+                      </div>
+                    )}
+                    <input type="file" ref={videoInputRef} onChange={handleVideoSelect} accept="video/*" hidden />
+                  </motion.div>
+
+                  <motion.div 
+                     key={selectedAudio ? "active-audio" : "empty-audio"}
+                     initial={{ opacity: 0, y: 20 }}
+                     animate={{ opacity: 1, y: 0 }}
+                     className={`${styles.fileSlot} ${selectedAudio ? styles.fileSlotActive : ''}`}
+                     onClick={() => !selectedAudio && audioInputRef.current?.click()}
+                     style={{ position: 'relative' }}
+                  >
+                    {!selectedAudio ? (
+                      <>
+                        <div className={styles.fileIcon} style={{ color: 'var(--mint-green)' }}><Music size={40} /></div>
+                        <span className={styles.fileTitle}>New Audio Track</span>
+                        <span className={styles.fileDesc}>Select the sound stream source</span>
+                      </>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                         <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--mint-green)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--deep-charcoal)' }}>
+                            <Volume2 size={32} />
+                         </div>
+                         <div className={styles.audioBadge}>{selectedAudio.name}</div>
+                         <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>Ready to Overlay</span>
+                         <button 
+                           onClick={(e) => { e.stopPropagation(); setSelectedAudio(null); }}
+                           style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%', padding: '5px', color: 'white', cursor: 'pointer' }}
+                         >
+                            <Trash2 size={16} />
+                         </button>
+                      </div>
+                    )}
+                    <input type="file" ref={audioInputRef} onChange={handleAudioSelect} accept="audio/*" hidden />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+              
+              {resultUrl && (
+                 <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+                    <div className={styles.infoBox} style={{ textAlign: 'center', border: '1px solid var(--mint-green)', background: 'rgba(167, 243, 208, 0.05)' }}>
+                       <h3 style={{ color: 'var(--mint-green)', marginBottom: '0.5rem' }}>Merge Complete!</h3>
+                       <p>Your combined streams are ready for download below.</p>
+                    </div>
+                 </motion.div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className={styles.configSidebar}>

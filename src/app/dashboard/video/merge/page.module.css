@@ -74,6 +74,20 @@
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
+.fileTitle { 
+  font-size: 1.125rem; 
+  font-weight: 700; 
+  color: white; 
+  margin-bottom: 0.25rem; 
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.fileDesc { 
+  font-size: 0.875rem; 
+  color: rgba(255, 255, 255, 0.6); 
+  font-weight: 500;
+}
+
 .audioBadge {
   background: var(--mint-green);
   color: var(--deep-charcoal);
