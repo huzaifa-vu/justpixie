@@ -19,6 +19,7 @@ export default function ImageAnnotator() {
   const { settings } = useSettings();
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const colorInputRef = useRef<HTMLInputElement>(null);
@@ -109,7 +110,10 @@ export default function ImageAnnotator() {
 
   useEffect(() => {
     const handleMouseMove = (e: any) => {
-      setCursorPos({ x: e.clientX, y: e.clientY });
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      setCursorPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+
       if (!isDrawing || !canvasRef.current) return;
       
       const pos = getCanvasCoordinates(e.clientX, e.clientY);
@@ -245,7 +249,7 @@ export default function ImageAnnotator() {
               title="Locate a source image"
             />
           ) : (
-            <div className={styles.canvasContainer}>
+            <div className={styles.canvasContainer} ref={containerRef}>
                <div 
                   className={styles.ghostCursor}
                   style={{ 
@@ -254,7 +258,8 @@ export default function ImageAnnotator() {
                     width: lineWidth + 'px', 
                     height: lineWidth + 'px',
                     borderColor: isEraser ? 'rgba(255,255,255,0.8)' : color,
-                    backgroundColor: isEraser ? 'transparent' : 'rgba(0,0,0,0.1)'
+                    backgroundColor: isEraser ? 'transparent' : 'rgba(0,0,0,0.1)',
+                    visibility: (cursorPos.x < 0 || cursorPos.y < 0) ? 'hidden' : 'visible'
                   }}
                />
 
