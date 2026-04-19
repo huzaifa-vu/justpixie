@@ -100,14 +100,14 @@ export default function PdfPageNumbers() {
         const yPerc = yPos / 100;
 
         if (pageRotation === 90) {
-          x = width * (1 - yPerc);
-          y = height * xPerc;
+          x = width * yPerc;
+          y = height * (1 - xPerc);
         } else if (pageRotation === 180) {
           x = width * (1 - xPerc);
           y = height * (1 - yPerc);
         } else if (pageRotation === 270) {
-          x = width * yPerc;
-          y = height * (1 - xPerc);
+          x = width * (1 - yPerc);
+          y = height * xPerc;
         } else {
           x = width * xPerc;
           y = height * yPerc;
