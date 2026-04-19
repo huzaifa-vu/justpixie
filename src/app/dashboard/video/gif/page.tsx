@@ -27,6 +27,8 @@ export default function GIFMaker() {
   const { settings } = useSettings();
   const ffmpegRef = useRef<any>(null);
 
+  const [currentPass, setCurrentPass] = useState(1);
+
   useEffect(() => {
     const load = async () => {
       ffmpegRef.current = new FFmpeg();
@@ -34,7 +36,10 @@ export default function GIFMaker() {
       const ffmpeg = ffmpegRef.current;
       
       ffmpeg.on('progress', ({ progress }: any) => {
-        setProgress(Math.round(progress * 100));
+        // Offset progress based on current pass: Pass 1 (0-50%), Pass 2 (50-100%)
+        const offset = currentPass === 1 ? 0 : 50;
+        const multiplier = 0.5;
+        setProgress(offset + Math.round(progress * 100 * multiplier));
       });
 
       try {
@@ -59,7 +64,7 @@ export default function GIFMaker() {
        if (videoUrl) URL.revokeObjectURL(videoUrl);
        if (resultUrl) URL.revokeObjectURL(resultUrl);
     };
-  }, []);
+  }, [currentPass]);
 
   const handleFiles = (files: File[]) => {
     if (files.length > 0) {
@@ -69,6 +74,7 @@ export default function GIFMaker() {
       setVideoUrl(URL.createObjectURL(file));
       setResultUrl(null);
       setProgress(0);
+      setCurrentPass(1);
     }
   };
 
@@ -84,23 +90,36 @@ export default function GIFMaker() {
   const executeExtraction = async () => {
     if (!selectedVideo || !isReady) return;
     setIsProcessing(true);
-    setProgress(0);
+    setProgress(5);
 
     try {
       const ffmpeg = ffmpegRef.current;
       await ffmpeg.writeFile('input.mp4', await fetchFile(selectedVideo));
       
-      // Standard GIF creation scale and fps optimization
+      // Pass 1: Palette Generation (0-50%)
+      setCurrentPass(1);
       await ffmpeg.exec([
         '-i', 'input.mp4', 
-        '-vf', 'fps=10,scale=500:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse', 
+        '-vf', 'fps=10,scale=500:-1:flags=lanczos,palettegen', 
+        'palette.png'
+      ]);
+      
+      setProgress(50);
+
+      // Pass 2: GIF Encoding (50-100%)
+      setCurrentPass(2);
+      await ffmpeg.exec([
+        '-i', 'input.mp4', 
+        '-i', 'palette.png', 
+        '-filter_complex', 'fps=10,scale=500:-1:flags=lanczos[x];[x][1:p]paletteuse', 
         '-loop', '0', 
         'output.gif'
       ]);
       
       const data = await ffmpeg.readFile('output.gif');
       const uint8data = new Uint8Array(data as ArrayBuffer);
-      const url = URL.createObjectURL(new Blob([uint8data.buffer], { type: 'image/gif' }));
+      const blob = new Blob([uint8data.buffer], { type: 'image/gif' });
+      const url = URL.createObjectURL(blob);
       
       setResultUrl(url);
       
@@ -115,6 +134,7 @@ export default function GIFMaker() {
     } finally {
       setIsProcessing(false);
       setProgress(100);
+      setCurrentPass(1);
     }
   };
 
@@ -124,6 +144,7 @@ export default function GIFMaker() {
     if (videoUrl) URL.revokeObjectURL(videoUrl);
     setVideoUrl(null);
     setProgress(0);
+    setCurrentPass(1);
   };
 
   return (
@@ -161,11 +182,11 @@ export default function GIFMaker() {
                     ) : (
                       <motion.div 
                         key="gif-output"
-                        style={{ width: '100%', height: '100%', position: 'relative' }}
+                        style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                       >
-                         <Image src={resultUrl} alt="Generated GIF" fill style={{ objectFit: 'contain' }} unoptimized />
+                         <img src={resultUrl} alt="Generated GIF" className={styles.gifOutput} />
                       </motion.div>
                     )}
                   </AnimatePresence>
