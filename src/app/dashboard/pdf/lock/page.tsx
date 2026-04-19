@@ -1,20 +1,25 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { UploadCloud, FileText, Wand2, RefreshCw, Download, Lock, Eye, EyeOff } from "lucide-react";
+import { UploadCloud, FileText, Wand2, RefreshCw, Download, ShieldCheck, Eye, EyeOff, Scissors, Layers } from "lucide-react";
 import ToolWrapper from "@/components/ToolWrapper";
 import styles from "./page.module.css";
 import { PDFDocument } from 'pdf-lib';
+import * as pdfjs from "pdfjs-dist";
 import { useAiHydration } from "@/hooks/useAiHydration";
 import { useSettings } from "@/hooks/useSettings";
 import { DropZone } from "@/components/DropZone";
 
-export default function PDFLock() {
+// Setup PDF.js worker
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
+
+export default function PDFPrivacy() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [authorName, setAuthorName] = useState("Pixie User");
   const [stripMeta, setStripMeta] = useState(true);
+  const [flatten, setFlatten] = useState(false);
   const [autoRun, setAutoRun] = useState(false);
   const { settings } = useSettings();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -58,44 +63,67 @@ export default function PDFLock() {
 
   useEffect(() => {
     if (autoRun && selectedFile && !isProcessing) {
-      executeLock();
+      executeSanitize();
       setAutoRun(false);
     }
   }, [autoRun, selectedFile, isProcessing]);
 
-  const executeLock = async () => {
+  const executeSanitize = async () => {
     if (!selectedFile) return;
     setIsProcessing(true);
 
     try {
       const buffer = await selectedFile.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
+      let finalBytes: Uint8Array;
 
-      if (stripMeta) {
-        // Wipe all identifying metadata
-        pdfDoc.setTitle('');
-        pdfDoc.setAuthor('');
-        pdfDoc.setSubject('');
-        pdfDoc.setKeywords([]);
-        pdfDoc.setCreator('');
-        pdfDoc.setProducer('');
+      if (flatten) {
+        // FLATTEN LOGIC: Render to images and back to PDF
+        const pdf = await pdfjs.getDocument({ data: buffer }).promise;
+        const outPdf = await PDFDocument.create();
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const viewport = page.getViewport({ scale: 2.0 }); // High res
+          
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+
+          if (context) {
+            await page.render({ canvasContext: context, viewport }).promise;
+            const imgData = canvas.toDataURL("image/jpeg", 0.9);
+            const imgBytes = await fetch(imgData).then(res => res.arrayBuffer());
+            const embeddedImg = await outPdf.embedJpg(imgBytes);
+            const outPage = outPdf.addPage([viewport.width, viewport.height]);
+            outPage.drawImage(embeddedImg, { x: 0, y: 0, width: viewport.width, height: viewport.height });
+          }
+        }
+        
+        finalBytes = await outPdf.save();
+      } else {
+        // QUICK SANITIZE (Metadata Only)
+        const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
+        if (stripMeta) {
+          pdfDoc.setTitle('');
+          pdfDoc.setAuthor('');
+          pdfDoc.setSubject('');
+          pdfDoc.setKeywords([]);
+          pdfDoc.setCreator('');
+          pdfDoc.setProducer('');
+        }
+        if (authorName.trim()) pdfDoc.setAuthor(authorName);
+        pdfDoc.setProducer('Pixie Privacy');
+        pdfDoc.setCreationDate(new Date());
+        pdfDoc.setModificationDate(new Date());
+        finalBytes = await pdfDoc.save({ useObjectStreams: true });
       }
 
-      // Stamp new author
-      if (authorName.trim()) {
-        pdfDoc.setAuthor(authorName);
-      }
-
-      pdfDoc.setProducer('Pixie Lock');
-      pdfDoc.setCreationDate(new Date());
-      pdfDoc.setModificationDate(new Date());
-
-      const resultBytes = await pdfDoc.save({ useObjectStreams: true });
-      const blob = new Blob([new Uint8Array(resultBytes)], { type: 'application/pdf' });
+      const blob = new Blob([finalBytes], { type: 'application/pdf' });
       setResultUrl(URL.createObjectURL(blob));
 
     } catch (error) {
-      console.error("Lock Error:", error);
+      console.error("Sanitize Error:", error);
       alert("Failed to process PDF.");
     } finally {
       setIsProcessing(false);
@@ -103,15 +131,14 @@ export default function PDFLock() {
   };
 
   return (
-    <ToolWrapper title="Lock & Sanitize" description="Strip hidden metadata, sanitize authorship, and compact your PDF for safe distribution." icon={Lock}>
-
+    <ToolWrapper title="Privacy & Metadata Scrub" description="Wipe identity data and optionally flatten content to prevent text selection and automated scraping." icon={ShieldCheck}>
       <div className={styles.workspace}>
         <div className={styles.previewArea}>
           <DropZone 
             onFilesSelected={handleFiles} 
             accept="application/pdf"
-            title={selectedFile ? selectedFile.name : "Select a PDF"}
-            subtitle={selectedFile ? "Ready for sanitization" : "Click or drop to upload"}
+            title={selectedFile ? selectedFile.name : "Select a Source PDF"}
+            subtitle={selectedFile ? "Ready for privacy scrubbing" : "Click or drop to upload"}
           />
         </div>
 
@@ -137,22 +164,38 @@ export default function PDFLock() {
             </div>
             
             <div className={styles.fieldGroup} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span className={styles.label}>Strip All Metadata</span>
-              <button 
+               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Scissors size={14} className={styles.iconDim} />
+                  <span className={styles.label}>Scrub Metadata</span>
+               </div>
+               <button 
                 onClick={() => { setStripMeta(!stripMeta); setResultUrl(null); }}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: stripMeta ? 'var(--mint-green)' : 'var(--text-muted)' }}
               >
-                {stripMeta ? <EyeOff size={24} /> : <Eye size={24} />}
+                {stripMeta ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+
+            <div className={styles.fieldGroup} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Layers size={14} className={styles.iconDim} />
+                  <span className={styles.label}>Flatten Document</span>
+               </div>
+               <button 
+                onClick={() => { setFlatten(!flatten); setResultUrl(null); }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: flatten ? 'var(--pixie-teal)' : 'var(--text-muted)' }}
+              >
+                {flatten ? <ShieldCheck size={20} /> : <EyeOff size={20} />}
               </button>
             </div>
 
             {!resultUrl ? (
               <button
                 className={styles.executeBtn}
-                onClick={executeLock}
+                onClick={executeSanitize}
                 disabled={!selectedFile || isProcessing}
               >
-                {isProcessing ? <><RefreshCw size={20} className={styles.spin} /> Sanitizing...</> : <><Lock size={20} /> Lock & Sanitize</>}
+                {isProcessing ? <><RefreshCw size={18} className={styles.spin} /> Processing...</> : <><ShieldCheck size={18} /> Apply Privacy Scrub</>}
               </button>
             ) : (
               <div className={styles.resultDetails}>
