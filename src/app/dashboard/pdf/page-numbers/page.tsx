@@ -165,11 +165,15 @@ export default function PdfPageNumbers() {
 
   const visualScale = (pdfSize.width && renderedWidth) ? (renderedWidth / pdfSize.width) : 1;
 
-  const handleDragEnd = (_: any, info: any) => {
-    if (!imgRef.current) return;
+  const handleDragEnd = (event: any) => {
+    if (!imgRef.current || !event.target) return;
     const rect = imgRef.current.getBoundingClientRect();
-    const newX = ((info.point.x - rect.left) / rect.width) * 100;
-    const newY = ((rect.bottom - info.point.y) / rect.height) * 100;
+    const badgeRect = event.target.getBoundingClientRect();
+    
+    // Calculate new percentages based on the badge's actual bottom-left corner relative to the image
+    const newX = ((badgeRect.left - rect.left) / rect.width) * 100;
+    const newY = ((rect.bottom - badgeRect.bottom) / rect.height) * 100;
+
     setXPos(Math.max(0, Math.min(100, Math.round(newX))));
     setYPos(Math.max(0, Math.min(100, Math.round(newY))));
   };
@@ -197,6 +201,7 @@ export default function PdfPageNumbers() {
                   dragMomentum={false}
                   dragElastic={0}
                   onDragEnd={handleDragEnd}
+                  whileDrag={{ opacity: 0.7 }}
                   style={{ 
                     left: `${xPos}%`, 
                     bottom: `${yPos}%`, 
@@ -204,6 +209,7 @@ export default function PdfPageNumbers() {
                     fontSize: `${textSize * visualScale}px`,
                   }}
                   animate={{ x: 0, y: 0 }}
+                  transition={{ type: "tween", duration: 0 }}
                 >
                   {startNum}
                 </motion.div>
