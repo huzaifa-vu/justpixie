@@ -176,7 +176,7 @@ export default function PDFPrivacy() {
                </div>
                <button 
                 onClick={() => { setStripMeta(!stripMeta); setResultUrl(null); }}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: stripMeta ? 'var(--pixie-teal)' : 'var(--text-muted)' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: stripMeta ? 'var(--mint-green)' : 'var(--text-muted)' }}
               >
                 {stripMeta ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
               </button>
@@ -192,7 +192,7 @@ export default function PDFPrivacy() {
                </div>
                <button 
                 onClick={() => { setFlatten(!flatten); setResultUrl(null); }}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: flatten ? 'var(--pixie-teal)' : 'var(--text-muted)' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: flatten ? 'var(--mint-green)' : 'var(--text-muted)' }}
               >
                 {flatten ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
               </button>
