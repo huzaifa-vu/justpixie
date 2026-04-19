@@ -84,23 +84,72 @@
 .uploadBtn { padding: 0.75rem 1.5rem; background: transparent; border: 1px dashed var(--border); border-radius: var(--radius-pill); color: var(--text-muted); font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s; }
 .uploadBtn:hover { border-color: var(--pixie-teal); color: var(--foreground); }
 
+.historyBar {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  padding: 0.4rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  z-index: 20;
+}
+
+.historyBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.historyBtn:hover:not(:disabled) {
+  background: var(--background);
+  color: var(--pixie-teal);
+  transform: scale(1.1);
+}
+
+.historyBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.compareBtn {
+  padding: 0 0.75rem;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.compareBtnActive {
+  background: var(--mint-green);
+  color: var(--deep-charcoal);
+}
+
 @media (max-width: 768px) {
-  .workspace {
-    flex-direction: column-reverse;
-    min-height: auto;
-    gap: 1rem;
-  }
-  .configSidebar {
-    width: 100%;
-  }
-  .canvasArea {
-    width: 100%;
-    min-height: 300px;
-  }
-  .selectInput {
-    font-size: 16px;
-  }
-  .actionBtn, .actionBtnAlt {
-    height: 48px;
+  .historyBar {
+    top: auto;
+    bottom: 1rem;
+    right: 50%;
+    transform: translateX(50%);
   }
 }
