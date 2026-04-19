@@ -87,9 +87,19 @@ export default function ImageRotateFlip() {
     if (files && files.length > 0) {
       handleFile(files[0]);
     }
-    if (params?.rotation) setRotation(Number(params.rotation) % 360);
-    if (params?.flipH !== undefined) setFlipH(Boolean(params.flipH));
-    if (params?.flipV !== undefined) setFlipV(Boolean(params.flipV));
+    
+    if (params?.rotation) {
+      const rot = Number(params.rotation);
+      if (!isNaN(rot)) setRotation(rot % 360);
+    }
+    
+    if (params?.flipH !== undefined) {
+      setFlipH(String(params.flipH).toLowerCase() === "true");
+    }
+    
+    if (params?.flipV !== undefined) {
+      setFlipV(String(params.flipV).toLowerCase() === "true");
+    }
     
     if (autoExecute) setAutoRun(true);
   }, "/dashboard/image/rotate");

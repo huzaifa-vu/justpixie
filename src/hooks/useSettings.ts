@@ -8,7 +8,7 @@ interface PixieSettings {
 
 const DEFAULT_SETTINGS: PixieSettings = {
   notifications: true,
-  autoDownload: true,
+  autoDownload: false,
   autoCopy: true,
 };
 
