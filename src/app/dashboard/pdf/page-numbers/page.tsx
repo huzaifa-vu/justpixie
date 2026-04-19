@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState, useRef } from "react";
 import { FileDigit, Download, RefreshCw, Trash2, CheckCircle, Info, Settings2, Palette } from "lucide-react";
 import ToolWrapper from "@/components/ToolWrapper";
