@@ -11,10 +11,12 @@ interface DownloaderUIProps {
   platform: 'youtube' | 'instagram' | 'twitter' | 'facebook';
   placeholder?: string;
   accentColor?: string;
+  initialUrl?: string;
+  autoRun?: boolean;
 }
 
-export default function DownloaderUI({ platform, placeholder, accentColor = "var(--mint-green)" }: DownloaderUIProps) {
-  const [url, setUrl] = useState("");
+export default function DownloaderUI({ platform, placeholder, accentColor = "var(--mint-green)", initialUrl = "", autoRun = false }: DownloaderUIProps) {
+  const [url, setUrl] = useState(initialUrl);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [metadata, setMetadata] = useState<any>(null);
@@ -66,6 +68,13 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
 
     load();
   }, []);
+
+  // Trigger analysis if directed by AI
+  useEffect(() => {
+    if (autoRun && url && !isLoading && !metadata) {
+      handleAnalyze();
+    }
+  }, [autoRun, url]);
 
   const handleAnalyze = async () => {
     if (!url) return;

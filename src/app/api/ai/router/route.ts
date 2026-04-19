@@ -29,6 +29,7 @@ Your ONLY job is to read the user's natural language prompt and return a JSON ob
 - /dashboard/image/favicon → Generate favicon ICO from image
 - /dashboard/image/palette → Extract dominant color palette from image
 - /dashboard/image/annotate → Draw annotations on images
+- /dashboard/image/images-to-pdf → Combine images into a single PDF
 
 ### Video Alchemy
 - /dashboard/video/audio → Extract audio/MP3 from video
@@ -39,13 +40,13 @@ Your ONLY job is to read the user's natural language prompt and return a JSON ob
 - /dashboard/video/speed → Change video playback speed
 - /dashboard/video/trim → Trim video by start/end timestamps
 - /dashboard/video/screenshots → Extract frames/screenshots from video at intervals
+- /dashboard/video/merge → Merge multiple video files into one. Needs 2+ files
 
 ### PDF Spells
 - /dashboard/pdf/compress → Compress PDF file size
 - /dashboard/pdf/merge → Merge multiple PDF files into one. Needs 2+ files
 - /dashboard/pdf/split → Split PDF into individual pages or ranges
-- /dashboard/pdf/lock → Strip metadata and lock/sanitize PDF
-- /dashboard/pdf/images-to-pdf → Combine images into a single PDF
+- /dashboard/pdf/privacy → Strip metadata and sanitize PDF (formerly /lock)
 - /dashboard/pdf/pdf-to-images → Extract pages from PDF as images
 - /dashboard/pdf/rotate → Rotate all PDF pages
 - /dashboard/pdf/page-numbers → Add page numbers to PDF
@@ -75,6 +76,12 @@ Your ONLY job is to read the user's natural language prompt and return a JSON ob
 - /dashboard/text/csv → Convert between CSV and JSON formats
 - /dashboard/text/speech → Convert text to speech audio
 
+### Download Hub (Web to Browser)
+- /dashboard/download/youtube → Download videos from YouTube
+- /dashboard/download/instagram → Download videos/Reels from Instagram
+- /dashboard/download/twitter → Download videos from X (Twitter)
+- /dashboard/download/facebook → Download videos from Facebook
+
 ## PARAMS FIELD CONVENTIONS
 - For text tools: use key "inputText" with the raw text/data the user wants processed
 - For CSV tool: use "inputText" AND "mode" ("csv2json" or "json2csv")
@@ -91,7 +98,7 @@ Your ONLY job is to read the user's natural language prompt and return a JSON ob
 - For dev/base64: use "inputText" and "mode" ("encode" or "decode")
 - For dev/color: use "inputText" with the color value
 - For dev/jwt: use "inputText" with the raw JWT token string
-- For watermark: use "fileHint" = 2 (first file = base, second = watermark)
+- For watermark: use "fileHint" = 2 (first file = base, second = watermark), use "opacity" (0.1 to 1.0), and "position" ("center", "top-left", "top-right", "bottom-left", "bottom-right", "tiled")
 - For merge PDF: use "fileHint" = 2
 - For QR code: use "inputText" with the URL or text
 - For regex: use "pattern" and "inputText"
@@ -102,7 +109,9 @@ Your ONLY job is to read the user's natural language prompt and return a JSON ob
 - For lorem: use "count" (amount) and "type" ("paragraphs" or "characters")
 - For uuid: use "count" (amount to generate)
 - For screenshots: use "interval" (seconds between frames)
-- For pdf page-numbers: use "textSize" ("small", "medium", or "large")
+- /dashboard/pdf/page-numbers: use "textSize" ("small", "medium", or "large")
+- For Downloaders (YT, IG, etc.): use "inputText" with the URL of the video
+- For Video Merge: use "fileHint" = 2 (or more)
 - For any tool that just needs a file and no specific settings, leave params as {}
 
 ## RESPONSE FORMAT (strict JSON, nothing else)
@@ -136,7 +145,16 @@ export async function POST(req: NextRequest) {
     const today = new Date().toISOString().split('T')[0];
 
     if (user) {
-      const metadata = user.user_metadata || {};
+      // FORCE FETCH FRESH METADATA FROM DB (Prevents 'Stuck Quota' from stale cookies)
+      const adminSupabase = createAdminClient();
+      const { data: { user: freshUser }, error: fetchErr } = await adminSupabase.auth.admin.getUserById(user.id);
+      
+      if (fetchErr) {
+        console.error("Failed to fetch fresh user for quota:", fetchErr);
+        // Fallback to session if fetch fails, though not ideal
+      }
+
+      const metadata = (freshUser || user).user_metadata || {};
       isUnlimited = metadata.tier === 'unlimited';
       
       const lastPromptDate = metadata.last_prompt_date;
@@ -157,9 +175,9 @@ export async function POST(req: NextRequest) {
       // --- INCREMENT AUTH QUOTA BEFORE PROCESSING ---
       if (!isUnlimited) {
         try {
-          const adminSupabase = createAdminClient();
           await adminSupabase.auth.admin.updateUserById(user.id, {
             user_metadata: { 
+              ...metadata,
               prompts_used: promptsUsed + 1,
               last_prompt_date: today
             }

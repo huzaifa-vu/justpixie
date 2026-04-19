@@ -19,7 +19,7 @@ export default function WatermarkWizard() {
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [opacity, setOpacity] = useState(0.5);
-  const [position, setPosition] = useState<"center" | "bottom-right" | "top-left" | "tiled">("bottom-right");
+  const [position, setPosition] = useState<"center" | "bottom-right" | "top-left" | "top-right" | "bottom-left" | "tiled">("bottom-right");
   const [pendingAutoExecute, setPendingAutoExecute] = useState(false);
   const { settings } = useSettings();
   
@@ -27,18 +27,29 @@ export default function WatermarkWizard() {
   const watermarkInputRef = useRef<HTMLInputElement>(null);
 
   // --- AI Hydration ---
-  useAiHydration(({ files, autoExecute }) => {
-    if (files.length >= 2) {
+  useAiHydration(({ files, params, autoExecute }) => {
+    if (files.length >= 1) {
       setBaseImage(files[0]);
       setBasePreview(URL.createObjectURL(files[0]));
-      setWatermarkImage(files[1]);
-      setWatermarkPreview(URL.createObjectURL(files[1]));
-      if (autoExecute) {
-        setPendingAutoExecute(true);
+      if (files.length >= 2) {
+        setWatermarkImage(files[1]);
+        setWatermarkPreview(URL.createObjectURL(files[1]));
       }
-    } else if (files.length === 1) {
-      setBaseImage(files[0]);
-      setBasePreview(URL.createObjectURL(files[0]));
+    }
+    
+    if (params?.opacity) {
+      const alpha = parseFloat(params.opacity);
+      if (!isNaN(alpha)) setOpacity(Math.max(0.1, Math.min(1, alpha)));
+    }
+    
+    if (params?.position) {
+      const pos = params.position.toLowerCase().replace(" ", "-");
+      const valid = ["center", "bottom-right", "top-left", "top-right", "bottom-left", "tiled"];
+      if (valid.includes(pos)) setPosition(pos as any);
+    }
+
+    if (autoExecute && files.length >= 2) {
+      setPendingAutoExecute(true);
     }
   }, "/dashboard/image/watermark");
 
@@ -133,6 +144,10 @@ export default function WatermarkWizard() {
         }
       } else if (position === "bottom-right") {
         ctx.drawImage(wImg, canvas.width - wWidth - padding, canvas.height - wHeight - padding, wWidth, wHeight);
+      } else if (position === "top-right") {
+        ctx.drawImage(wImg, canvas.width - wWidth - padding, padding, wWidth, wHeight);
+      } else if (position === "bottom-left") {
+        ctx.drawImage(wImg, padding, canvas.height - wHeight - padding, wWidth, wHeight);
       } else if (position === "top-left") {
         ctx.drawImage(wImg, padding, padding, wWidth, wHeight);
       } else {
@@ -293,7 +308,18 @@ export default function WatermarkWizard() {
 
              <div className={styles.selectorGroup}>
                <label className={styles.inputLabel}>Positioning</label>
-               <Dropdown options={[{ label: "Bottom Right Lock", value: "bottom-right" }, { label: "Center Focal", value: "center" }, { label: "Full Tiled Wash", value: "tiled" }, { label: "Top Left", value: "top-left" }]} value={position} onChange={(val) => setPosition(val)} />
+               <Dropdown 
+                  options={[
+                    { label: "Bottom Right Lock", value: "bottom-right" }, 
+                    { label: "Top Right Corner", value: "top-right" },
+                    { label: "Bottom Left Corner", value: "bottom-left" },
+                    { label: "Top Left Focal", value: "top-left" },
+                    { label: "Center Focal", value: "center" }, 
+                    { label: "Full Tiled Wash", value: "tiled" }
+                  ]} 
+                  value={position} 
+                  onChange={(val) => setPosition(val)} 
+                />
              </div>
 
             {!resultUrl ? (

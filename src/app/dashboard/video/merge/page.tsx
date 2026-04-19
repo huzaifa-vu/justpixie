@@ -156,9 +156,17 @@ export default function VideoAudioMerger() {
   // Keep listener active throughout the entire session
   useFileDrop({ onDrop: handleDrop, accept: "video/*,audio/*" });
 
-  useAiHydration(({ files }) => {
+  useAiHydration(({ files, autoExecute }) => {
     if (files && files.length > 0) {
       handleDrop(files);
+    }
+    if (autoExecute) {
+      // Small delay to ensure state and WASM are ready
+      setTimeout(() => {
+        if (selectedVideo && selectedAudio && isReady) {
+          executeMerge();
+        }
+      }, 500);
     }
   }, "/dashboard/video/merge");
 
