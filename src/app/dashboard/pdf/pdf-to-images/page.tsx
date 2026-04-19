@@ -89,16 +89,10 @@ export default function PDFToImages() {
 
   useAiHydration(({ files, autoExecute }) => {
     if (files && files.length > 0) {
-      const loadAi = async () => {
-        const file = files[0]; setSelectedFile(file); setInfo("");
-        try {
-          const buf = await file.arrayBuffer();
-          const pdf = await PDFDocument.load(buf, { ignoreEncryption: true });
-          setPageCount(pdf.getPageCount());
-          if (autoExecute) setAutoRun(true);
-        } catch { setPageCount(0); }
-      };
-      loadAi();
+      handleFiles(files);
+      if (autoExecute) {
+        setAutoRun(true);
+      }
     }
   }, "/dashboard/pdf/pdf-to-images");
 
