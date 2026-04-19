@@ -100,14 +100,14 @@ export default function PdfPageNumbers() {
         const yPerc = yPos / 100;
 
         if (pageRotation === 90) {
-          x = height * yPerc;
-          y = width * (1 - xPerc);
+          x = width * (1 - yPerc);
+          y = height * xPerc;
         } else if (pageRotation === 180) {
           x = width * (1 - xPerc);
           y = height * (1 - yPerc);
         } else if (pageRotation === 270) {
-          x = height * (1 - yPerc);
-          y = width * xPerc;
+          x = width * yPerc;
+          y = height * (1 - xPerc);
         } else {
           x = width * xPerc;
           y = height * yPerc;
@@ -188,7 +188,7 @@ export default function PdfPageNumbers() {
         <div className={styles.previewArea}>
           {file ? (
             <div className={styles.tabletFrame}>
-              <div ref={thumbnailRef} style={{ position: 'relative' }}>
+              <div ref={thumbnailRef} style={{ position: 'relative', width: 'fit-content', lineHeight: 0 }}>
                 {thumbnailUrl ? (
                   <img ref={imgRef} src={thumbnailUrl} className={styles.thumbnail} alt="PDF Proof" />
                 ) : (

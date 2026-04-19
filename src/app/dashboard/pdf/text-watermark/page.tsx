@@ -102,14 +102,14 @@ export default function PdfWatermark() {
         const yPerc = yPos / 100;
 
         if (pageRotation === 90) {
-          x = height * yPerc;
-          y = width * (1 - xPerc);
+          x = width * (1 - yPerc);
+          y = height * xPerc;
         } else if (pageRotation === 180) {
           x = width * (1 - xPerc);
           y = height * (1 - yPerc);
         } else if (pageRotation === 270) {
-          x = height * (1 - yPerc);
-          y = width * xPerc;
+          x = width * yPerc;
+          y = height * (1 - xPerc);
         } else {
           x = width * xPerc;
           y = height * yPerc;
@@ -190,7 +190,8 @@ export default function PdfWatermark() {
         <div className={styles.previewArea}>
           {file ? (
             <div className={styles.tabletFrame}>
-              <div ref={thumbnailRef} style={{ position: 'relative' }}>
+              {/* Document boundary wrapper to ensure 0-100% precision */}
+              <div ref={thumbnailRef} style={{ position: 'relative', width: 'fit-content', lineHeight: 0 }}>
                 {thumbnailUrl ? (
                   <img ref={imgRef} src={thumbnailUrl} className={styles.thumbnail} alt="PDF Proof" />
                 ) : (
@@ -208,7 +209,7 @@ export default function PdfWatermark() {
                     color: color,
                     fontSize: `${fontSize * visualScale}px`,
                     opacity: opacity,
-                    transform: `rotate(${-rotation}deg)`, // CSS rotates clockwise, pdf-lib rotates CCW usually, we align to visual
+                    transform: `rotate(${-rotation}deg)`,
                     transformOrigin: 'bottom left'
                   }}
                 >
