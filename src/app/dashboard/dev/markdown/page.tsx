@@ -69,28 +69,26 @@ export default function MarkdownPreviewer() {
 
           <div className={mStyles.ribbonSection}>
             <button 
-              className={devStyles.miniBtn} 
+              className={`${devStyles.miniBtn} ${copiedMode === 'md' ? devStyles.miniBtnSuccess : ''}`} 
               onClick={() => handleCopy(markdown, "md")}
-              style={{ padding: '0.6rem 1rem' }}
             >
               {copiedMode === 'md' ? <Check size={14} /> : <Copy size={14} />} {copiedMode === 'md' ? 'Copied' : 'Markdown'}
             </button>
             <button 
-              className={devStyles.miniBtn} 
+              className={`${devStyles.miniBtn} ${copiedMode === 'html' ? devStyles.miniBtnSuccess : ''}`} 
               onClick={() => handleCopy(html, "html")}
-              style={{ padding: '0.6rem 1rem' }}
             >
               {copiedMode === 'html' ? <Check size={14} /> : <FileCode2 size={14} />} {copiedMode === 'html' ? 'Copied' : 'HTML Code'}
             </button>
             <div className={mStyles.separator} />
-            <button className={devStyles.miniBtn} onClick={() => handleDownload(markdown, `pixie-${Date.now()}.md`, "text/markdown")} title="Download Markdown">
-              <Download size={14} />
+            <button className={devStyles.iconBtn} onClick={() => handleDownload(markdown, `pixie-${Date.now()}.md`, "text/markdown")} title="Download Markdown">
+              <Download size={16} />
             </button>
-            <button className={devStyles.miniBtn} onClick={() => handleDownload(html, `pixie-${Date.now()}.html`, "text/html")} title="Download HTML">
-              <FileCode2 size={14} />
+            <button className={devStyles.iconBtn} onClick={() => handleDownload(html, `pixie-${Date.now()}.html`, "text/html")} title="Download HTML Code">
+              <FileCode2 size={16} />
             </button>
-            <button className={devStyles.miniBtn} onClick={() => setMarkdown("")} style={{ color: '#ef4444' }} title="Reset Stage">
-              <Trash2 size={14} />
+            <button className={`${devStyles.iconBtn} ${devStyles.iconBtnDanger}`} onClick={() => setMarkdown("")} title="Reset Stage">
+              <Trash2 size={16} />
             </button>
           </div>
         </div>

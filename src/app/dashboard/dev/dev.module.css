@@ -34,6 +34,59 @@
 .textInput { padding: 0.75rem 1rem; border-radius: var(--radius-inner); border: 1px solid var(--border); background: var(--pure-white); font-family: inherit; font-size: 0.9375rem; outline: none; color: var(--foreground); }
 .textInput:focus { border-color: var(--mint-green); }
 
+/* Premium Studio Buttons */
+.miniBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  background: rgba(167, 243, 208, 0.2);
+  color: var(--deep-charcoal);
+  border: 1px solid rgba(167, 243, 208, 0.4);
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.miniBtn:hover {
+  background: var(--mint-green);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(167, 243, 208, 0.4);
+}
+.miniBtnSuccess {
+  background: var(--mint-green) !important;
+  color: #064e3b !important;
+  box-shadow: 0 4px 12px rgba(167, 243, 208, 0.4);
+}
+
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--pure-white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.iconBtn:hover {
+  background: var(--soft-sage);
+  color: var(--deep-charcoal);
+  transform: scale(1.05);
+  border-color: var(--text-muted);
+}
+.iconBtnDanger:hover {
+  background: #fee2e2;
+  color: #ef4444;
+  border-color: #fca5a5;
+}
+
 @media (max-width: 768px) {
   .workspace {
     flex-direction: column-reverse;
