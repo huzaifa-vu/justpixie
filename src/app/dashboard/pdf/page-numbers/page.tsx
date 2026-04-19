@@ -7,6 +7,7 @@ import { PDFDocument, rgb, hexToRgb } from "pdf-lib";
 import { useAiHydration } from "@/hooks/useAiHydration";
 import { useSettings } from "@/hooks/useSettings";
 import { DropZone } from "@/components/DropZone";
+import { motion } from "framer-motion";
 
 export default function PdfPageNumbers() {
   const [file, setFile] = useState<File | null>(null);
@@ -158,7 +159,20 @@ export default function PdfPageNumbers() {
     return () => obs.disconnect();
   }, [thumbnailUrl]);
 
+  useEffect(() => {
+    setOutputUrl(null);
+  }, [xPos, yPos, color, textSize, startNum]);
+
   const visualScale = (pdfSize.width && renderedWidth) ? (renderedWidth / pdfSize.width) : 1;
+
+  const handleDragEnd = (_: any, info: any) => {
+    if (!imgRef.current) return;
+    const rect = imgRef.current.getBoundingClientRect();
+    const newX = ((info.point.x - rect.left) / rect.width) * 100;
+    const newY = ((rect.bottom - info.point.y) / rect.height) * 100;
+    setXPos(Math.max(0, Math.min(100, Math.round(newX))));
+    setYPos(Math.max(0, Math.min(100, Math.round(newY))));
+  };
 
   return (
     <ToolWrapper title="Page Numbers Studio" description="Interactive visual placement of serialized page numbers." icon={FileDigit}>
@@ -168,25 +182,31 @@ export default function PdfPageNumbers() {
             <div className={styles.tabletFrame}>
               <div ref={thumbnailRef} style={{ position: 'relative' }}>
                 {thumbnailUrl ? (
-                  <img ref={imgRef} src={thumbnailUrl} className={styles.thumbnail} alt="PDF Proof" />
+                  <img ref={imgRef} src={thumbnailUrl} className={styles.thumbnail} alt="PDF Proof" draggable={false} />
                 ) : (
                   <div className={styles.thumbnail} style={{ width: 300, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#222' }}>
                      <RefreshCw size={40} className={styles.spin} style={{ color: '#444' }} />
                   </div>
                 )}
                 
-                {/* Live Preview Badge */}
-                <div 
+                {/* Drag-and-Place Interactivity */}
+                <motion.div 
                   className={styles.livePreviewBadge}
+                  drag
+                  dragConstraints={thumbnailRef}
+                  dragMomentum={false}
+                  dragElastic={0}
+                  onDragEnd={handleDragEnd}
                   style={{ 
                     left: `${xPos}%`, 
                     bottom: `${yPos}%`, 
                     color: color,
                     fontSize: `${textSize * visualScale}px`,
                   }}
+                  animate={{ x: 0, y: 0 }}
                 >
                   {startNum}
-                </div>
+                </motion.div>
               </div>
             </div>
           ) : (
@@ -233,14 +253,18 @@ export default function PdfPageNumbers() {
                 <Palette size={16} style={{ color: 'var(--mint-green)' }} />
                 <span className={styles.label}>Typography & Style</span>
               </div>
-              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-end' }}>
-                <div style={{ flex: 1 }}>
-                   <span style={{ fontSize: '0.7rem', display: 'block', marginBottom: '0.5rem', fontWeight: 700, color: 'var(--text-muted)' }}>Color</span>
-                   <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className={styles.colorInput} title="Choose number color" />
+              <div style={{ background: 'var(--soft-sage)', padding: '1rem', borderRadius: 'var(--radius-inner)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                   <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>Color</span>
+                   <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className={styles.colorInput} style={{ width: '40px', height: '24px', padding: 0 }} />
                 </div>
-                <div style={{ width: '90px' }}>
-                   <span style={{ fontSize: '0.7rem', display: 'block', marginBottom: '0.5rem', fontWeight: 700, color: 'var(--text-muted)' }}>Size (pt)</span>
-                   <input type="number" value={textSize} onChange={(e) => setTextSize(Number(e.target.value))} className={styles.textInput} />
+                
+                <div>
+                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+                      <span>Text Size</span>
+                      <span>{textSize}pt</span>
+                   </div>
+                   <input type="range" min="6" max="72" value={textSize} onChange={(e) => setTextSize(Number(e.target.value))} className={styles.rangeInput} />
                 </div>
               </div>
             </div>

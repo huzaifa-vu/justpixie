@@ -84,6 +84,18 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--mint-green) transparent;
+}
+
+.configBody::-webkit-scrollbar {
+  width: 5px;
+}
+
+.configBody::-webkit-scrollbar-thumb {
+  background: var(--mint-green);
+  border-radius: 10px;
 }
 
 .infoBox {
@@ -307,16 +319,18 @@
 
 .livePreviewBadge {
   position: absolute;
-  pointer-events: none;
+  pointer-events: auto;
   z-index: 5;
   font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   white-space: nowrap;
   text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  transition: all 0.05s linear;
+  transition: opacity 0.2s;
   line-height: 1;
+  cursor: grab;
+}
+
+.livePreviewBadge:active {
+  cursor: grabbing;
 }
 
 .rangeGroup {
