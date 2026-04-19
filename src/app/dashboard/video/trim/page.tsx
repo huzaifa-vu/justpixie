@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { UploadCloud, Scissors, RefreshCw, Download, Settings2 } from "lucide-react";
+import { UploadCloud, Scissors, RefreshCw, Download, Settings2, Clock } from "lucide-react";
 import ToolWrapper from "@/components/ToolWrapper";
 import styles from "../audio/page.module.css";
 import { FFmpeg } from '@ffmpeg/ffmpeg';
@@ -25,6 +25,26 @@ export default function VideoTrimmer() {
 
   const ffmpegRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const formatSecondsToTimestamp = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    return [h, m, s].map(v => v.toString().padStart(2, '0')).join(':');
+  };
+
+  const handleCaptureStart = () => {
+    if (videoRef.current) {
+      setStartTime(formatSecondsToTimestamp(videoRef.current.currentTime));
+    }
+  };
+
+  const handleCaptureEnd = () => {
+    if (videoRef.current) {
+      setEndTime(formatSecondsToTimestamp(videoRef.current.currentTime));
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -116,7 +136,7 @@ export default function VideoTrimmer() {
             />
           ) : (
             <div className={styles.viewerContainer}>
-               <video src={resultUrl || videoUrl} className={styles.videoPlayer} controls preload="metadata" />
+               <video ref={videoRef} src={resultUrl || videoUrl} className={styles.videoPlayer} controls preload="metadata" />
             </div>
           )}
         </div>
@@ -127,22 +147,32 @@ export default function VideoTrimmer() {
             {!isReady ? <div className={styles.infoBoxWarn}><strong>Loading FFmpeg...</strong></div> : <div className={styles.infoBox}><strong>Engine Ready</strong> WebAssembly initialized.</div>}
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-               <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)' }}>Start Time (HH:MM:SS)</span>
+               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                 <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)' }}>Start Time</span>
+                 <button onClick={handleCaptureStart} className={styles.miniBtn} title="Capture current time">
+                   <Clock size={14} /> Set from Player
+                 </button>
+               </div>
                <input 
                  type="text" 
                  value={startTime} 
                  onChange={e => setStartTime(e.target.value)} 
-                 style={{ padding: '0.75rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', fontFamily: 'monospace', fontSize: '1.25rem' }} 
+                 style={{ padding: '0.75rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', fontFamily: 'monospace', fontSize: '1.25rem', width: '100%' }} 
                />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-               <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)' }}>End Time (HH:MM:SS)</span>
+               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                 <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)' }}>End Time</span>
+                 <button onClick={handleCaptureEnd} className={styles.miniBtn} title="Capture current time">
+                   <Clock size={14} /> Set from Player
+                 </button>
+               </div>
                <input 
                  type="text" 
                  value={endTime} 
                  onChange={e => setEndTime(e.target.value)} 
-                 style={{ padding: '0.75rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', fontFamily: 'monospace', fontSize: '1.25rem' }} 
+                 style={{ padding: '0.75rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', fontFamily: 'monospace', fontSize: '1.25rem', width: '100%' }} 
                />
             </div>
             

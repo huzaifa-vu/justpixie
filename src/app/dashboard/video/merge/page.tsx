@@ -139,8 +139,8 @@ export default function VideoAudioMerger() {
   };
 
   const handleDrop = (files: File[]) => {
-    const vid = files.find(f => f.type.startsWith("video/"));
-    const aud = files.find(f => f.type.startsWith("audio/"));
+    const vid = files.find(f => f.type.startsWith("video/") || /\.(mp4|mov|avi|mkv|webm|m4v)$/i.test(f.name));
+    const aud = files.find(f => f.type.startsWith("audio/") || /\.(mp3|wav|ogg|m4a|aac|flac)$/i.test(f.name));
     if (vid) {
       setSelectedVideo(vid);
       if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl);
