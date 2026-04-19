@@ -10,7 +10,7 @@ export default function PDFCategoryHome() {
     { name: 'Compress PDF', type: 'PDF', desc: 'Reduce megabytes in seconds.', href: '/dashboard/pdf/compress', icon: Shrink },
     { name: 'Merge PDF', type: 'PDF', desc: 'Combine multiple documents gracefully.', href: '/dashboard/pdf/merge', icon: Combine },
     { name: 'Split PDF', type: 'PDF', desc: 'Extract specific pages rapidly.', href: '/dashboard/pdf/split', icon: SplitSquareHorizontal },
-    { name: 'Privacy & Metadata', type: 'PDF', desc: 'Scrub identity data and flatten content.', href: '/dashboard/pdf/lock', icon: ShieldCheck },
+    { name: 'Privacy & Metadata', type: 'PDF', desc: 'Scrub identity data and flatten content.', href: '/dashboard/pdf/privacy', icon: ShieldCheck },
     { name: 'PDF to Images', type: 'PDF', desc: 'Extract pages as image files.', href: '/dashboard/pdf/pdf-to-images', icon: ImageIcon },
     { name: 'Rotate Pages', type: 'PDF', desc: 'Rotate all pages by 90/180/270\u00b0.', href: '/dashboard/pdf/rotate', icon: RotateCcw },
     { name: 'Add Page Numbers', type: 'PDF', desc: 'Stamp sequential numbers on pages.', href: '/dashboard/pdf/page-numbers', icon: Hash },

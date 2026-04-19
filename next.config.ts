@@ -12,6 +12,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/dashboard/pdf/lock",
+        destination: "/dashboard/pdf/privacy",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

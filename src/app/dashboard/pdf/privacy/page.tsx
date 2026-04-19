@@ -1,17 +1,15 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { UploadCloud, FileText, Wand2, RefreshCw, Download, ShieldCheck, Eye, EyeOff, Scissors, Layers } from "lucide-react";
+import { 
+  UploadCloud, FileText, Wand2, RefreshCw, Download, ShieldCheck, 
+  Eye, EyeOff, Scissors, Layers, Info, ToggleLeft, ToggleRight 
+} from "lucide-react";
 import ToolWrapper from "@/components/ToolWrapper";
 import styles from "./page.module.css";
 import { PDFDocument } from 'pdf-lib';
-import * as pdfjs from "pdfjs-dist";
 import { useAiHydration } from "@/hooks/useAiHydration";
 import { useSettings } from "@/hooks/useSettings";
 import { DropZone } from "@/components/DropZone";
-
-// Setup PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
 export default function PDFPrivacy() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -73,12 +71,16 @@ export default function PDFPrivacy() {
     setIsProcessing(true);
 
     try {
+      // Dynamic import to fix DOMMatrix SSR error
+      const { version, GlobalWorkerOptions, getDocument } = await import("pdfjs-dist");
+      GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.min.mjs`;
+
       const buffer = await selectedFile.arrayBuffer();
       let finalBytes: Uint8Array;
 
       if (flatten) {
         // FLATTEN LOGIC: Render to images and back to PDF
-        const pdf = await pdfjs.getDocument({ data: buffer }).promise;
+        const pdf = await getDocument({ data: buffer }).promise;
         const outPdf = await PDFDocument.create();
 
         for (let i = 1; i <= pdf.numPages; i++) {
@@ -167,12 +169,15 @@ export default function PDFPrivacy() {
                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <Scissors size={14} className={styles.iconDim} />
                   <span className={styles.label}>Scrub Metadata</span>
+                  <div className={styles.tooltipIcon} title="Removes hidden Author, Creator, and metadata tags from the PDF structure.">
+                     <Info size={12} />
+                  </div>
                </div>
                <button 
                 onClick={() => { setStripMeta(!stripMeta); setResultUrl(null); }}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: stripMeta ? 'var(--mint-green)' : 'var(--text-muted)' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: stripMeta ? 'var(--pixie-teal)' : 'var(--text-muted)' }}
               >
-                {stripMeta ? <EyeOff size={20} /> : <Eye size={20} />}
+                {stripMeta ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
               </button>
             </div>
 
@@ -180,12 +185,15 @@ export default function PDFPrivacy() {
                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <Layers size={14} className={styles.iconDim} />
                   <span className={styles.label}>Flatten Document</span>
+                  <div className={styles.tooltipIcon} title="Converts pages into images to prevent text selection and make tampering extremely difficult.">
+                     <Info size={12} />
+                  </div>
                </div>
                <button 
                 onClick={() => { setFlatten(!flatten); setResultUrl(null); }}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: flatten ? 'var(--pixie-teal)' : 'var(--text-muted)' }}
               >
-                {flatten ? <ShieldCheck size={20} /> : <EyeOff size={20} />}
+                {flatten ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
               </button>
             </div>
 
