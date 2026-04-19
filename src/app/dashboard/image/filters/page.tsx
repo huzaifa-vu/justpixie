@@ -130,7 +130,7 @@ export default function ImageFilters() {
         return () => clearTimeout(timer);
       }
     }
-  }, [imageSrc, activeFilter, brightness, contrast, settings.autoDownload]);
+  }, [imageSrc, brightness, contrast, settings.autoDownload]);
 
 
 
