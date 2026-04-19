@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Palette, Copy, Check, Pipette } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import ToolWrapper from "@/components/ToolWrapper";
 import styles from "../dev.module.css";
 import { useAiHydration } from "@/hooks/useAiHydration";
@@ -146,27 +147,45 @@ export default function ColorConverter() {
                 onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
                 onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
               >
-                {hovered && copied !== 'preview' && (
-                  <div style={{ 
-                    position: 'absolute', 
-                    inset: 0, 
-                    backgroundColor: 'rgba(0,0,0,0.15)', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    transition: 'opacity 0.2s',
-                    backdropFilter: 'blur(2px)'
-                  }}>
-                    <span style={{ backgroundColor: 'rgba(255,255,255,0.9)', color: '#000', padding: '0.6rem 1.2rem', borderRadius: 'var(--radius-pill)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                      <Copy size={16} /> Click to Copy
-                    </span>
-                  </div>
-                )}
-                {copied === 'preview' && (
-                  <span style={{ position: 'relative', zIndex: 2, backgroundColor: '#000', color: '#fff', padding: '0.6rem 1.2rem', borderRadius: 'var(--radius-pill)', fontWeight: 600, backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Check size={16} /> Copied!
-                  </span>
-                )}
+                <AnimatePresence>
+                  {hovered && copied !== 'preview' && (
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      style={{ 
+                        position: 'absolute', 
+                        inset: 0, 
+                        backgroundColor: 'rgba(0,0,0,0.15)', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        backdropFilter: 'blur(2px)'
+                      }}
+                    >
+                      <motion.span 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        style={{ backgroundColor: 'rgba(255,255,255,0.9)', color: '#000', padding: '0.6rem 1.2rem', borderRadius: 'var(--radius-pill)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                      >
+                        <Copy size={16} /> Click to Copy
+                      </motion.span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                  {copied === 'preview' && (
+                    <motion.span 
+                      initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      style={{ position: 'relative', zIndex: 2, backgroundColor: '#000', color: '#fff', padding: '0.6rem 1.2rem', borderRadius: 'var(--radius-pill)', fontWeight: 600, backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                    >
+                      <Check size={16} /> Copied!
+                    </motion.span>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>
@@ -187,18 +206,36 @@ export default function ColorConverter() {
                 style={{cursor:'pointer', position: 'relative', overflow: 'hidden'}}
               >
                 {hex}
-                {hoveredHex && copied !== 'hex' && (
-                  <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(1px)' }}>
-                    <span style={{ backgroundColor: 'var(--mint-green)', color: 'var(--deep-charcoal)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Copy size={10} /> CLICK TO COPY
-                    </span>
-                  </div>
-                )}
-                {copied === 'hex' && (
-                  <div style={{ position: 'absolute', inset: 0, backgroundColor: 'var(--mint-green)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ color: 'var(--deep-charcoal)', fontWeight: 700, fontSize: '0.75rem' }}>COPIED!</span>
-                  </div>
-                )}
+                <AnimatePresence>
+                  {hoveredHex && copied !== 'hex' && (
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(1px)' }}
+                    >
+                      <motion.span 
+                        initial={{ scale: 0.9 }}
+                        animate={{ scale: 1 }}
+                        style={{ backgroundColor: 'var(--mint-green)', color: 'var(--deep-charcoal)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}
+                      >
+                        <Copy size={10} /> CLICK TO COPY
+                      </motion.span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                <AnimatePresence>
+                  {copied === 'hex' && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      style={{ position: 'absolute', inset: 0, backgroundColor: 'var(--mint-green)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      <span style={{ color: 'var(--deep-charcoal)', fontWeight: 700, fontSize: '0.75rem' }}>COPIED!</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
 
@@ -212,18 +249,36 @@ export default function ColorConverter() {
                 style={{cursor:'pointer', position: 'relative', overflow: 'hidden'}}
               >
                 {rgbStr}
-                {hoveredRgb && copied !== 'rgb' && (
-                  <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(1px)' }}>
-                    <span style={{ backgroundColor: 'var(--mint-green)', color: 'var(--deep-charcoal)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Copy size={10} /> CLICK TO COPY
-                    </span>
-                  </div>
-                )}
-                {copied === 'rgb' && (
-                  <div style={{ position: 'absolute', inset: 0, backgroundColor: 'var(--mint-green)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ color: 'var(--deep-charcoal)', fontWeight: 700, fontSize: '0.75rem' }}>COPIED!</span>
-                  </div>
-                )}
+                <AnimatePresence>
+                  {hoveredRgb && copied !== 'rgb' && (
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(1px)' }}
+                    >
+                      <motion.span 
+                        initial={{ scale: 0.9 }}
+                        animate={{ scale: 1 }}
+                        style={{ backgroundColor: 'var(--mint-green)', color: 'var(--deep-charcoal)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}
+                      >
+                        <Copy size={10} /> CLICK TO COPY
+                      </motion.span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                <AnimatePresence>
+                  {copied === 'rgb' && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      style={{ position: 'absolute', inset: 0, backgroundColor: 'var(--mint-green)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      <span style={{ color: 'var(--deep-charcoal)', fontWeight: 700, fontSize: '0.75rem' }}>COPIED!</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
 
@@ -237,18 +292,36 @@ export default function ColorConverter() {
                 style={{cursor:'pointer', position: 'relative', overflow: 'hidden'}}
               >
                 {hslStr}
-                {hoveredHsl && copied !== 'hsl' && (
-                  <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(1px)' }}>
-                    <span style={{ backgroundColor: 'var(--mint-green)', color: 'var(--deep-charcoal)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Copy size={10} /> CLICK TO COPY
-                    </span>
-                  </div>
-                )}
-                {copied === 'hsl' && (
-                  <div style={{ position: 'absolute', inset: 0, backgroundColor: 'var(--mint-green)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ color: 'var(--deep-charcoal)', fontWeight: 700, fontSize: '0.75rem' }}>COPIED!</span>
-                  </div>
-                )}
+                <AnimatePresence>
+                  {hoveredHsl && copied !== 'hsl' && (
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(1px)' }}
+                    >
+                      <motion.span 
+                        initial={{ scale: 0.9 }}
+                        animate={{ scale: 1 }}
+                        style={{ backgroundColor: 'var(--mint-green)', color: 'var(--deep-charcoal)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}
+                      >
+                        <Copy size={10} /> CLICK TO COPY
+                      </motion.span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                <AnimatePresence>
+                  {copied === 'hsl' && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      style={{ position: 'absolute', inset: 0, backgroundColor: 'var(--mint-green)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      <span style={{ color: 'var(--deep-charcoal)', fontWeight: 700, fontSize: '0.75rem' }}>COPIED!</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>
