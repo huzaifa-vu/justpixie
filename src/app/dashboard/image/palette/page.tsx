@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { UploadCloud, Palette, Copy, Wand2, Check } from "lucide-react";
 import ToolWrapper from "@/components/ToolWrapper";
 import { DropZone } from "@/components/DropZone";
-import styles from "../format/page.module.css";
+import styles from "./palette.module.css";
 import { useAiHydration } from "@/hooks/useAiHydration";
 import { useSettings } from "@/hooks/useSettings";
 import { useEffect } from "react";
@@ -141,37 +141,28 @@ export default function ColorPalette() {
 
              {isProcessing && <div className={styles.infoBoxWarn}>Analyzing pixels...</div>}
 
-             {palette.length > 0 && (
+              {palette.length > 0 && (
                 <div style={{ display: 'grid', gap: '0.5rem', marginBottom: '1rem' }}>
                    {palette.map((hex, i) => (
-                      <div 
+                       <div 
                         key={i}
+                        className={styles.colorRow}
                         onClick={() => handleCopy(hex)}
-                        style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          justifyContent: 'space-between', 
-                          padding: '0.5rem', 
-                          borderRadius: '8px', 
-                          background: 'var(--surface-card)', 
-                          border: '1px solid var(--border)', 
-                          cursor: 'pointer',
-                          transition: 'transform 0.2s'
-                        }}
-                        onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-                        onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
                       >
-                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                            <div style={{ width: '40px', height: '40px', borderRadius: '4px', backgroundColor: hex, border: '1px solid rgba(0,0,0,0.1)' }}></div>
-                            <span style={{ fontFamily: 'monospace', fontWeight: 600, fontSize: '1.25rem', color: 'var(--deep-charcoal)' }}>{hex}</span>
+                         <div className={styles.copyOverlay}>
+                            <Copy size={16} /> Click to Copy
                          </div>
-                         <div style={{ color: 'var(--text-muted)' }}>
+                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <div className={styles.swatchPreview} style={{ backgroundColor: hex }}></div>
+                            <span className={styles.hexCode}>{hex}</span>
+                         </div>
+                         <div style={{ color: 'var(--text-muted)', position: 'relative', zIndex: 10 }}>
                             {copiedColor === hex ? <Check size={18} color="var(--mint-green)" /> : <Copy size={18} />}
                          </div>
                       </div>
                    ))}
                 </div>
-             )}
+              )}
 
             <button 
               className={styles.resetBtn} 
