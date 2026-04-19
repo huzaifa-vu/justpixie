@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { FileDigit, Download, RefreshCw, Trash2, CheckCircle, Info, Settings2, Palette } from "lucide-react";
 import ToolWrapper from "@/components/ToolWrapper";
 import styles from "../pdf-pro.module.css";
-import { PDFDocument, rgb, hexToRgb } from "pdf-lib";
+import { PDFDocument, rgb, degrees } from "pdf-lib";
 import { useAiHydration } from "@/hooks/useAiHydration";
 import { useSettings } from "@/hooks/useSettings";
 import { DropZone } from "@/components/DropZone";
