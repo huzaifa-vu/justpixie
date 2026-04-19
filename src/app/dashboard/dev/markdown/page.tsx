@@ -53,8 +53,18 @@ export default function MarkdownPreviewer() {
         {/* Top Action Ribbon */}
         <div className={mStyles.actionRibbon}>
           <div className={mStyles.ribbonSection}>
-             <div className={mStyles.statItem}><BarChart3 size={14} /> <span className={mStyles.statValue}>{words}</span> words</div>
-             <div className={mStyles.statItem}><Clock size={14} /> <span className={mStyles.statValue}>{readTime}</span> min read</div>
+             <div className={mStyles.ribbonLabel}>
+                <Wand2 size={14} /> Markdown Studio
+             </div>
+             <div className={mStyles.separator} />
+             <div className={mStyles.statBadge}>
+                <BarChart3 size={14} /> 
+                <span className={mStyles.statValue}>{words}</span> words
+             </div>
+             <div className={mStyles.statBadgeSecondary}>
+                <Clock size={14} /> 
+                <span className={mStyles.statValue}>{readTime}</span> min read
+             </div>
           </div>
 
           <div className={mStyles.ribbonSection}>
@@ -63,24 +73,24 @@ export default function MarkdownPreviewer() {
               onClick={() => handleCopy(markdown, "md")}
               style={{ padding: '0.6rem 1rem' }}
             >
-              {copiedMode === 'md' ? <Check size={14} /> : <Copy size={14} />} {copiedMode === 'md' ? 'Copied MD' : 'Copy MD'}
+              {copiedMode === 'md' ? <Check size={14} /> : <Copy size={14} />} {copiedMode === 'md' ? 'Copied' : 'Markdown'}
             </button>
             <button 
               className={devStyles.miniBtn} 
               onClick={() => handleCopy(html, "html")}
               style={{ padding: '0.6rem 1rem' }}
             >
-              {copiedMode === 'html' ? <Check size={14} /> : <FileCode2 size={14} />} {copiedMode === 'html' ? 'Copied HTML' : 'Copy HTML'}
+              {copiedMode === 'html' ? <Check size={14} /> : <FileCode2 size={14} />} {copiedMode === 'html' ? 'Copied' : 'HTML Code'}
             </button>
-            <div style={{ width: '1px', height: '20px', background: 'var(--border)' }} />
-            <button className={devStyles.miniBtn} onClick={() => handleDownload(markdown, `pixie-${Date.now()}.md`, "text/markdown")}>
-              <Download size={14} /> .md
+            <div className={mStyles.separator} />
+            <button className={devStyles.miniBtn} onClick={() => handleDownload(markdown, `pixie-${Date.now()}.md`, "text/markdown")} title="Download Markdown">
+              <Download size={14} />
             </button>
-            <button className={devStyles.miniBtn} onClick={() => handleDownload(html, `pixie-${Date.now()}.html`, "text/html")}>
-              <FileCode2 size={14} /> .html
+            <button className={devStyles.miniBtn} onClick={() => handleDownload(html, `pixie-${Date.now()}.html`, "text/html")} title="Download HTML">
+              <FileCode2 size={14} />
             </button>
-            <button className={devStyles.miniBtn} onClick={() => setMarkdown("")} style={{ color: '#ef4444' }}>
-              <Trash2 size={14} /> Clear
+            <button className={devStyles.miniBtn} onClick={() => setMarkdown("")} style={{ color: '#ef4444' }} title="Reset Stage">
+              <Trash2 size={14} />
             </button>
           </div>
         </div>
