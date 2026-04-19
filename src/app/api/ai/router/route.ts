@@ -87,7 +87,7 @@ Your ONLY job is to read the user's natural language prompt and return a JSON ob
 - For CSV tool: use "inputText" AND "mode" ("csv2json" or "json2csv")
 - For video trim: use "startTime" and "endTime" (format HH:MM:SS)
 - For video speed: use "speed" (e.g. "2" for 2x)
-- For image resize: use "width" and "height"
+- For image resize: use "width" and "height". Include "lockAspectRatio": true if only ONE dimension is specified (to maintain ratio). Include "lockAspectRatio": false if BOTH width and height are specified (to allow custom stretching).
 - For image compress: use "maxSizeMB" (convert kb to MB, e.g. 200kb = 0.2) and "maxWidthOrHeight"
 - For video compress: use "crf" (e.g., 28 is high compression)
 - For pdf compress: use "quality"

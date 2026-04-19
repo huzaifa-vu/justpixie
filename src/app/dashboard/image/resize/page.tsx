@@ -37,6 +37,10 @@ export default function ImageResizer() {
   };
 
   useAiHydration(({ files, params, autoExecute }) => {
+    // 1. Respect AI's decision on aspect ratio locking
+    const aiLock = params?.lockAspectRatio !== undefined ? (params.lockAspectRatio === true || params.lockAspectRatio === "true") : null;
+    if (aiLock !== null) setLockRatio(aiLock);
+
     if (files && files.length > 0) {
       const file = files[0];
       setSelectedFile(file);
@@ -46,13 +50,29 @@ export default function ImageResizer() {
       const img = new Image(); img.src = url;
       img.onload = () => { 
         setOrigW(img.width); setOrigH(img.height); 
-        if (params?.width) setWidth(Number(params.width));
-        else setWidth(img.width);
         
-        if (params?.height) setHeight(Number(params.height));
-        else setHeight(img.height);
+        const aiW = params?.width ? Number(params.width) : null;
+        const aiH = params?.height ? Number(params.height) : null;
+        const effectiveLock = aiLock !== null ? aiLock : lockRatio;
+
+        // 2. Smart Calculation: If Locking is enabled and only one dimension came from AI
+        if (aiW && !aiH && effectiveLock) {
+          setWidth(aiW);
+          setHeight(Math.round(aiW * (img.height / img.width)));
+        } else if (!aiW && aiH && effectiveLock) {
+          setHeight(aiH);
+          setWidth(Math.round(aiH * (img.width / img.height)));
+        } else {
+          // Standard: Use AI values or fallback to original
+          if (aiW) setWidth(aiW);
+          else setWidth(img.width);
+          
+          if (aiH) setHeight(aiH);
+          else setHeight(img.height);
+        }
       };
     } else {
+      // No files yet (navigation only case)
       if (params?.width) setWidth(Number(params.width));
       if (params?.height) setHeight(Number(params.height));
     }
