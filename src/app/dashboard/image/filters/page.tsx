@@ -78,14 +78,23 @@ export default function ImageFilters() {
   }, [getActiveCSS]);
 
   useEffect(() => {
-      if (imgRef.current && history[currentIndex]) {
+      // Sync canvas with history state
+      if (history[currentIndex]) {
         const img = new Image();
         img.onload = () => {
+          imgRef.current = img; 
           renderCanvas(img);
         };
         img.src = history[currentIndex];
       }
-  }, [brightness, contrast, saturate, blur, hueRotate, grayscale, sepia, invert, currentIndex, history, renderCanvas]);
+  }, [currentIndex, history, renderCanvas]);
+
+  // Handle slider updates
+  useEffect(() => {
+    if (imgRef.current) {
+      renderCanvas(imgRef.current);
+    }
+  }, [brightness, contrast, saturate, blur, hueRotate, grayscale, sepia, invert, renderCanvas]);
 
   const handleApply = () => {
     if (!canvasRef.current) return;
@@ -121,16 +130,7 @@ export default function ImageFilters() {
     if (params?.contrast) setContrast(Number(params.contrast));
   }, "/dashboard/image/filters");
 
-  useEffect(() => {
-    if (imageSrc && settings.autoDownload) {
-      if (brightness !== 100 || contrast !== 100) {
-        const timer = setTimeout(() => {
-          handleDownload();
-        }, 1000); // Give it a bit more time for the canvas to render
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [imageSrc, brightness, contrast, settings.autoDownload]);
+
 
 
 
