@@ -28,6 +28,7 @@ export default function GIFMaker() {
   const ffmpegRef = useRef<any>(null);
 
   const [currentPass, setCurrentPass] = useState(1);
+  const passRef = useRef(1);
 
   useEffect(() => {
     const load = async () => {
@@ -36,8 +37,8 @@ export default function GIFMaker() {
       const ffmpeg = ffmpegRef.current;
       
       ffmpeg.on('progress', ({ progress }: any) => {
-        // Offset progress based on current pass: Pass 1 (0-50%), Pass 2 (50-100%)
-        const offset = currentPass === 1 ? 0 : 50;
+        // Use ref value to avoid dependency on state in the effect
+        const offset = passRef.current === 1 ? 0 : 50;
         const multiplier = 0.5;
         setProgress(offset + Math.round(progress * 100 * multiplier));
       });
@@ -64,7 +65,7 @@ export default function GIFMaker() {
        if (videoUrl) URL.revokeObjectURL(videoUrl);
        if (resultUrl) URL.revokeObjectURL(resultUrl);
     };
-  }, [currentPass]);
+  }, []);
 
   const handleFiles = (files: File[]) => {
     if (files.length > 0) {
@@ -75,6 +76,7 @@ export default function GIFMaker() {
       setResultUrl(null);
       setProgress(0);
       setCurrentPass(1);
+      passRef.current = 1;
     }
   };
 
@@ -94,10 +96,18 @@ export default function GIFMaker() {
 
     try {
       const ffmpeg = ffmpegRef.current;
+      
+      // Cleanup previous files if any
+      const files = ['input.mp4', 'palette.png', 'output.gif'];
+      for (const f of files) {
+          try { await ffmpeg.deleteFile(f); } catch(e) {}
+      }
+
       await ffmpeg.writeFile('input.mp4', await fetchFile(selectedVideo));
       
       // Pass 1: Palette Generation (0-50%)
       setCurrentPass(1);
+      passRef.current = 1;
       await ffmpeg.exec([
         '-i', 'input.mp4', 
         '-vf', 'fps=10,scale=500:-1:flags=lanczos,palettegen', 
@@ -108,6 +118,7 @@ export default function GIFMaker() {
 
       // Pass 2: GIF Encoding (50-100%)
       setCurrentPass(2);
+      passRef.current = 2;
       await ffmpeg.exec([
         '-i', 'input.mp4', 
         '-i', 'palette.png', 
@@ -135,6 +146,14 @@ export default function GIFMaker() {
       setIsProcessing(false);
       setProgress(100);
       setCurrentPass(1);
+      passRef.current = 1;
+
+      // Final Cleanup
+      const ffmpeg = ffmpegRef.current;
+      const files = ['input.mp4', 'palette.png'];
+      for (const f of files) {
+          try { await ffmpeg.deleteFile(f); } catch(e) {}
+      }
     }
   };
 
@@ -145,6 +164,7 @@ export default function GIFMaker() {
     setVideoUrl(null);
     setProgress(0);
     setCurrentPass(1);
+    passRef.current = 1;
   };
 
   return (
