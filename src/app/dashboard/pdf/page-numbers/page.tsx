@@ -23,8 +23,11 @@ export default function PdfPageNumbers() {
   const [yPos, setYPos] = useState(5);  // 0-100 percentage
   const [textSize, setTextSize] = useState(14);
   const [color, setColor] = useState("#000000");
+  const [pdfSize, setPdfSize] = useState({ width: 0, height: 0 });
+  const [renderedWidth, setRenderedWidth] = useState(0);
 
   const thumbnailRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   const handleFiles = async (files: File[]) => {
     if (files.length > 0) {
@@ -44,13 +47,17 @@ export default function PdfPageNumbers() {
         const loadingTask = getDocument(buf);
         const pdf = await loadingTask.promise;
         const page = await pdf.getPage(1);
-        const viewport = page.getViewport({ scale: 0.5 });
+        
+        const viewport = page.getViewport({ scale: 1.0 });
+        setPdfSize({ width: viewport.width, height: viewport.height });
+
+        const renderViewport = page.getViewport({ scale: 0.5 });
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
         if (ctx) {
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
-          await page.render({ canvasContext: ctx, viewport }).promise;
+          canvas.height = renderViewport.height;
+          canvas.width = renderViewport.width;
+          await page.render({ canvasContext: ctx, viewport: renderViewport }).promise;
           canvas.toBlob((blob) => {
             if (blob) setThumbnailUrl(URL.createObjectURL(blob));
           }, "image/jpeg", 0.7);
@@ -140,6 +147,19 @@ export default function PdfPageNumbers() {
     }
   }, [autoRun, file, isProcessing]);
 
+  useEffect(() => {
+    if (!imgRef.current) return;
+    const obs = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setRenderedWidth(entry.contentRect.width);
+      }
+    });
+    obs.observe(imgRef.current);
+    return () => obs.disconnect();
+  }, [thumbnailUrl]);
+
+  const visualScale = (pdfSize.width && renderedWidth) ? (renderedWidth / pdfSize.width) : 1;
+
   return (
     <ToolWrapper title="Page Numbers Studio" description="Interactive visual placement of serialized page numbers." icon={FileDigit}>
       <div className={styles.workspace}>
@@ -148,7 +168,7 @@ export default function PdfPageNumbers() {
             <div className={styles.tabletFrame}>
               <div ref={thumbnailRef} style={{ position: 'relative' }}>
                 {thumbnailUrl ? (
-                  <img src={thumbnailUrl} className={styles.thumbnail} alt="PDF Proof" />
+                  <img ref={imgRef} src={thumbnailUrl} className={styles.thumbnail} alt="PDF Proof" />
                 ) : (
                   <div className={styles.thumbnail} style={{ width: 300, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#222' }}>
                      <RefreshCw size={40} className={styles.spin} style={{ color: '#444' }} />
@@ -162,8 +182,7 @@ export default function PdfPageNumbers() {
                     left: `${xPos}%`, 
                     bottom: `${yPos}%`, 
                     color: color,
-                    fontSize: `${textSize}px`,
-                    transform: 'translate(-50%, 50%)'
+                    fontSize: `${textSize * visualScale}px`,
                   }}
                 >
                   {startNum}
@@ -184,48 +203,54 @@ export default function PdfPageNumbers() {
           <div className={styles.configHeader}><FileDigit size={20} /><h2>Studio Manager</h2></div>
           <div className={styles.configBody}>
             <div className={styles.infoBox}>
-               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', color: 'var(--foreground)', fontWeight: 700 }}>
+               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', color: 'var(--mint-green)', fontWeight: 700 }}>
                  <Info size={14} />
-                 <span>Studio Tip</span>
+                 <span>Precision Placement</span>
               </div>
-              Drag the sliders below to adjust the exact position of the page numbers. The preview updates in real-time.
+              Adjust the coordinates using the sliders. The preview reflects the exact **bottom-left anchor** used for the final export.
             </div>
 
             <div className={styles.fieldGroup}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Settings2 size={14} className={styles.label} />
-                <span className={styles.label}>Coordination</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                <Settings2 size={16} style={{ color: 'var(--mint-green)' }} />
+                <span className={styles.label}>Layout & Position</span>
               </div>
               <div className={styles.rangeGroup}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem' }}>
-                   <span>X: {xPos}%</span>
-                   <span>Y: {yPos}%</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                   <span>Horizontal: {xPos}%</span>
                 </div>
                 <input type="range" min="0" max="100" value={xPos} onChange={(e) => setXPos(Number(e.target.value))} className={styles.rangeInput} />
+                
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+                   <span>Vertical: {yPos}%</span>
+                </div>
                 <input type="range" min="0" max="100" value={yPos} onChange={(e) => setYPos(Number(e.target.value))} className={styles.rangeInput} />
               </div>
             </div>
 
             <div className={styles.fieldGroup}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Palette size={14} className={styles.label} />
-                <span className={styles.label}>Aesthetics</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                <Palette size={16} style={{ color: 'var(--mint-green)' }} />
+                <span className={styles.label}>Typography & Style</span>
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1 }}>
-                   <span style={{ fontSize: '0.7rem', display: 'block', marginBottom: '0.25rem' }}>Text Color</span>
-                   <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className={styles.colorInput} />
+                   <span style={{ fontSize: '0.7rem', display: 'block', marginBottom: '0.5rem', fontWeight: 700, color: 'var(--text-muted)' }}>Color</span>
+                   <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className={styles.colorInput} title="Choose number color" />
                 </div>
-                <div style={{ width: '80px' }}>
-                   <span style={{ fontSize: '0.7rem', display: 'block', marginBottom: '0.25rem' }}>Size (pt)</span>
+                <div style={{ width: '90px' }}>
+                   <span style={{ fontSize: '0.7rem', display: 'block', marginBottom: '0.5rem', fontWeight: 700, color: 'var(--text-muted)' }}>Size (pt)</span>
                    <input type="number" value={textSize} onChange={(e) => setTextSize(Number(e.target.value))} className={styles.textInput} />
                 </div>
               </div>
             </div>
 
             <div className={styles.fieldGroup}>
-               <span className={styles.label}>Sequence Start</span>
-               <input type="number" min="1" value={startNum} onChange={(e) => { setStartNum(Number(e.target.value)); setOutputUrl(null); }} className={styles.textInput} />
+               <span className={styles.label}>Starting sequence</span>
+               <div style={{ position: 'relative' }}>
+                 <input type="number" min="1" value={startNum} onChange={(e) => { setStartNum(Number(e.target.value)); setOutputUrl(null); }} className={styles.textInput} />
+                 <FileDigit size={14} style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }} />
+               </div>
             </div>
 
             {isProcessing && (
