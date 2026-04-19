@@ -10,30 +10,39 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background: rgba(var(--surface-card-rgb, 255, 255, 255), 0.7);
-  backdrop-filter: blur(16px) saturate(180%);
-  border-radius: var(--radius-inner);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07),
-              0 0 1px 0 rgba(255, 255, 255, 0.3) inset;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px) saturate(200%);
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08),
+              0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   z-index: 10;
-  position: relative;
 }
 
-.ribbonLabel {
+.statsCapsule {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  font-size: 0.7rem;
-  font-weight: 800;
+  gap: 1.25rem;
+  background: rgba(var(--mint-green-rgb), 0.05);
+  padding: 0.5rem 1.5rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(var(--mint-green-rgb), 0.1);
+  transition: all 0.3s ease;
+}
+
+.statsCapsule:hover {
+  background: rgba(var(--mint-green-rgb), 0.1);
+  border-color: rgba(var(--mint-green-rgb), 0.2);
+}
+
+.statSegment {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  background: var(--soft-sage);
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
-  border: 1px solid var(--border);
 }
 
 .ribbonSection {
@@ -139,32 +148,10 @@
   color: var(--text-muted);
 }
 
-.statBadge {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(167, 243, 208, 0.15); /* Tinted mint */
+.statValue {
+  font-family: 'JetBrains Mono', monospace;
   color: var(--deep-charcoal);
-  padding: 0.5rem 0.8rem;
-  border-radius: var(--radius-pill);
-  font-size: 0.75rem;
-  font-weight: 700;
-  border: 1px solid rgba(167, 243, 208, 0.3);
-  transition: all 0.2s ease;
-}
-
-.statBadge:hover {
-  background: rgba(167, 243, 208, 0.25);
-  transform: translateY(-1px);
-}
-
-.statBadgeSecondary {
-  background: rgba(196, 181, 253, 0.15); /* Tinted lilac */
-  border-color: rgba(196, 181, 253, 0.3);
-}
-
-.statBadgeSecondary:hover {
-  background: rgba(196, 181, 253, 0.25);
+  opacity: 0.9;
 }
 
 .statValue {

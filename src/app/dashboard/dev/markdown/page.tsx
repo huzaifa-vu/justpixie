@@ -53,17 +53,21 @@ export default function MarkdownPreviewer() {
         {/* Top Action Ribbon */}
         <div className={mStyles.actionRibbon}>
           <div className={mStyles.ribbonSection}>
-             <div className={mStyles.ribbonLabel}>
-                <Wand2 size={14} /> Markdown Studio
-             </div>
-             <div className={mStyles.separator} />
-             <div className={mStyles.statBadge}>
-                <BarChart3 size={14} /> 
-                <span className={mStyles.statValue}>{words}</span> words
-             </div>
-             <div className={mStyles.statBadgeSecondary}>
-                <Clock size={14} /> 
-                <span className={mStyles.statValue}>{readTime}</span> min read
+             <div className={mStyles.statsCapsule}>
+               <div className={mStyles.statSegment}>
+                  <BarChart3 size={14} /> 
+                  <span className={mStyles.statValue}>{words}</span> words
+               </div>
+               <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--border)' }} />
+               <div className={mStyles.statSegment}>
+                  <FileCode2 size={14} /> 
+                  <span className={mStyles.statValue}>{chars}</span> chars
+               </div>
+               <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--border)' }} />
+               <div className={mStyles.statSegment}>
+                  <Clock size={14} /> 
+                  <span className={mStyles.statValue}>{readTime}m</span> read
+               </div>
              </div>
           </div>
 
