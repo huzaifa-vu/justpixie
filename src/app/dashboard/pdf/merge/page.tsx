@@ -65,7 +65,7 @@ export default function PDFMerger() {
       }
 
       const mergedPdfFile = await mergedPdf.save();
-      const blob = new Blob([new Uint8Array(mergedPdfFile)], { type: 'application/pdf' });
+      const blob = new Blob([mergedPdfFile.buffer as ArrayBuffer], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       setResultUrl(url);
 

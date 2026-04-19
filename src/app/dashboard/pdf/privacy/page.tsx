@@ -122,7 +122,7 @@ export default function PDFPrivacy() {
         finalBytes = await pdfDoc.save({ useObjectStreams: true });
       }
 
-      const blob = new Blob([finalBytes], { type: 'application/pdf' });
+      const blob = new Blob([finalBytes.buffer as ArrayBuffer], { type: 'application/pdf' });
       setResultUrl(URL.createObjectURL(blob));
 
     } catch (error) {

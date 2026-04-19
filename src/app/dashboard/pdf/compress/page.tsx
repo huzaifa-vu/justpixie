@@ -82,7 +82,7 @@ export default function PDFCompressor() {
         addDefaultPage: false,
       });
 
-      const blob = new Blob([new Uint8Array(compressedBytes)], { type: 'application/pdf' });
+      const blob = new Blob([compressedBytes.buffer as ArrayBuffer], { type: 'application/pdf' });
       setCompressedSize(blob.size);
       setResultUrl(URL.createObjectURL(blob));
 

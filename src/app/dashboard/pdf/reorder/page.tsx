@@ -118,7 +118,7 @@ export default function ReorderPdf() {
       copiedPages.forEach(page => newDoc.addPage(page));
       
       const pdfBytes = await newDoc.save();
-      const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
+      const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       setResultUrl(url);
       setStatus("Done!");
