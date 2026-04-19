@@ -170,22 +170,24 @@ export default function WatermarkWizard() {
 
       <div className={styles.workspace}>
         <div className={styles.layersArea}>
-          {/* Helper Note */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem', background: 'rgba(196,181,253,0.15)', borderRadius: 'var(--radius-inner)', fontSize: '0.8rem', color: 'var(--deep-charcoal)', marginBottom: '0.5rem' }}>
-            <Info size={14} />
-            <span><strong>Image 1</strong> = Base Canvas &nbsp;|&nbsp; <strong>Image 2</strong> = Watermark Logo</span>
-          </div>
-
           {/* Base Layer */}
-          <div className={styles.layerBox}>
-             <div className={styles.layerTitle}>Base Canvas (Image 1)</div>
+          <div className={`${styles.layerBox} ${basePreview ? styles.layerActive : ""}`}>
+             <div className={styles.layerHeader}>
+                <div className={styles.layerTitle}>1. Base Canvas</div>
+                {baseImage && <span className={styles.fileSize}>{(baseImage.size / 1024).toFixed(1)} KB</span>}
+             </div>
              <DropZone 
-                onFilesSelected={(files) => handleFiles([files[0]])} 
+                onFilesSelected={(files) => {
+                  setBaseImage(files[0]);
+                  setBasePreview(URL.createObjectURL(files[0]));
+                  setResultUrl(null);
+                }} 
                 accept="image/*"
-                title="Upload Base Image"
+                title="Select Base"
                 compact
                 previewUrl={basePreview}
              />
+             {baseImage && <div className={styles.fileName}>{baseImage.name}</div>}
           </div>
 
           {/* Swap Button */}
@@ -204,8 +206,11 @@ export default function WatermarkWizard() {
           )}
 
           {/* Watermark Layer */}
-          <div className={styles.layerBox}>
-             <div className={styles.layerTitle}>Protection Mark (Image 2)</div>
+          <div className={`${styles.layerBox} ${watermarkPreview ? styles.layerActive : ""}`}>
+             <div className={styles.layerHeader}>
+                <div className={styles.layerTitle}>2. Protection Mark</div>
+                {watermarkImage && <span className={styles.fileSize}>{(watermarkImage.size / 1024).toFixed(1)} KB</span>}
+             </div>
              <DropZone 
                 onFilesSelected={(files) => {
                   setWatermarkImage(files[0]);
@@ -213,20 +218,39 @@ export default function WatermarkWizard() {
                   setResultUrl(null);
                 }} 
                 accept="image/png, image/webp"
-                title="Upload Logo/Mark"
+                title="Select Mark"
                 compact
                 previewUrl={watermarkPreview}
              />
+             {watermarkImage && <div className={styles.fileName}>{watermarkImage.name}</div>}
           </div>
         </div>
 
-        {/* Output Preview */}
+        {/* Output Preview Stage */}
         <div className={styles.previewArea}>
-          <div className={styles.viewerContainer}>
-             {!resultUrl ? (
-               <div className={styles.placeholderState}>Provide layers and execute spell to see output here.</div>
+          <div className={`${styles.viewerContainer} ${basePreview ? styles.checkerboard : ""}`}>
+             {!basePreview ? (
+               <div className={styles.placeholderState}>
+                 <Layers size={48} style={{ opacity: 0.2, marginBottom: '1rem' }} />
+                 <p>Upload a base image to begin staging</p>
+               </div>
              ) : (
-               <div className={styles.imageBox} style={{ backgroundImage: `url(${resultUrl})` }} />
+               <div className={styles.stageWrap}>
+                 <img src={resultUrl || basePreview} alt="Stage" className={styles.stageImage} />
+                 
+                 {/* Ghost Overlay when staging (before fusion) */}
+                 {watermarkPreview && !resultUrl && (
+                   <div className={`${styles.watermarkGhost} ${styles[position]}`} style={{ opacity: opacity }}>
+                     <img src={watermarkPreview} alt="Ghost" />
+                   </div>
+                 )}
+
+                 {resultUrl && (
+                   <div className={styles.successBadge}>
+                     <Wand2 size={16} /> Fused Successfully
+                   </div>
+                 )}
+               </div>
              )}
           </div>
         </div>

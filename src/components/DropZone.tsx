@@ -74,6 +74,13 @@ export function DropZone({
           {!compact && <p>{subtitle}</p>}
         </>
       )}
+
+      {previewUrl && (
+        <div className={`${styles.previewOverlay} ${styles.checkerboard}`}>
+          <img src={previewUrl} alt="Preview" className={styles.previewImage} />
+          <div className={styles.changeBadge}>Change</div>
+        </div>
+      )}
       
       <input
         type="file"
