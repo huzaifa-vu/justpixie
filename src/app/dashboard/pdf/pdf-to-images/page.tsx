@@ -36,7 +36,7 @@ export default function PDFToImages() {
 
         // Generate Thumbnail for first page
         const { version, GlobalWorkerOptions, getDocument } = await import("pdfjs-dist");
-        GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.min.mjs`;
+        GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
         
         const loadingTask = getDocument(buf);
         const pdf = await loadingTask.promise;
@@ -96,7 +96,7 @@ export default function PDFToImages() {
     try {
       // Dynamically import pdf.js strictly on the client to avoid Next.js SSR crashes
       const { version, GlobalWorkerOptions, getDocument } = await import('pdfjs-dist');
-      GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.min.mjs`;
+      GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
       const buf = await selectedFile.arrayBuffer();
       const loadingTask = getDocument(buf);

@@ -74,7 +74,7 @@ export default function PDFPrivacy() {
     try {
       // Dynamic import to fix DOMMatrix SSR error
       const { version, GlobalWorkerOptions, getDocument } = await import("pdfjs-dist");
-      GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.min.mjs`;
+      GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
       const buffer = await selectedFile.arrayBuffer();
       let finalBytes: Uint8Array;
