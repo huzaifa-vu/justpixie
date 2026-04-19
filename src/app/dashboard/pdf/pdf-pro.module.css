@@ -315,6 +315,17 @@
   line-height: 1;
 }
 
+/* Hide native HTML number arrows */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
 .rangeGroup {
   display: flex;
   flex-direction: column;

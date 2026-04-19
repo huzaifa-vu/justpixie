@@ -209,9 +209,9 @@ export default function PdfPageNumbers() {
             <div className={styles.infoBox}>
                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', color: 'var(--mint-green)', fontWeight: 700 }}>
                  <Info size={14} />
-                 <span>Precision Placement</span>
+                 <span>Adjust Positioning</span>
               </div>
-              Adjust the coordinates using the sliders. The preview reflects the exact **bottom-left anchor** used for the final export.
+              Slide the bars below to move the page numbers. The digital tablet on the left shows a live preview of where the first number will sit.
             </div>
 
             <div className={styles.fieldGroup}>
