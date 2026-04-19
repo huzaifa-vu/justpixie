@@ -7,6 +7,7 @@ import styles from "./Dropdown.module.css";
 export interface DropdownOption {
   label: string;
   value: string | number;
+  preview?: React.ReactNode;
 }
 
 interface DropdownProps {
@@ -99,7 +100,10 @@ export default function Dropdown({
               className={`${styles.option} ${isSelected(opt.value) ? styles.optionSelected : ""}`}
               onClick={() => handleOptionClick(opt.value)}
             >
-              <span>{opt.label}</span>
+              <div className={styles.optionContent}>
+                {opt.preview && <span className={styles.optionPreview}>{opt.preview}</span>}
+                <span>{opt.label}</span>
+              </div>
               {isSelected(opt.value) && <Check size={16} />}
             </button>
           ))}

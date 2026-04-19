@@ -13,18 +13,15 @@ import { useSettings } from "@/hooks/useSettings";
 
 
 const FILTERS = [
-  { name: "None", css: "none" },
-  { name: "Grayscale", css: "grayscale(100%)" },
-  { name: "Sepia", css: "sepia(100%)" },
-  { name: "Invert", css: "invert(100%)" },
-  { name: "Blur", css: "blur(3px)" },
-  { name: "High Contrast", css: "contrast(200%)" },
-  { name: "Low Brightness", css: "brightness(50%)" },
-  { name: "Saturate", css: "saturate(300%)" },
-  { name: "Hue Rotate", css: "hue-rotate(180deg)" },
-  { name: "Warm Glow", css: "sepia(40%) saturate(150%) brightness(110%)" },
-  { name: "Cool Breeze", css: "hue-rotate(200deg) saturate(120%)" },
-  { name: "Vintage", css: "sepia(60%) contrast(90%) brightness(90%)" },
+  { name: "None", css: "none", preview: <span style={{fontSize:'10px'}}>None</span> },
+  { name: "Grayscale", css: "grayscale(100%)", preview: <div style={{ width: '100%', height: '100%', background: '#888' }} /> },
+  { name: "Sepia", css: "sepia(100%)", preview: <div style={{ width: '100%', height: '100%', background: '#704214' }} /> },
+  { name: "Invert", css: "invert(100%)", preview: <div style={{ width: '100%', height: '100%', background: '#000', border: '1px solid #fff' }} /> },
+  { name: "Blur", css: "blur(3px)", preview: <div style={{ width: '100%', height: '100%', background: '#ddd', filter: 'blur(2px)' }} /> },
+  { name: "High Contrast", css: "contrast(200%)", preview: <div style={{ width: '100%', height: '100%', background: 'linear-gradient(to right, black, white)' }} /> },
+  { name: "Warm Glow", css: "sepia(40%) saturate(150%) brightness(110%)", preview: <div style={{ width: '100%', height: '100%', background: '#ffcc33' }} /> },
+  { name: "Cool Breeze", css: "hue-rotate(200deg) saturate(120%)", preview: <div style={{ width: '100%', height: '100%', background: '#33ccff' }} /> },
+  { name: "Vintage", css: "sepia(60%) contrast(90%) brightness(90%)", preview: <div style={{ width: '100%', height: '100%', background: '#c4a484' }} /> },
 ];
 
 export default function ImageFilters() {
@@ -33,6 +30,13 @@ export default function ImageFilters() {
   const [activeFilter, setActiveFilter] = useState("None");
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
+  const [saturate, setSaturate] = useState(100);
+  const [blur, setBlur] = useState(0);
+  const [hueRotate, setHueRotate] = useState(0);
+  const [grayscale, setGrayscale] = useState(0);
+  const [sepia, setSepia] = useState(0);
+  const [invert, setInvert] = useState(0);
+  
   const [history, setHistory] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const { settings } = useSettings();
@@ -46,30 +50,37 @@ export default function ImageFilters() {
     reader.onload = (e) => {
       const src = e.target?.result as string;
       setImageSrc(src);
-      setActiveFilter("None");
-      setBrightness(100);
-      setContrast(100);
+      resetControls();
       setHistory([src]);
       setCurrentIndex(0);
 
       const img = new Image();
-      img.onload = () => { imgRef.current = img; renderCanvas(img, "none", 100, 100); };
+      img.onload = () => { imgRef.current = img; renderCanvas(img); };
       img.src = src;
     };
     reader.readAsDataURL(file);
   };
 
+  const resetControls = () => {
+    setActiveFilter("None");
+    setBrightness(100);
+    setContrast(100);
+    setSaturate(100);
+    setBlur(0);
+    setHueRotate(0);
+    setGrayscale(0);
+    setSepia(0);
+    setInvert(0);
+  };
+
   const getActiveCSS = useCallback(() => {
     const preset = FILTERS.find(f => f.name === activeFilter);
-    const base = preset?.css || "none";
-    // Layer custom brightness/contrast on top
-    if (base === "none") {
-      return `brightness(${brightness}%) contrast(${contrast}%)`;
-    }
-    return `${base} brightness(${brightness}%) contrast(${contrast}%)`;
-  }, [activeFilter, brightness, contrast]);
+    const base = preset?.css === "none" ? "" : (preset?.css || "");
+    
+    return `${base} brightness(${brightness}%) contrast(${contrast}%) saturate(${saturate}%) blur(${blur}px) hue-rotate(${hueRotate}deg) grayscale(${grayscale}%) sepia(${sepia}%) invert(${invert}%)`.trim();
+  }, [activeFilter, brightness, contrast, saturate, blur, hueRotate, grayscale, sepia, invert]);
 
-  const renderCanvas = useCallback((img: HTMLImageElement, filterCSS: string, br: number, ct: number) => {
+  const renderCanvas = useCallback((img: HTMLImageElement) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -78,26 +89,19 @@ export default function ImageFilters() {
     canvas.width = img.width;
     canvas.height = img.height;
 
-    let combinedFilter: string;
-    if (filterCSS === "none") {
-      combinedFilter = `brightness(${br}%) contrast(${ct}%)`;
-    } else {
-      combinedFilter = `${filterCSS} brightness(${br}%) contrast(${ct}%)`;
-    }
-    ctx.filter = combinedFilter;
+    ctx.filter = getActiveCSS();
     ctx.drawImage(img, 0, 0);
-  }, []);
+  }, [getActiveCSS]);
 
   useEffect(() => {
       if (imgRef.current && history[currentIndex]) {
         const img = new Image();
         img.onload = () => {
-          const preset = FILTERS.find(f => f.name === activeFilter);
-          renderCanvas(img, preset?.css || "none", brightness, contrast);
+          renderCanvas(img);
         };
         img.src = history[currentIndex];
       }
-  }, [activeFilter, brightness, contrast, currentIndex, history, renderCanvas]);
+  }, [activeFilter, brightness, contrast, saturate, blur, hueRotate, grayscale, sepia, invert, currentIndex, history, renderCanvas]);
 
   const handleApply = () => {
     if (!canvasRef.current) return;
@@ -107,10 +111,7 @@ export default function ImageFilters() {
     setHistory(newHistory);
     setCurrentIndex(newHistory.length - 1);
     
-    // Reset active modifiers
-    setActiveFilter("None");
-    setBrightness(100);
-    setContrast(100);
+    resetControls();
   };
 
   const undo = () => {
@@ -191,29 +192,87 @@ export default function ImageFilters() {
             <div className={styles.fieldGroup}>
               <span className={styles.label}>Filter Preset</span>
               <Dropdown 
-                options={FILTERS.map(f => ({ label: f.name, value: f.name }))}
+                options={FILTERS.map(f => ({ label: f.name, value: f.name, preview: f.preview }))}
                 value={activeFilter}
                 onChange={(val) => setActiveFilter(val)}
               />
             </div>
 
-            <div className={styles.fieldGroup}>
-              <div className={styles.rangeLabel}>
-                <span className={styles.label}>Brightness</span>
-                <span className={styles.rangeValue}>{brightness}%</span>
+            {/* Custom Sliders Section */}
+            <div className={styles.customControls}>
+              <div className={styles.fieldGroup}>
+                <div className={styles.rangeLabel}>
+                  <span className={styles.label}>Brightness</span>
+                  <span className={styles.rangeValue}>{brightness}%</span>
+                </div>
+                <input type="range" min="10" max="200" value={brightness} onChange={(e) => setBrightness(Number(e.target.value))} className={styles.rangeInput} />
               </div>
-              <input type="range" min="10" max="200" value={brightness} onChange={(e) => setBrightness(Number(e.target.value))} className={styles.rangeInput} />
-            </div>
 
-            <div className={styles.fieldGroup}>
-              <div className={styles.rangeLabel}>
-                <span className={styles.label}>Contrast</span>
-                <span className={styles.rangeValue}>{contrast}%</span>
+              <div className={styles.fieldGroup}>
+                <div className={styles.rangeLabel}>
+                  <span className={styles.label}>Contrast</span>
+                  <span className={styles.rangeValue}>{contrast}%</span>
+                </div>
+                <input type="range" min="10" max="300" value={contrast} onChange={(e) => setContrast(Number(e.target.value))} className={styles.rangeInput} />
               </div>
-              <input type="range" min="10" max="300" value={contrast} onChange={(e) => setContrast(Number(e.target.value))} className={styles.rangeInput} />
+
+              <div className={styles.fieldGroup}>
+                <div className={styles.rangeLabel}>
+                  <span className={styles.label}>Saturation</span>
+                  <span className={styles.rangeValue}>{saturate}%</span>
+                </div>
+                <input type="range" min="0" max="500" value={saturate} onChange={(e) => setSaturate(Number(e.target.value))} className={styles.rangeInput} />
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <div className={styles.rangeLabel}>
+                  <span className={styles.label}>Blur</span>
+                  <span className={styles.rangeValue}>{blur}px</span>
+                </div>
+                <input type="range" min="0" max="20" step="1" value={blur} onChange={(e) => setBlur(Number(e.target.value))} className={styles.rangeInput} />
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <div className={styles.rangeLabel}>
+                  <span className={styles.label}>Hue Rotate</span>
+                  <span className={styles.rangeValue}>{hueRotate}°</span>
+                </div>
+                <input type="range" min="0" max="360" value={hueRotate} onChange={(e) => setHueRotate(Number(e.target.value))} className={styles.rangeInput} />
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <div className={styles.rangeLabel}>
+                  <span className={styles.label}>Grayscale</span>
+                  <span className={styles.rangeValue}>{grayscale}%</span>
+                </div>
+                <input type="range" min="0" max="100" value={grayscale} onChange={(e) => setGrayscale(Number(e.target.value))} className={styles.rangeInput} />
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <div className={styles.rangeLabel}>
+                  <span className={styles.label}>Sepia</span>
+                  <span className={styles.rangeValue}>{sepia}%</span>
+                </div>
+                <input type="range" min="0" max="100" value={sepia} onChange={(e) => setSepia(Number(e.target.value))} className={styles.rangeInput} />
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <div className={styles.rangeLabel}>
+                  <span className={styles.label}>Invert</span>
+                  <span className={styles.rangeValue}>{invert}%</span>
+                </div>
+                <input type="range" min="0" max="100" value={invert} onChange={(e) => setInvert(Number(e.target.value))} className={styles.rangeInput} />
+              </div>
             </div>
 
             <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                className={styles.hiddenInput} 
+                onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} 
+                accept="image/*"
+              />
               <button 
                 className={styles.uploadBtn} 
                 onClick={() => fileInputRef.current?.click()}
@@ -224,7 +283,7 @@ export default function ImageFilters() {
               <button 
                 className={styles.actionBtnAlt} 
                 onClick={handleApply} 
-                disabled={activeFilter === "None" && brightness === 100 && contrast === 100}
+                disabled={activeFilter === "None" && brightness === 100 && contrast === 100 && saturate === 100 && blur === 0 && hueRotate === 0 && grayscale === 0 && sepia === 0 && invert === 0}
                 style={{ flex: 1, padding: '0.75rem', fontSize: '0.9rem' }}
               >
                 <Layers size={16} /> Apply
