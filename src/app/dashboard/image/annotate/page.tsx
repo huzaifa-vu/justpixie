@@ -7,7 +7,7 @@ import { DropZone } from "@/components/DropZone";
 import styles from "./annotate.module.css";
 import { useAiHydration } from "@/hooks/useAiHydration";
 import { useSettings } from "@/hooks/useSettings";
-import { Eraser, Trash2, Plus } from "lucide-react";
+import { Eraser, Trash2, Plus, RotateCcw, RotateCw, RefreshCcw } from "lucide-react";
 
 export default function ImageAnnotator() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -24,29 +24,31 @@ export default function ImageAnnotator() {
   const colorInputRef = useRef<HTMLInputElement>(null);
   
   const [isDrawing, setIsDrawing] = useState(false);
-  const [paths, setPaths] = useState<any[]>([]); // To support undo (simple version)
+  const [history, setHistory] = useState<any[][]>([]); 
+  const [currentIndex, setCurrentIndex] = useState(-1);
+  const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
   const currentPath = useRef<{x: number, y: number}[]>([]); 
+  const [paths, setPaths] = useState<any[]>([]); 
 
   useAiHydration(({ files }) => {
     if (files && files.length > 0) {
       setSelectedImage(files[0]);
       setImageUrl(URL.createObjectURL(files[0]));
       setPaths([]);
+      setHistory([]);
+      setCurrentIndex(-1);
     }
   }, "/dashboard/image/annotate");
 
   useEffect(() => {
-    if (!imageUrl || !canvasRef.current || !imageRef.current) return;
+    if (!canvasRef.current) return;
     
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
-    // Clear and redraw image
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(imageRef.current, 0, 0, canvas.width, canvas.height);
     
-    // Redraw all saved paths
     paths.forEach(p => {
        ctx.beginPath();
        ctx.globalCompositeOperation = p.mode === 'eraser' ? 'destination-out' : 'source-over';
@@ -62,15 +64,12 @@ export default function ImageAnnotator() {
        ctx.stroke();
     });
     
-    // Reset composite for next drawing
     ctx.globalCompositeOperation = 'source-over';
-
-  }, [imageUrl, paths]);
+  }, [paths]);
 
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
      imageRef.current = e.currentTarget;
      if (canvasRef.current) {
-        // scale to fit reasonable drawing bounds
         const MAX_W = 800;
         const img = e.currentTarget;
         let w = img.naturalWidth;
@@ -85,60 +84,98 @@ export default function ImageAnnotator() {
         canvasRef.current.width = w;
         canvasRef.current.height = h;
         
-        // initial draw handled by useEffect
-        setPaths([]); // trigger effect
+        setPaths([]);
+        setHistory([]);
+        setCurrentIndex(-1);
      }
   };
 
-  const getCanvasCoordinates = (e: MouseEvent<HTMLCanvasElement>) => {
+  const getCanvasCoordinates = (clientX: number, clientY: number) => {
     if (!canvasRef.current) return { x: 0, y: 0 };
     const rect = canvasRef.current.getBoundingClientRect();
     const scaleX = canvasRef.current.width / rect.width;
     const scaleY = canvasRef.current.height / rect.height;
     return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
     };
   };
 
   const startDrawing = (e: MouseEvent<HTMLCanvasElement>) => {
     setIsDrawing(true);
-    const pos = getCanvasCoordinates(e);
+    const pos = getCanvasCoordinates(e.clientX, e.clientY);
     currentPath.current = [pos];
   };
 
-  const draw = (e: MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing || !canvasRef.current) return;
-    const pos = getCanvasCoordinates(e);
-    currentPath.current.push(pos);
-    
-    // render immediate line snippet
-    const ctx = canvasRef.current.getContext('2d');
-    if (!ctx) return;
-    
-    const lastPos = currentPath.current[currentPath.current.length - 2];
-    ctx.beginPath();
-    ctx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
-    ctx.strokeStyle = color;
-    ctx.lineWidth = lineWidth;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.moveTo(lastPos.x, lastPos.y);
-    ctx.lineTo(pos.x, pos.y);
-    ctx.stroke();
-    ctx.globalCompositeOperation = 'source-over'; // Reset immediately
-  };
+  useEffect(() => {
+    const handleMouseMove = (e: any) => {
+      setCursorPos({ x: e.clientX, y: e.clientY });
+      if (!isDrawing || !canvasRef.current) return;
+      
+      const pos = getCanvasCoordinates(e.clientX, e.clientY);
+      currentPath.current.push(pos);
+      
+      const ctx = canvasRef.current.getContext('2d');
+      if (!ctx) return;
+      
+      const lastPos = currentPath.current[currentPath.current.length - 2];
+      ctx.beginPath();
+      ctx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineWidth;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.moveTo(lastPos.x, lastPos.y);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      ctx.globalCompositeOperation = 'source-over';
+    };
 
-  const stopDrawing = () => {
-    if (!isDrawing) return;
-    setIsDrawing(false);
-    if (currentPath.current.length > 0) {
-      setPaths([...paths, { color, width: lineWidth, points: [...currentPath.current], mode: isEraser ? 'eraser' : 'brush' }]);
+    const handleMouseUp = () => {
+      if (!isDrawing) return;
+      setIsDrawing(false);
+      if (currentPath.current.length > 0) {
+        const newPaths = [...paths, { color, width: lineWidth, points: [...currentPath.current], mode: isEraser ? 'eraser' : 'brush' }];
+        setPaths(newPaths);
+        
+        const newHistory = history.slice(0, currentIndex + 1);
+        newHistory.push(newPaths);
+        setHistory(newHistory);
+        setCurrentIndex(newHistory.length - 1);
+      }
+      currentPath.current = [];
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDrawing, paths, color, lineWidth, isEraser, history, currentIndex]);
+
+  const undo = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+      setPaths(history[currentIndex - 1]);
+    } else if (currentIndex === 0) {
+       setCurrentIndex(-1);
+       setPaths([]);
     }
   };
 
-  const handleUndo = () => {
-    setPaths(paths.slice(0, -1));
+  const redo = () => {
+    if (currentIndex < history.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+      setPaths(history[currentIndex + 1]);
+    }
+  };
+
+  const resetAll = () => {
+    setCurrentIndex(-1);
+    setPaths([]);
+    setHistory([]);
   };
 
   const handleFiles = (files: File[]) => {
@@ -146,24 +183,33 @@ export default function ImageAnnotator() {
       setSelectedImage(files[0]);
       setImageUrl(URL.createObjectURL(files[0]));
       setPaths([]);
+      setHistory([]);
+      setCurrentIndex(-1);
     }
   };
 
   const handleSave = () => {
-    if (!canvasRef.current) return;
-    const url = canvasRef.current.toDataURL('image/png');
+    if (!canvasRef.current || !imageRef.current) return;
+    
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = canvasRef.current.width;
+    tempCanvas.height = canvasRef.current.height;
+    const tctx = tempCanvas.getContext('2d');
+    if (!tctx) return;
+
+    tctx.drawImage(imageRef.current, 0, 0, tempCanvas.width, tempCanvas.height);
+    tctx.drawImage(canvasRef.current, 0, 0);
+
+    const url = tempCanvas.toDataURL('image/png');
     setResultUrl(url);
     
     const a = document.createElement("a");
     a.href = url;
-    a.download = `pixie-${Date.now()}.png`;
+    a.download = `annotated-${Date.now()}.png`;
     a.click();
   };
 
   useEffect(() => {
-    // If we have a result URL and auto-download is ON, trigger download
-    // Note: In annotate, resultUrl is usually only set when handleSave is called manually
-    // but this infrastructure keeps it consistent with other tools.
     if (resultUrl && settings.autoDownload) {
       const a = document.createElement("a");
       a.href = resultUrl;
@@ -177,6 +223,21 @@ export default function ImageAnnotator() {
 
       <div className={styles.workspace}>
         <div className={styles.previewArea}>
+          {imageUrl && (
+            <div className={styles.historyBar}>
+               <button className={styles.historyBtn} onClick={undo} disabled={currentIndex < 0} title="Undo">
+                  <RotateCcw size={16} />
+               </button>
+               <button className={styles.historyBtn} onClick={redo} disabled={currentIndex >= history.length - 1} title="Redo">
+                  <RotateCw size={16} />
+               </button>
+               <div style={{ width: '1px', background: 'var(--border)', height: '20px', margin: '0 0.25rem' }} />
+               <button className={styles.historyBtn} onClick={resetAll} title="Reset All">
+                  <RefreshCcw size={16} />
+               </button>
+            </div>
+          )}
+
           {!imageUrl ? (
             <DropZone 
               onFilesSelected={handleFiles} 
@@ -185,15 +246,26 @@ export default function ImageAnnotator() {
             />
           ) : (
             <div className={styles.canvasContainer}>
-               <img src={imageUrl} alt="Ref" onLoad={handleImageLoad} style={{ display: 'none' }} />
-               <canvas 
-                 ref={canvasRef} 
-                 onMouseDown={startDrawing}
-                 onMouseMove={draw}
-                 onMouseUp={stopDrawing}
-                 onMouseLeave={stopDrawing}
-                 className={styles.canvas}
+               <div 
+                  className={styles.ghostCursor}
+                  style={{ 
+                    left: cursorPos.x, 
+                    top: cursorPos.y, 
+                    width: lineWidth + 'px', 
+                    height: lineWidth + 'px',
+                    borderColor: isEraser ? 'rgba(255,255,255,0.8)' : color,
+                    backgroundColor: isEraser ? 'transparent' : 'rgba(0,0,0,0.1)'
+                  }}
                />
+
+               <div className={styles.canvasWrapper} style={{ width: canvasRef.current?.width, height: canvasRef.current?.height }}>
+                  <img src={imageUrl} alt="Ref" className={styles.baseImage} onLoad={handleImageLoad} />
+                  <canvas 
+                    ref={canvasRef} 
+                    onMouseDown={startDrawing}
+                    className={styles.canvas}
+                  />
+               </div>
             </div>
           )}
         </div>
@@ -220,19 +292,17 @@ export default function ImageAnnotator() {
                    />
                 ))}
                 
-                {/* Custom Color Swatch */}
                 <div 
                   className={`${styles.swatch} ${styles.customSwatch} ${!isEraser && !['#000000', '#ffffff', '#be123c', '#047857', '#1d4ed8', '#fbbf24', '#e879f9', '#a7f3d0'].includes(color) ? styles.swatchActive : ""}`}
-                  onClick={() => { colorInputRef.current?.click(); setIsEraser(false); }}
-                  style={{ backgroundColor: color }}
+                  style={{ backgroundColor: color, position: 'relative' }}
                 >
-                  <Plus size={18} />
+                  <Plus size={18} onClick={() => colorInputRef.current?.click()} />
                   <input 
                     type="color" 
                     ref={colorInputRef} 
-                    className={styles.hiddenInput} 
+                    style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', display: 'block' }}
                     value={color}
-                    onChange={(e) => setColor(e.target.value)}
+                    onChange={(e) => { setColor(e.target.value); setIsEraser(false); }}
                   />
                 </div>
               </div>
@@ -273,9 +343,7 @@ export default function ImageAnnotator() {
                </button>
             </div>
 
-            <button className={styles.resetBtn} onClick={handleUndo} disabled={paths.length === 0} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-              <Undo2 size={18} /> Undo Stroke
-            </button>
+
 
             {/* Export */}
             <div className={styles.categoryHeader} style={{ marginTop: 'auto' }}>
