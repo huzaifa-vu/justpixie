@@ -4,21 +4,24 @@ import { useState, useRef, useEffect, MouseEvent } from "react";
 import { UploadCloud, PenTool, Download, Settings2, Undo2 } from "lucide-react";
 import ToolWrapper from "@/components/ToolWrapper";
 import { DropZone } from "@/components/DropZone";
-import styles from "../format/page.module.css";
+import styles from "./annotate.module.css";
 import { useAiHydration } from "@/hooks/useAiHydration";
 import { useSettings } from "@/hooks/useSettings";
+import { Eraser, Trash2, Plus } from "lucide-react";
 
 export default function ImageAnnotator() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [color, setColor] = useState<string>("#be123c");
-  const [lineWidth, setLineWidth] = useState<number>(4);
+  const [lineWidth, setLineWidth] = useState<number>(8);
+  const [isEraser, setIsEraser] = useState(false);
   const { settings } = useSettings();
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const colorInputRef = useRef<HTMLInputElement>(null);
   
   const [isDrawing, setIsDrawing] = useState(false);
   const [paths, setPaths] = useState<any[]>([]); // To support undo (simple version)
@@ -46,6 +49,7 @@ export default function ImageAnnotator() {
     // Redraw all saved paths
     paths.forEach(p => {
        ctx.beginPath();
+       ctx.globalCompositeOperation = p.mode === 'eraser' ? 'destination-out' : 'source-over';
        ctx.strokeStyle = p.color;
        ctx.lineWidth = p.width;
        ctx.lineCap = "round";
@@ -57,6 +61,9 @@ export default function ImageAnnotator() {
        }
        ctx.stroke();
     });
+    
+    // Reset composite for next drawing
+    ctx.globalCompositeOperation = 'source-over';
 
   }, [imageUrl, paths]);
 
@@ -111,6 +118,7 @@ export default function ImageAnnotator() {
     
     const lastPos = currentPath.current[currentPath.current.length - 2];
     ctx.beginPath();
+    ctx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
     ctx.strokeStyle = color;
     ctx.lineWidth = lineWidth;
     ctx.lineCap = "round";
@@ -118,13 +126,14 @@ export default function ImageAnnotator() {
     ctx.moveTo(lastPos.x, lastPos.y);
     ctx.lineTo(pos.x, pos.y);
     ctx.stroke();
+    ctx.globalCompositeOperation = 'source-over'; // Reset immediately
   };
 
   const stopDrawing = () => {
     if (!isDrawing) return;
     setIsDrawing(false);
     if (currentPath.current.length > 0) {
-      setPaths([...paths, { color, width: lineWidth, points: [...currentPath.current] }]);
+      setPaths([...paths, { color, width: lineWidth, points: [...currentPath.current], mode: isEraser ? 'eraser' : 'brush' }]);
     }
   };
 
@@ -175,7 +184,7 @@ export default function ImageAnnotator() {
               title="Locate a source image"
             />
           ) : (
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--deep-charcoal)', padding: '2rem', overflow: 'auto' }}>
+            <div className={styles.canvasContainer}>
                <img src={imageUrl} alt="Ref" onLoad={handleImageLoad} style={{ display: 'none' }} />
                <canvas 
                  ref={canvasRef} 
@@ -183,68 +192,115 @@ export default function ImageAnnotator() {
                  onMouseMove={draw}
                  onMouseUp={stopDrawing}
                  onMouseLeave={stopDrawing}
-                 style={{ 
-                   cursor: 'crosshair', 
-                   maxWidth: '100%', 
-                   maxHeight: '70vh',
-                   objectFit: 'contain',
-                   boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
-                   backgroundColor: 'white' // default solid bg
-                 }}
+                 className={styles.canvas}
                />
             </div>
           )}
-          {/* Hidden input removed in favor of DropZone */}
         </div>
 
         <div className={styles.configSidebar}>
-          <div className={styles.configHeader}><Settings2 size={20} /><h2>Brushes</h2></div>
+          <div className={styles.configHeader}><Settings2 size={20} /><h2>Canvas Studio</h2></div>
           <div className={styles.configBody}>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)' }}>Ink Color</span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
+            {/* Brush Settings */}
+            <div className={styles.categoryHeader}>
+              <PenTool size={14} />
+              <span className={styles.categoryTitle}>Brush Settings</span>
+            </div>
+
+            <div className={styles.fieldGroup}>
+              <span className={styles.label}>Ink Color</span>
+              <div className={styles.colorGrid}>
                 {['#000000', '#ffffff', '#be123c', '#047857', '#1d4ed8', '#fbbf24', '#e879f9', '#a7f3d0'].map(c => (
                    <div 
                      key={c}
-                     onClick={() => setColor(c)}
-                     style={{ 
-                       height: '32px', 
-                       backgroundColor: c, 
-                       borderRadius: '4px', 
-                       cursor: 'pointer',
-                       border: color === c ? '2px solid var(--mint-green)' : '1px solid rgba(0,0,0,0.2)'
-                     }}
+                     onClick={() => { setColor(c); setIsEraser(false); }}
+                     className={`${styles.swatch} ${color === c && !isEraser ? styles.swatchActive : ""}`}
+                     style={{ backgroundColor: c }}
                    />
                 ))}
+                
+                {/* Custom Color Swatch */}
+                <div 
+                  className={`${styles.swatch} ${styles.customSwatch} ${!isEraser && !['#000000', '#ffffff', '#be123c', '#047857', '#1d4ed8', '#fbbf24', '#e879f9', '#a7f3d0'].includes(color) ? styles.swatchActive : ""}`}
+                  onClick={() => { colorInputRef.current?.click(); setIsEraser(false); }}
+                  style={{ backgroundColor: color }}
+                >
+                  <Plus size={18} />
+                  <input 
+                    type="color" 
+                    ref={colorInputRef} 
+                    className={styles.hiddenInput} 
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                  />
+                </div>
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
-              <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)' }}>Stroke Weight ({lineWidth}px)</span>
+            <div className={styles.fieldGroup} style={{ marginTop: '0.5rem' }}>
+              <div className={styles.rangeLabel}>
+                <span className={styles.label}>Stroke Weight</span>
+                <span className={styles.rangeValue}>{lineWidth}px</span>
+              </div>
               <input 
                 type="range" 
-                min="1" max="20" 
+                min="1" max="50" 
                 value={lineWidth}
                 onChange={e => setLineWidth(Number(e.target.value))}
-                style={{ accentColor: 'var(--mint-green)' }}
+                className={styles.rangeInput}
               />
             </div>
 
-            <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <button className={styles.resetBtn} onClick={handleUndo} disabled={paths.length === 0} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                <Undo2 size={18} /> Undo Stroke
-              </button>
-              
-              <button className={styles.executeBtn} onClick={handleSave} disabled={!imageUrl} style={{ background: 'var(--coral-pink)' }}>
-                <Download size={20} /> Export Annotation
-              </button>
+            {/* Tools */}
+            <div className={styles.categoryHeader} style={{ marginTop: '0.5rem' }}>
+              <Settings2 size={14} />
+              <span className={styles.categoryTitle}>Tools</span>
             </div>
+
+            <div className={styles.toolGrid}>
+               <button 
+                className={`${styles.toolBtn} ${!isEraser ? styles.toolBtnActive : ""}`}
+                onClick={() => setIsEraser(false)}
+               >
+                 <PenTool size={16} /> Brush
+               </button>
+               <button 
+                className={`${styles.toolBtn} ${isEraser ? styles.toolBtnActive : ""}`}
+                onClick={() => setIsEraser(true)}
+               >
+                 <Eraser size={16} /> Eraser
+               </button>
+            </div>
+
+            <button className={styles.resetBtn} onClick={handleUndo} disabled={paths.length === 0} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+              <Undo2 size={18} /> Undo Stroke
+            </button>
+
+            {/* Export */}
+            <div className={styles.categoryHeader} style={{ marginTop: 'auto' }}>
+              <Download size={14} />
+              <span className={styles.categoryTitle}>Finalize</span>
+            </div>
+
+            <button className={styles.executeBtn} onClick={handleSave} disabled={!imageUrl}>
+              <Download size={20} /> Export Annotation
+            </button>
 
             <button className={styles.resetBtn} onClick={() => { 
                 setSelectedImage(null); setImageUrl(null); setPaths([]); setResultUrl(null);
                 if(fileInputRef.current) fileInputRef.current.value = '';
-            }} style={{ marginTop: 'auto' }}>Clear Workspace</button>
+            }}>
+              <Trash2 size={18} /> Clear Workspace
+            </button>
+
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              className={styles.hiddenInput} 
+              onChange={(e) => e.target.files?.[0] && handleFileChange(e as any)} 
+              accept="image/*"
+            />
 
           </div>
         </div>
