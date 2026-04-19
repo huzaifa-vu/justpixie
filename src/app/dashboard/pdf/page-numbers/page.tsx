@@ -306,7 +306,7 @@ export default function PdfPageNumbers() {
             ) : (
               <a 
                 href={outputUrl} 
-                download={`numbered-${file.name}`}
+                download={`numbered-${file?.name || 'document.pdf'}`}
                 className={styles.downloadBtnLarge}
               >
                 <Download size={20} /> Download PDF

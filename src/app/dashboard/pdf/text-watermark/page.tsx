@@ -327,14 +327,14 @@ export default function PdfWatermark() {
                </div>
             )}
             
-            {!outputUrl ? (
+            {(!outputUrl || !file) ? (
               <button className={styles.executeBtn} onClick={handleProcess} disabled={!file || !text || isProcessing}>
                 {isProcessing ? <><RefreshCw size={18} className={styles.spin} /> Processing...</> : <><PenTool size={18} /> Finalize Watermark</>}
               </button>
             ) : (
               <a 
                 href={outputUrl} 
-                download={`watermarked-${file.name}`}
+                download={`watermarked-${file?.name || 'document.pdf'}`}
                 className={styles.downloadBtnLarge}
               >
                 <Download size={20} /> Download Protected PDF
