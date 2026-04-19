@@ -59,7 +59,7 @@ export default function PdfWatermark() {
         if (ctx) {
           canvas.height = renderViewport.height;
           canvas.width = renderViewport.width;
-          await page.render({ canvasContext: ctx, viewport: renderViewport }).promise;
+          await page.render({ canvasContext: ctx, viewport: renderViewport, canvas }).promise;
           canvas.toBlob((blob) => {
             if (blob) setThumbnailUrl(URL.createObjectURL(blob));
           }, "image/jpeg", 0.7);

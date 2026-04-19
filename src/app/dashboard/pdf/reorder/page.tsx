@@ -73,7 +73,7 @@ export default function ReorderPdf() {
         if (ctx) {
           canvas.height = viewport.height;
           canvas.width = viewport.width;
-          await page.render({ canvasContext: ctx, viewport }).promise;
+          await page.render({ canvasContext: ctx, viewport, canvas }).promise;
           const blob = await new Promise<Blob | null>(res => canvas.toBlob(res, "image/jpeg", 0.7));
           if (blob) {
             const url = URL.createObjectURL(blob);

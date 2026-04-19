@@ -58,7 +58,7 @@ export default function PDFToImages() {
           if (context) {
             canvas.height = viewport.height;
             canvas.width = viewport.width;
-            await page.render({ canvasContext: context, viewport }).promise;
+            await page.render({ canvasContext: context, viewport, canvas }).promise;
             
             const thumbBlob = await new Promise<Blob | null>(r => canvas.toBlob(r, "image/jpeg", 0.6));
             if (thumbBlob) {
@@ -140,7 +140,7 @@ export default function PDFToImages() {
 
       canvas.width = viewport.width;
       canvas.height = viewport.height;
-      await page.render({ canvasContext: ctx, viewport }).promise;
+      await page.render({ canvasContext: ctx, viewport, canvas }).promise;
 
       const blob = await new Promise<Blob | null>(r => canvas.toBlob(r, "image/png"));
       if (blob) {
@@ -189,7 +189,7 @@ export default function PDFToImages() {
         if (ctx) {
           canvas.width = viewport.width;
           canvas.height = viewport.height;
-          await page.render({ canvasContext: ctx, viewport }).promise;
+          await page.render({ canvasContext: ctx, viewport, canvas }).promise;
           const blob = await new Promise<Blob | null>(r => canvas.toBlob(r, "image/png"));
           if (blob) {
              const url = URL.createObjectURL(blob);
@@ -215,7 +215,7 @@ export default function PDFToImages() {
           
           canvas.height = viewport.height;
           canvas.width = viewport.width;
-          await page.render({ canvasContext: context, viewport: viewport }).promise;
+          await page.render({ canvasContext: context, viewport: viewport, canvas }).promise;
 
           const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
           if (blob) zip.file(`Pixie_Page_${item.pageNum}.png`, blob);

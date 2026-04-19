@@ -94,7 +94,7 @@ export default function PDFPrivacy() {
           canvas.height = viewport.height;
 
           if (context) {
-            await page.render({ canvasContext: context, viewport }).promise;
+            await page.render({ canvasContext: context, viewport, canvas }).promise;
             const imgData = canvas.toDataURL("image/jpeg", 0.9);
             const imgBytes = await fetch(imgData).then(res => res.arrayBuffer());
             const embeddedImg = await outPdf.embedJpg(imgBytes);

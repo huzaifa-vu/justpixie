@@ -43,7 +43,7 @@ export default function PdfRotate() {
         if (ctx) {
           canvas.height = viewport.height;
           canvas.width = viewport.width;
-          await page.render({ canvasContext: ctx, viewport }).promise;
+          await page.render({ canvasContext: ctx, viewport, canvas }).promise;
           canvas.toBlob((blob) => {
             if (blob) setThumbnailUrl(URL.createObjectURL(blob));
           }, "image/jpeg", 0.7);
