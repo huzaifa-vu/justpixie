@@ -306,18 +306,13 @@
 
 .livePreviewBadge {
   position: absolute;
-  pointer-events: auto;
+  pointer-events: none;
   z-index: 5;
   font-weight: 700;
   white-space: nowrap;
   text-shadow: 0 2px 4px rgba(0,0,0,0.2);
   transition: opacity 0.2s;
   line-height: 1;
-  cursor: grab;
-}
-
-.livePreviewBadge:active {
-  cursor: grabbing;
 }
 
 .rangeGroup {

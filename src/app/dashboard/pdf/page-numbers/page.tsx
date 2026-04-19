@@ -7,7 +7,6 @@ import { PDFDocument, rgb, hexToRgb } from "pdf-lib";
 import { useAiHydration } from "@/hooks/useAiHydration";
 import { useSettings } from "@/hooks/useSettings";
 import { DropZone } from "@/components/DropZone";
-import { motion } from "framer-motion";
 
 export default function PdfPageNumbers() {
   const [file, setFile] = useState<File | null>(null);
@@ -165,19 +164,6 @@ export default function PdfPageNumbers() {
 
   const visualScale = (pdfSize.width && renderedWidth) ? (renderedWidth / pdfSize.width) : 1;
 
-  const handleDragEnd = (event: any) => {
-    if (!imgRef.current || !event.target) return;
-    const rect = imgRef.current.getBoundingClientRect();
-    const badgeRect = event.target.getBoundingClientRect();
-    
-    // Calculate new percentages based on the badge's actual bottom-left corner relative to the image
-    const newX = ((badgeRect.left - rect.left) / rect.width) * 100;
-    const newY = ((rect.bottom - badgeRect.bottom) / rect.height) * 100;
-
-    setXPos(Math.max(0, Math.min(100, Math.round(newX))));
-    setYPos(Math.max(0, Math.min(100, Math.round(newY))));
-  };
-
   return (
     <ToolWrapper title="Page Numbers Studio" description="Interactive visual placement of serialized page numbers." icon={FileDigit}>
       <div className={styles.workspace}>
@@ -186,33 +172,25 @@ export default function PdfPageNumbers() {
             <div className={styles.tabletFrame}>
               <div ref={thumbnailRef} style={{ position: 'relative' }}>
                 {thumbnailUrl ? (
-                  <img ref={imgRef} src={thumbnailUrl} className={styles.thumbnail} alt="PDF Proof" draggable={false} />
+                  <img ref={imgRef} src={thumbnailUrl} className={styles.thumbnail} alt="PDF Proof" />
                 ) : (
                   <div className={styles.thumbnail} style={{ width: 300, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#222' }}>
                      <RefreshCw size={40} className={styles.spin} style={{ color: '#444' }} />
                   </div>
                 )}
                 
-                {/* Drag-and-Place Interactivity */}
-                <motion.div 
+                {/* Live Preview Badge */}
+                <div 
                   className={styles.livePreviewBadge}
-                  drag
-                  dragConstraints={thumbnailRef}
-                  dragMomentum={false}
-                  dragElastic={0}
-                  onDragEnd={handleDragEnd}
-                  whileDrag={{ opacity: 0.7 }}
                   style={{ 
                     left: `${xPos}%`, 
                     bottom: `${yPos}%`, 
                     color: color,
                     fontSize: `${textSize * visualScale}px`,
                   }}
-                  animate={{ x: 0, y: 0 }}
-                  transition={{ type: "tween", duration: 0 }}
                 >
                   {startNum}
-                </motion.div>
+                </div>
               </div>
             </div>
           ) : (
