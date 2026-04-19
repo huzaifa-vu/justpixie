@@ -43,6 +43,10 @@ export default function GIFMaker() {
         setProgress(offset + Math.round(progress * 100 * multiplier));
       });
 
+      ffmpeg.on('log', ({ message }: any) => {
+        console.log(`[FFmpeg Engine] ${message}`);
+      });
+
       try {
         await ffmpeg.load({
           coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
@@ -133,7 +137,7 @@ export default function GIFMaker() {
       const code2 = await ffmpeg.exec([
         '-i', 'input.mp4', 
         '-i', 'palette.png', 
-        '-filter_complex', 'fps=10,scale=500:-1:flags=lanczos[x];[x][1:p]paletteuse', 
+        '-filter_complex', '[0:v]fps=10,scale=500:-1:flags=lanczos[x];[x][1:v]paletteuse', 
         '-loop', '0', 
         'output.gif'
       ]);
