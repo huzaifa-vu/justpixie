@@ -10,6 +10,31 @@
 .fileName { font-size: 0.8rem; color: var(--deep-charcoal); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: -0.25rem; }
 
 .previewArea { flex: 1; background: var(--surface-card); border-radius: var(--radius-bento); border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-bento); position: relative; }
+.viewerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.clearBtn {
+  background: transparent;
+  border: none;
+  color: var(--gentle-lilac);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clearBtn:hover {
+  text-decoration: underline;
+  transform: scale(1.05);
+}
+
 .viewerContainer { flex: 1; display: flex; justify-content: center; align-items: center; padding: 2rem; position: relative; min-height: 400px; }
 
 .checkerboard {

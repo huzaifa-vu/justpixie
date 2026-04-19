@@ -228,6 +228,23 @@ export default function WatermarkWizard() {
 
         {/* Output Preview Stage */}
         <div className={styles.previewArea}>
+          <div className={styles.viewerTop}>
+            <span>{resultUrl ? "Magic Cut Result" : "Staging Area"}</span>
+            {(basePreview || resultUrl) && (
+              <button 
+                className={styles.clearBtn}
+                onClick={() => {
+                  setBaseImage(null);
+                  setBasePreview(null);
+                  setWatermarkImage(null);
+                  setWatermarkPreview(null);
+                  setResultUrl(null);
+                }}
+              >
+                Clear Canvas
+              </button>
+            )}
+          </div>
           <div className={`${styles.viewerContainer} ${basePreview ? styles.checkerboard : ""}`}>
              {!basePreview ? (
                <div className={styles.placeholderState}>
@@ -292,11 +309,21 @@ export default function WatermarkWizard() {
                </div>
             )}
             
-            <button className={styles.resetBtn} onClick={() => { setResultUrl(null); }}>Clear Render</button>
+            <button 
+              className={styles.resetBtn} 
+              onClick={() => { 
+                setBaseImage(null);
+                setBasePreview(null);
+                setWatermarkImage(null);
+                setWatermarkPreview(null);
+                setResultUrl(null); 
+              }}
+            >
+              Reset Wizard
+            </button>
           </div>
         </div>
       </div>
     </ToolWrapper>
   );
-}
 
