@@ -371,7 +371,7 @@ export default function ImageAnnotator() {
               type="file" 
               ref={fileInputRef} 
               className={styles.hiddenInput} 
-              onChange={(e) => e.target.files?.[0] && handleFileChange(e as any)} 
+              onChange={(e) => e.target.files && handleFiles(Array.from(e.target.files))} 
               accept="image/*"
             />
 
