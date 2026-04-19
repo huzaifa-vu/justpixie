@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Wand2, FileText, Shrink, Combine, SplitSquareHorizontal, Lock, Image as ImageIcon, RotateCcw, Hash, Type, GripVertical, ArrowRight, ShieldCheck } from "lucide-react";
+import { Wand2, FileText, Shrink, Combine, SplitSquareHorizontal, Image as ImageIcon, RotateCcw, Hash, Type, GripVertical, ArrowRight, ShieldCheck } from "lucide-react";
 import styles from "../page.module.css";
 import Link from "next/link";
 
