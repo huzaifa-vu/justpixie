@@ -1,33 +1,21 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import { SlidersHorizontal, Download, UploadCloud, Undo2, Redo2, Layers } from "lucide-react";
+import { SlidersHorizontal, Download, UploadCloud, Undo2, Redo2, Layers, Sun, Palette, Sparkles } from "lucide-react";
 import ToolWrapper from "@/components/ToolWrapper";
 import { DropZone } from "@/components/DropZone";
 import { useRouter } from "next/navigation";
 import styles from "../image-tools.module.css";
 import { ArrowLeft } from "lucide-react";
-import Dropdown from "@/components/Dropdown";
 import { useAiHydration } from "@/hooks/useAiHydration";
 import { useSettings } from "@/hooks/useSettings";
 
 
-const FILTERS = [
-  { name: "None", css: "none", preview: <span style={{fontSize:'10px'}}>None</span> },
-  { name: "Grayscale", css: "grayscale(100%)", preview: <div style={{ width: '100%', height: '100%', background: '#888' }} /> },
-  { name: "Sepia", css: "sepia(100%)", preview: <div style={{ width: '100%', height: '100%', background: '#704214' }} /> },
-  { name: "Invert", css: "invert(100%)", preview: <div style={{ width: '100%', height: '100%', background: '#000', border: '1px solid #fff' }} /> },
-  { name: "Blur", css: "blur(3px)", preview: <div style={{ width: '100%', height: '100%', background: '#ddd', filter: 'blur(2px)' }} /> },
-  { name: "High Contrast", css: "contrast(200%)", preview: <div style={{ width: '100%', height: '100%', background: 'linear-gradient(to right, black, white)' }} /> },
-  { name: "Warm Glow", css: "sepia(40%) saturate(150%) brightness(110%)", preview: <div style={{ width: '100%', height: '100%', background: '#ffcc33' }} /> },
-  { name: "Cool Breeze", css: "hue-rotate(200deg) saturate(120%)", preview: <div style={{ width: '100%', height: '100%', background: '#33ccff' }} /> },
-  { name: "Vintage", css: "sepia(60%) contrast(90%) brightness(90%)", preview: <div style={{ width: '100%', height: '100%', background: '#c4a484' }} /> },
-];
+
 
 export default function ImageFilters() {
   const router = useRouter();
   const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState("None");
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
   const [saturate, setSaturate] = useState(100);
@@ -62,7 +50,6 @@ export default function ImageFilters() {
   };
 
   const resetControls = () => {
-    setActiveFilter("None");
     setBrightness(100);
     setContrast(100);
     setSaturate(100);
@@ -74,11 +61,8 @@ export default function ImageFilters() {
   };
 
   const getActiveCSS = useCallback(() => {
-    const preset = FILTERS.find(f => f.name === activeFilter);
-    const base = preset?.css === "none" ? "" : (preset?.css || "");
-    
-    return `${base} brightness(${brightness}%) contrast(${contrast}%) saturate(${saturate}%) blur(${blur}px) hue-rotate(${hueRotate}deg) grayscale(${grayscale}%) sepia(${sepia}%) invert(${invert}%)`.trim();
-  }, [activeFilter, brightness, contrast, saturate, blur, hueRotate, grayscale, sepia, invert]);
+    return `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturate}%) blur(${blur}px) hue-rotate(${hueRotate}deg) grayscale(${grayscale}%) sepia(${sepia}%) invert(${invert}%)`.trim();
+  }, [brightness, contrast, saturate, blur, hueRotate, grayscale, sepia, invert]);
 
   const renderCanvas = useCallback((img: HTMLImageElement) => {
     const canvas = canvasRef.current;
@@ -101,7 +85,7 @@ export default function ImageFilters() {
         };
         img.src = history[currentIndex];
       }
-  }, [activeFilter, brightness, contrast, saturate, blur, hueRotate, grayscale, sepia, invert, currentIndex, history, renderCanvas]);
+  }, [brightness, contrast, saturate, blur, hueRotate, grayscale, sepia, invert, currentIndex, history, renderCanvas]);
 
   const handleApply = () => {
     if (!canvasRef.current) return;
@@ -133,18 +117,13 @@ export default function ImageFilters() {
     if (files && files.length > 0) {
       handleFile(files[0]);
     }
-    if (params?.filter) {
-      const match = FILTERS.find(f => f.name.toLowerCase() === params.filter.toLowerCase());
-      if (match) setActiveFilter(match.name);
-    }
     if (params?.brightness) setBrightness(Number(params.brightness));
     if (params?.contrast) setContrast(Number(params.contrast));
   }, "/dashboard/image/filters");
 
   useEffect(() => {
     if (imageSrc && settings.autoDownload) {
-      // For filters, we only auto-download if we've actually applied something non-default
-      if (activeFilter !== "None" || brightness !== 100 || contrast !== 100) {
+      if (brightness !== 100 || contrast !== 100) {
         const timer = setTimeout(() => {
           handleDownload();
         }, 1000); // Give it a bit more time for the canvas to render
@@ -174,7 +153,8 @@ export default function ImageFilters() {
 
         <div className={styles.configSidebar}>
           <div className={styles.configHeader}>
-            <h2>Filter Presets</h2>
+            <SlidersHorizontal size={18} />
+            <h2>Adjustment Panel</h2>
           </div>
           <div className={styles.configBody}>
 
@@ -189,17 +169,13 @@ export default function ImageFilters() {
               </div>
             )}
 
-            <div className={styles.fieldGroup}>
-              <span className={styles.label}>Filter Preset</span>
-              <Dropdown 
-                options={FILTERS.map(f => ({ label: f.name, value: f.name, preview: f.preview }))}
-                value={activeFilter}
-                onChange={(val) => setActiveFilter(val)}
-              />
+            {/* Color Adjustments */}
+            <div className={styles.categoryHeader}>
+              <Sun size={14} className={styles.headerIcon} />
+              <span className={styles.categoryTitle}>Color Adjustments</span>
             </div>
-
-            {/* Custom Sliders Section */}
-            <div className={styles.customControls}>
+            
+            <div className={styles.controlGroup}>
               <div className={styles.fieldGroup}>
                 <div className={styles.rangeLabel}>
                   <span className={styles.label}>Brightness</span>
@@ -223,7 +199,15 @@ export default function ImageFilters() {
                 </div>
                 <input type="range" min="0" max="500" value={saturate} onChange={(e) => setSaturate(Number(e.target.value))} className={styles.rangeInput} />
               </div>
+            </div>
 
+            {/* Visual Details */}
+            <div className={styles.categoryHeader}>
+              <Sparkles size={14} className={styles.headerIcon} />
+              <span className={styles.categoryTitle}>Visual Details</span>
+            </div>
+
+            <div className={styles.controlGroup}>
               <div className={styles.fieldGroup}>
                 <div className={styles.rangeLabel}>
                   <span className={styles.label}>Blur</span>
@@ -239,7 +223,15 @@ export default function ImageFilters() {
                 </div>
                 <input type="range" min="0" max="360" value={hueRotate} onChange={(e) => setHueRotate(Number(e.target.value))} className={styles.rangeInput} />
               </div>
+            </div>
 
+            {/* Artistic Effects */}
+            <div className={styles.categoryHeader}>
+              <Palette size={14} className={styles.headerIcon} />
+              <span className={styles.categoryTitle}>Artistic Effects</span>
+            </div>
+
+            <div className={styles.controlGroup}>
               <div className={styles.fieldGroup}>
                 <div className={styles.rangeLabel}>
                   <span className={styles.label}>Grayscale</span>
@@ -283,7 +275,7 @@ export default function ImageFilters() {
               <button 
                 className={styles.actionBtnAlt} 
                 onClick={handleApply} 
-                disabled={activeFilter === "None" && brightness === 100 && contrast === 100 && saturate === 100 && blur === 0 && hueRotate === 0 && grayscale === 0 && sepia === 0 && invert === 0}
+                disabled={brightness === 100 && contrast === 100 && saturate === 100 && blur === 0 && hueRotate === 0 && grayscale === 0 && sepia === 0 && invert === 0}
                 style={{ flex: 1, padding: '0.75rem', fontSize: '0.9rem' }}
               >
                 <Layers size={16} /> Apply
