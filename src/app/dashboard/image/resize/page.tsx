@@ -38,7 +38,7 @@ export default function ImageResizer() {
 
   useAiHydration(({ files, params, autoExecute }) => {
     // 1. Respect AI's decision on aspect ratio locking
-    const aiLock = params?.lockAspectRatio !== undefined ? (params.lockAspectRatio === true || params.lockAspectRatio === "true") : null;
+    const aiLock = params?.lockAspectRatio !== undefined ? (String(params.lockAspectRatio) === "true") : null;
     if (aiLock !== null) setLockRatio(aiLock);
 
     if (files && files.length > 0) {
