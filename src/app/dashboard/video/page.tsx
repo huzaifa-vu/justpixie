@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { 
   Video, Headphones, VolumeX, Shrink, FileVideo, 
   RotateCw, Gauge, Scissors, Camera, ArrowRight, 
-  Plus, Youtube
+  Plus, Play
 } from "lucide-react";
 import styles from "../page.module.css";
 import Link from "next/link";
@@ -20,7 +20,7 @@ export default function VideoCategoryHome() {
     { name: 'Video Speed', type: 'Video', desc: 'Speed up or slow down video playback.', href: '/dashboard/video/speed', icon: Gauge },
     { name: 'Video Trimmer', type: 'Video', desc: 'Slice segments precisely without delays.', href: '/dashboard/video/trim', icon: Scissors },
     { name: 'To Screenshots', type: 'Video', desc: 'Capture frames natively at intervals.', href: '/dashboard/video/screenshots', icon: Camera },
-    { name: 'YouTube Downloader', type: 'Download', desc: 'Securely extract high-quality YouTube videos.', href: '/dashboard/video/youtube', icon: Youtube }
+    { name: 'YouTube Downloader', type: 'Download', desc: 'Securely extract high-quality YouTube videos.', href: '/dashboard/video/youtube', icon: Play }
   ];
 
   return (
