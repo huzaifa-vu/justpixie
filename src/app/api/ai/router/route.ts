@@ -77,10 +77,7 @@ Your ONLY job is to read the user's natural language prompt and return a JSON ob
 - /dashboard/text/speech → Convert text to speech audio
 
 ### Download Hub (Web to Browser)
-- /dashboard/download/youtube → Download videos from YouTube
-- /dashboard/download/instagram → Download videos/Reels from Instagram
-- /dashboard/download/twitter → Download videos from X (Twitter)
-- /dashboard/download/facebook → Download videos from Facebook
+- /dashboard/video/youtube → Download videos from YouTube
 
 ## PARAMS FIELD CONVENTIONS
 - For text tools: use key "inputText" with the raw text/data the user wants processed
@@ -113,7 +110,7 @@ Your ONLY job is to read the user's natural language prompt and return a JSON ob
 - For uuid: use "count" (amount to generate)
 - For screenshots: use "interval" (seconds between frames)
 - /dashboard/pdf/page-numbers: use "textSize" ("small", "medium", or "large")
-- For Downloaders (YT, IG, etc.): use "inputText" with the URL of the video
+- For YouTube Downloader: use "inputText" with the URL of the video
 - For Video Merge: use "fileHint" = 2 (or more)
 - For any tool that just needs a file and no specific settings, leave params as {}
 

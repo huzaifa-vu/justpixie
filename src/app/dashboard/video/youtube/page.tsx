@@ -13,7 +13,7 @@ export default function YoutubePage() {
   useAiHydration(({ params, autoExecute }) => {
     if (params.inputText) setInitialUrl(params.inputText);
     if (autoExecute) setAutoRun(true);
-  }, "/dashboard/download/youtube");
+  }, "/dashboard/video/youtube");
 
   return (
     <ToolWrapper 

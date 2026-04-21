@@ -94,7 +94,6 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
     { name: "Image Magic", href: "/dashboard/image", icon: ImageIcon },
     { name: "PDF Spells", href: "/dashboard/pdf", icon: FileText },
     { name: "Video Alchemy", href: "/dashboard/video", icon: Video },
-    { name: "Download Hub", href: "/dashboard/download", icon: Download },
     { name: "Dev Utilities", href: "/dashboard/dev", icon: Code },
     { name: "Text & Data", href: "/dashboard/text", icon: Type },
   ];
