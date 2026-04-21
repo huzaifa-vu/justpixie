@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { UploadCloud, Maximize, Wand2, RefreshCw, Download } from "lucide-react";
+import { UploadCloud, Maximize, Wand2, RefreshCw, Download, Lock, Unlock } from "lucide-react";
 import ToolWrapper from "@/components/ToolWrapper";
 import { DropZone } from "@/components/DropZone";
 import styles from "../../image/format/page.module.css";
@@ -142,7 +142,28 @@ export default function ImageResizer() {
             {origW > 0 && <div style={{fontSize:'0.8125rem', color:'var(--text-muted)'}}>Original: {origW}×{origH}px</div>}
             <div className={styles.selectorGroup}><label className={styles.inputLabel}>Width (px)</label><input type="number" value={width} onChange={(e) => handleWidthChange(parseInt(e.target.value)||1)} className={styles.dropdown} /></div>
             <div className={styles.selectorGroup}><label className={styles.inputLabel}>Height (px)</label><input type="number" value={height} onChange={(e) => handleHeightChange(parseInt(e.target.value)||1)} className={styles.dropdown} /></div>
-            <label style={{display:'flex', gap:'0.5rem', fontSize:'0.875rem', cursor:'pointer'}}><input type="checkbox" checked={lockRatio} onChange={() => setLockRatio(!lockRatio)} /> Lock Aspect Ratio</label>
+            <div 
+              className={styles.toggleContainer} 
+              onClick={() => setLockRatio(!lockRatio)}
+              data-checked={lockRatio}
+            >
+              <div className={styles.toggleLabel}>
+                {lockRatio ? (
+                  <Lock size={16} className={styles.toggleIcon} />
+                ) : (
+                  <Unlock size={16} className={styles.toggleIcon} />
+                )}
+                Lock Aspect Ratio
+              </div>
+              <label className={styles.switch} onClick={(e) => e.stopPropagation()}>
+                <input 
+                  type="checkbox" 
+                  checked={lockRatio} 
+                  onChange={() => setLockRatio(!lockRatio)} 
+                />
+                <span className={styles.slider}></span>
+              </label>
+            </div>
             {!resultUrl ? (
               <button className={styles.executeBtn} onClick={executeResize} disabled={!selectedFile || isProcessing}>{isProcessing ? <><RefreshCw size={20} className={styles.spin} /> Resizing...</> : <><Maximize size={20} /> Resize</>}</button>
             ) : (
