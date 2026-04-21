@@ -11,6 +11,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useQuota } from "@/hooks/useQuota";
 import { useFileDrop } from "@/hooks/useFileDrop";
 import { useFileDropContext } from "@/contexts/FileDropContext";
+import { TOOLS_REGISTRY } from "@/utils/toolsRegistry";
 
 const FilePreview = ({ file, onRemove }: { file: File, onRemove: () => void }) => {
   const [thumb, setThumb] = useState<string | null>(null);
@@ -236,12 +237,11 @@ export default function DashboardHome() {
   };
 
   const categories = [
-    { name: "Image Magic", count: "11 Tools", icon: FileImage, color: "#D0EFFF", text: "#007799", href: "/dashboard/image" },
-    { name: "PDF Spells", count: "10 Tools", icon: FileText, color: "#FFE4E6", text: "#E11D48", href: "/dashboard/pdf" },
-    { name: "Video Alchemy", count: "9 Tools", icon: Film, color: "#E0E7FF", text: "#4338CA", href: "/dashboard/video" },
-    { name: "Download Hub", count: "4 Tools", icon: Download, color: "#F0FFD4", text: "#4D7C0F", href: "/dashboard/download" },
-    { name: "Dev Utilities", count: "14 Tools", icon: Code, color: "#DCFCE7", text: "#15803D", href: "/dashboard/dev" },
-    { name: "Text & Data", count: "5 Tools", icon: Type, color: "#FDE8EF", text: "#BE185D", href: "/dashboard/text" },
+    { id: 'image', name: "Image Magic", icon: FileImage, color: "#D0EFFF", text: "#007799", href: "/dashboard/image" },
+    { id: 'pdf', name: "PDF Spells", icon: FileText, color: "#FFE4E6", text: "#E11D48", href: "/dashboard/pdf" },
+    { id: 'video', name: "Video Alchemy", icon: Film, color: "#E0E7FF", text: "#4338CA", href: "/dashboard/video" },
+    { id: 'dev', name: "Dev Utilities", icon: Code, color: "#DCFCE7", text: "#15803D", href: "/dashboard/dev" },
+    { id: 'text', name: "Text & Data", icon: Type, color: "#FDE8EF", text: "#BE185D", href: "/dashboard/text" },
   ];
 
   const greeting = useMemo(() => {
@@ -446,6 +446,33 @@ export default function DashboardHome() {
           )}
         </div>
         
+        <div className={styles.sectionHeader} style={{ marginTop: '2rem' }}>
+          <h2>Trending Spells (Tools)</h2>
+        </div>
+
+        <div className={styles.toolsGrid}>
+          {[
+            { name: 'YouTube Downloader', type: 'Download', desc: 'Securely extract high-quality video.', href: '/dashboard/video/youtube' },
+            { name: 'Background Remover', type: 'Image', desc: 'AI-powered precise subject cutout.', href: '/dashboard/image/bg-remove' },
+            { name: 'Compress PDF', type: 'PDF', desc: 'Reduce megabytes in seconds.', href: '/dashboard/pdf/compress' },
+            { name: 'Video to Audio', type: 'Video', desc: 'Extract MP3 directly in browser.', href: '/dashboard/video/audio' }
+          ].map((tool, idx) => (
+            <Link href={tool.href} key={idx} style={{ textDecoration: 'none' }}>
+              <div className={styles.toolCard}>
+                <div className={styles.toolHeader}>
+                  <span className={styles.toolBadge}>{tool.type}</span>
+                  <Wand2 size={24} className={styles.toolIcon} />
+                </div>
+                <h4 className={styles.toolName}>{tool.name}</h4>
+                <p className={tool.desc ? styles.toolDesc : ''}>{tool.desc}</p>
+                <div className={styles.toolArrowBtn}>
+                  <ArrowRight size={18} />
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+
         <div className={styles.onboardingSection}>
           <div className={styles.onboardingHeader}>
             <Wand2 size={22} className={styles.wandStar} />
@@ -454,18 +481,18 @@ export default function DashboardHome() {
           <div className={styles.onboardingGrid}>
             <div className={styles.onboardingCard}>
               <div className={styles.stepNum}>1</div>
-              <h3 className={styles.stepTitle}>Upload Context</h3>
-              <p className={styles.stepDesc}>Securely drop your image, PDF, audio, or video file into the Data zone. It never leaves your PC.</p>
+              <h3 className={styles.stepTitle}>Drop your Media</h3>
+              <p className={styles.stepDesc}>Attach your image, PDF, or video to the Data Zone. It stays 100% private and never leaves your PC.</p>
             </div>
             <div className={styles.onboardingCard}>
               <div className={styles.stepNum}>2</div>
-              <h3 className={styles.stepTitle}>Cast a Spell</h3>
-              <p className={styles.stepDesc}>Type your intent like "Remove background" or "Compress this PDF". Pixie translates your natural language instantly.</p>
+              <h3 className={styles.stepTitle}>Type your Intent</h3>
+              <p className={styles.stepDesc}>Tell Pixie what you need in plain English. Our AI routes you to the perfect local tool instantly.</p>
             </div>
             <div className={styles.onboardingCard}>
               <div className={styles.stepNum}>3</div>
-              <h3 className={styles.stepTitle}>Download Result</h3>
-              <p className={styles.stepDesc}>Our local WASM engine processes your file at warp speed. Grab the returned file and you're done.</p>
+              <h3 className={styles.stepTitle}>Grab your File</h3>
+              <p className={styles.stepDesc}>Our local engine processes your file at warp speed. Download the result immediately—no waiting, no server logs.</p>
             </div>
           </div>
         </div>
@@ -487,7 +514,7 @@ export default function DashboardHome() {
               </div>
               <div className={styles.catInfo}>
                 <h3>{cat.name}</h3>
-                <span>{cat.count}</span>
+                <span>{TOOLS_REGISTRY[cat.id]?.length || 0} Tools</span>
               </div>
               <button className={styles.catAction}>View All</button>
             </motion.div>
@@ -496,30 +523,7 @@ export default function DashboardHome() {
       </div>
 
       <div className={styles.sectionHeader} style={{ marginTop: '3rem' }}>
-        <h2>Trending Spells (Tools)</h2>
-      </div>
-
-      <div className={styles.toolsGrid}>
-        {[
-          { name: 'Background Remover', type: 'Image', desc: 'AI-powered precise cutout.', href: '/dashboard/image/bg-remove' },
-          { name: 'Compress PDF', type: 'PDF', desc: 'Reduce megabytes in seconds.', href: '/dashboard/pdf/compress' },
-          { name: 'Video to Audio', type: 'Video', desc: 'Extract MP3 directly in browser.', href: '/dashboard/video/audio' },
-          { name: 'Image Compressor', type: 'Image', desc: 'Instant shrink ray magic.', href: '/dashboard/image/compress' }
-        ].map((tool, idx) => (
-          <Link href={tool.href} key={idx} style={{ textDecoration: 'none' }}>
-            <div className={styles.toolCard}>
-              <div className={styles.toolHeader}>
-                <span className={styles.toolBadge}>{tool.type}</span>
-                <Wand2 size={24} className={styles.toolIcon} />
-              </div>
-              <h4 className={styles.toolName}>{tool.name}</h4>
-              <p className={styles.toolDesc}>{tool.desc}</p>
-              <div className={styles.toolArrowBtn}>
-                <ArrowRight size={18} />
-              </div>
-            </div>
-          </Link>
-        ))}
+        <h2>All Categories</h2>
       </div>
     </div>
   );

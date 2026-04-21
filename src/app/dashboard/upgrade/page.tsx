@@ -6,11 +6,23 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import { createClient } from "@/utils/supabase/client";
+import { useEffect } from "react";
 
 export default function UpgradePage() {
   const [loading, setLoading] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const router = useRouter();
+
+  const [user, setUser] = useState<any>(null);
+  const [isLifetime, setIsLifetime] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setIsLifetime(session?.user?.user_metadata?.is_lifetime === true);
+    });
+  }, []);
 
   const handleUpgrade = async () => {
     setLoading(true);
@@ -71,7 +83,38 @@ export default function UpgradePage() {
       </div>
 
       <div className={styles.pricingGrid}>
-        {/* Free Tier */}
+        {/* Guest Tier */}
+        <div className={styles.pricingCard}>
+          <div className={styles.cardHeader}>
+            <div className={styles.tierName}>Guest Explorer</div>
+            <div className={styles.priceBlock}>
+              <span className={styles.currency}>$</span>
+              <span className={styles.price}>0</span>
+              <span className={styles.period}>/no account</span>
+            </div>
+            <p className={styles.tierDesc}>Try out the tools without signing in.</p>
+          </div>
+          
+          {!user ? (
+            <div className={styles.planBtnOutline} style={{ cursor: 'default' }}>
+              Current Plan
+            </div>
+          ) : (
+            <div className={styles.planBtnOutlineDisabled} style={{ opacity: 0.5 }}>
+              Free Tier
+            </div>
+          )}
+
+          <ul className={styles.featuresList}>
+            <li><Check size={18} className={styles.checkIcon} /> Standard File Tools</li>
+            <li><Check size={18} className={styles.checkIcon} /> Local WASM processing</li>
+            <li><Check size={18} className={styles.checkIcon} /> <strong>10 AI Prompts Daily</strong></li>
+            <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Unlimited AI Prompts</li>
+            <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Account Sync</li>
+          </ul>
+        </div>
+
+        {/* Hobbyist Tier */}
         <div className={styles.pricingCard}>
           <div className={styles.cardHeader}>
             <div className={styles.tierName}>Hobbyist</div>
@@ -83,16 +126,26 @@ export default function UpgradePage() {
             <p className={styles.tierDesc}>Perfect for exploring Pixie's magical file tools.</p>
           </div>
           
-          <Link href="/dashboard" className={styles.planBtnOutline}>
-            Current Plan
-          </Link>
+          {user && !isLifetime ? (
+            <div className={styles.planBtnOutline} style={{ cursor: 'default' }}>
+              Current Plan
+            </div>
+          ) : !user ? (
+            <Link href="/login" className={styles.planBtnSolid} style={{ background: 'var(--deep-charcoal)', color: 'white' }}>
+              Login to Upgrade
+            </Link>
+          ) : (
+            <div className={styles.planBtnOutlineDisabled} style={{ opacity: 0.5 }}>
+              Free Tier
+            </div>
+          )}
 
           <ul className={styles.featuresList}>
             <li><Check size={18} className={styles.checkIcon} /> All 30+ File Tools forever</li>
             <li><Check size={18} className={styles.checkIcon} /> Local-first WASM processing</li>
             <li><Check size={18} className={styles.checkIcon} /> <strong>100 Free AI Prompts Daily</strong></li>
             <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Unlimited AI Prompts</li>
-            <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Priority Bulk Processing</li>
+            <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Priority Processing</li>
           </ul>
         </div>
 
@@ -106,16 +159,22 @@ export default function UpgradePage() {
               <span className={styles.price}>19</span>
               <span className={styles.period}>/lifetime</span>
             </div>
-            <p className={styles.tierDesc}>One single payment. Unlimited magic forever. Support indie development.</p>
+            <p className={styles.tierDesc}>One single payment. Unlimited magic forever.</p>
           </div>
           
-          <button 
-            className={styles.planBtnSolid} 
-            onClick={handleUpgrade}
-            disabled={loading}
-          >
-            {loading ? "Warming up..." : "Unlock Lifetime Access"} <ArrowRight size={18} />
-          </button>
+          {isLifetime ? (
+            <div className={styles.planBtnOutline} style={{ border: '2px solid var(--mint-green)', color: 'var(--mint-green)', cursor: 'default' }}>
+              Current Plan
+            </div>
+          ) : (
+            <button 
+              className={styles.planBtnSolid} 
+              onClick={handleUpgrade}
+              disabled={loading}
+            >
+              {loading ? "Warming up..." : user ? "Unlock Lifetime Access" : "Sign In to Buy"} <ArrowRight size={18} />
+            </button>
+          )}
 
           <ul className={styles.featuresList}>
             <li><Check size={18} className={styles.checkIcon} /> <strong>Unlimited AI Prompts</strong></li>
