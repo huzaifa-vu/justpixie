@@ -104,8 +104,25 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
       <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""}`}>
         <div className={styles.sidebarHeader}>
           <div className={styles.logo} onClick={() => setCollapsed(!collapsed)} style={{ cursor: 'pointer' }}>
-            <Wand2 className={styles.wandStar} size={28} />
-            {!collapsed && <span>Pixie</span>}
+            {collapsed ? (
+              <Image 
+                src="/logo-icon.png" 
+                alt="Pixie Logo" 
+                width={40} 
+                height={40} 
+                className={styles.iconOnly}
+                priority
+              />
+            ) : (
+              <Image 
+                src="/logo-full.png" 
+                alt="Pixie Logo" 
+                width={140} 
+                height={36} 
+                className={styles.logoImg}
+                priority
+              />
+            )}
           </div>
         </div>
 
@@ -194,7 +211,14 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
                  </Link>
                </>
             )}
-            {collapsed && <Wand2 size={24} className={styles.wandStar} />}
+            {collapsed && (
+              <Image 
+                src="/logo-icon.png" 
+                alt="Pixie Logo" 
+                width={24} 
+                height={24} 
+              />
+            )}
           </div>
 
         </div>
@@ -202,12 +226,18 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
 
       {/* --- MOBILE BOTTOM NAVIGATION BAR --- */}
       <nav className={styles.mobileBottomBar}>
-        {navItems.slice(0, 5).map((item) => (
-          <Link key={item.href} href={item.href} className={`${styles.mobileTab} ${pathname === item.href || pathname.startsWith(item.href + '/') ? styles.activeTab : ""}`}>
-            <item.icon size={24} />
-            <span>{item.name === "Dashboard" ? "Home" : item.name.split(" ")[0]}</span>
-          </Link>
-        ))}
+        {navItems.slice(0, 5).map((item) => {
+          const isActive = item.href === '/dashboard' 
+            ? pathname === '/dashboard' 
+            : (pathname === item.href || pathname.startsWith(item.href + '/'));
+            
+          return (
+            <Link key={item.href} href={item.href} className={`${styles.mobileTab} ${isActive ? styles.activeTab : ""}`}>
+              <item.icon size={24} />
+              <span>{item.name === "Dashboard" ? "Home" : item.name.split(" ")[0]}</span>
+            </Link>
+          );
+        })}
         <button onClick={() => setMobileMoreOpen(true)} className={`${styles.mobileTab} ${mobileMoreOpen ? styles.activeTab : ""}`}>
           <Menu size={24} />
           <span>More</span>
@@ -219,8 +249,13 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
       <div className={`${styles.mobileSheet} ${mobileMoreOpen ? styles.open : ""}`}>
         <div className={styles.sheetHeader}>
           <div className={styles.logo}>
-            <Wand2 className={styles.wandStar} size={24} />
-            <span>Pixie</span>
+            <Image 
+              src="/logo-full.png" 
+              alt="Pixie Logo" 
+              width={100} 
+              height={26} 
+              className={styles.logoImg}
+            />
           </div>
           <button className={styles.iconBtn} onClick={() => setMobileMoreOpen(false)}><X size={24} /></button>
         </div>
@@ -308,8 +343,13 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
         <header className={styles.topbar}>
           {/* Mobile Brand (hidden on desktop) */}
           <div className={`${styles.mobileBrand} ${styles.mobileOnly}`}>
-            <Wand2 className={styles.wandStar} size={22} />
-            <span>Pixie</span>
+            <Image 
+              src="/logo-full.png" 
+              alt="Pixie Logo" 
+              width={100} 
+              height={26} 
+              className={styles.logoImg}
+            />
           </div>
 
           <div className={styles.breadcrumbs}>

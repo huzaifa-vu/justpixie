@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Wand2, User, LogOut, Settings, LayoutDashboard, CreditCard } from "lucide-react";
 import styles from "@/app/page.module.css";
 import { createClient } from "@/utils/supabase/client";
+import Image from "next/image";
 
 export default function MarketingWrapper({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<any>(null);
@@ -62,8 +63,13 @@ export default function MarketingWrapper({ children }: { children: React.ReactNo
       <header className={styles.header} style={{ position: 'relative', zIndex: 100 }}>
         <Link href="/" style={{ textDecoration: 'none' }}>
           <div className={styles.logo}>
-            <Wand2 className={styles.wandStar} size={28} />
-            <span>Pixie</span>
+            <Image 
+              src="/logo-full.png" 
+              alt="Pixie Logo" 
+              width={120} 
+              height={32} 
+              className={styles.logoImg}
+            />
           </div>
         </Link>
         <nav className={styles.navLinks}>
@@ -162,8 +168,13 @@ export default function MarketingWrapper({ children }: { children: React.ReactNo
         <div className={styles.footerContent}>
           <div className={styles.footerCol}>
             <div className={styles.logo} style={{ marginBottom: '1rem' }}>
-              <Wand2 className={styles.wandStar} size={24} />
-              <span>Pixie</span>
+              <Image 
+                src="/logo-full.png" 
+                alt="Pixie Logo" 
+                width={100} 
+                height={26} 
+                className={styles.logoImg}
+              />
             </div>
             <p style={{ fontSize: '0.875rem', lineHeight: '1.6' }}>Effortless, local, and magical file transformation power inside your browser.</p>
           </div>

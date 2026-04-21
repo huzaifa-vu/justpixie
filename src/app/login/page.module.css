@@ -51,20 +51,14 @@
 .logoLink {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
   text-decoration: none;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.wandIcon {
-  color: var(--mint-green);
-}
-
-.logoText {
-  font-family: var(--font-jakarta);
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--deep-charcoal);
+.logoImg {
+  height: 2.5rem;
+  width: auto;
+  object-fit: contain;
 }
 
 :global([data-theme="dark"]) .logoText {

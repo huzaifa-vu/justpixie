@@ -16,6 +16,10 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Pixie 2.0 - Effortless File Transformation",
   description: "Complex file transformation made as simple and magical as a single command.",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export const viewport: Viewport = {

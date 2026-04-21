@@ -58,8 +58,14 @@ export default function LoginPage() {
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <Link href="/" className={styles.logoLink}>
-            <Wand2 size={32} className={styles.wandIcon} />
-            <span className={styles.logoText}>Pixie</span>
+            <Image 
+              src="/logo-full.png" 
+              alt="Pixie Logo" 
+              width={160} 
+              height={42} 
+              className={styles.logoImg}
+              priority
+            />
           </Link>
           <h1 className={styles.title}>{isSignUp ? "Create Account" : "Welcome Back"}</h1>
           <p className={styles.subtitle}>

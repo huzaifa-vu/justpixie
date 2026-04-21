@@ -9,11 +9,11 @@
 }
 
 .sidebar {
-  width: 300px;
+  width: 18.75rem;
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(30px) saturate(150%);
   -webkit-backdrop-filter: blur(30px) saturate(150%);
-  border-radius: 36px;
+  border-radius: 2.25rem;
   display: flex;
   flex-direction: column;
   transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -39,19 +39,19 @@
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 200px;
+  height: 12.5rem;
   background: linear-gradient(180deg, rgba(200, 150, 255, 0.08), transparent);
   pointer-events: none;
   z-index: 0;
 }
 
 .sidebar.collapsed {
-  width: 80px;
+  width: 5rem;
   align-items: center;
 }
 
 .sidebarHeader {
-  height: 80px;
+  height: 5rem;
   padding: 0 1.5rem;
   display: flex;
   align-items: center;
@@ -61,16 +61,22 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  font-family: var(--font-jakarta);
-  font-weight: 800;
-  font-size: 1.75rem;
-  color: var(--deep-charcoal);
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   user-select: none;
   position: relative;
   z-index: 1;
-  letter-spacing: -1px;
+}
+
+.logoImg {
+  height: 2.25rem;
+  width: auto;
+  object-fit: contain;
+}
+
+.iconOnly {
+  height: 2.5rem;
+  width: auto;
+  object-fit: contain;
 }
 
 :global([data-theme="dark"]) .logo {
@@ -89,8 +95,8 @@
 .collapseBtn {
   background: rgba(0, 0, 0, 0.05);
   border: none;
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
   color: var(--deep-charcoal);
   cursor: pointer;
@@ -143,7 +149,7 @@
   gap: 0.85rem;
   padding: 0.65rem 1rem;
   margin-bottom: 0.25rem;
-  border-radius: 16px;
+  border-radius: 1rem;
   color: rgba(0,0,0,0.55);
   text-decoration: none;
   font-weight: 700;
@@ -244,11 +250,11 @@
   background: linear-gradient(120deg, #ffd3e2, #e6c3fc, #c3d4fd, #f2cffc);
   background-size: 300% 300%;
   animation: meshPan 15s ease infinite;
-  border-radius: 24px;
+  border-radius: 1.5rem;
   padding: 1.25rem;
   margin-bottom: 0.5rem;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(181, 107, 245, 0.3), inset 0 2px 10px rgba(255,255,255,0.6);
+  box-shadow: 0 0.625rem 1.875rem rgba(181, 107, 245, 0.3), inset 0 2px 10px rgba(255,255,255,0.6);
   border: 1px solid rgba(255,255,255,0.8);
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
@@ -310,7 +316,7 @@
 }
 
 .quotaBar {
-  height: 6px;
+  height: 0.375rem;
   background: rgba(0, 0, 0, 0.05);
   border-radius: 3px;
   margin-bottom: 1rem;
@@ -324,7 +330,7 @@
 .quotaFill {
   height: 100%;
   background: linear-gradient(90deg, #a855f7, #ec4899);
-  border-radius: 3px;
+  border-radius: 0.1875rem;
 }
 
 .upgradeBtn {
@@ -366,7 +372,7 @@
   gap: 0.85rem;
   color: var(--deep-charcoal);
   padding: 0.5rem;
-  border-radius: 16px;
+  border-radius: 1rem;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   cursor: pointer;
 }
@@ -435,7 +441,7 @@
 }
 
 .topbar {
-  height: 80px;
+  height: 5rem;
   padding: 0 2rem;
   display: flex;
   align-items: center;
@@ -443,7 +449,7 @@
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-radius: 36px;
+  border-radius: 2.25rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03), inset 0 2px 10px rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.8);
   z-index: 10;
@@ -576,11 +582,7 @@
 .mobileBrand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-jakarta);
-  font-weight: 800;
-  font-size: 1.25rem;
-  color: var(--foreground);
+  user-select: none;
 }
 
 .mobileBrand .wandStar {
@@ -592,12 +594,12 @@
   position: absolute;
   top: calc(100% + 12px);
   right: 0;
-  width: 320px;
+  width: 20rem;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(30px) saturate(180%);
   -webkit-backdrop-filter: blur(30px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 28px;
+  border-radius: 1.75rem;
   padding: 1.5rem;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15), inset 0 2px 20px rgba(255, 255, 255, 0.7);
   z-index: 1000;
@@ -814,13 +816,20 @@
     display: flex !important;
   }
 
+  .dataDropzone {
+    padding: 0.5rem;
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.3);
+  }
+
   .topbar {
-    height: 64px;
+    height: 4rem;
     padding: 0 1.25rem;
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.7); /* Slightly more opaque */
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* Fixed border for definition */
     border-radius: 0;
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -829,7 +838,7 @@
   }
 
   :global([data-theme="dark"]) .topbar {
-    background: rgba(10, 10, 10, 0.5);
+    background: rgba(10, 10, 10, 0.8);
     border-bottom-color: rgba(255, 255, 255, 0.1);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   }
@@ -845,8 +854,8 @@
   /* Make workspace span edge-to-edge, removing default scrollbars for native feel */
   .workspace {
     padding: 1rem;
-    padding-top: 76px; /* Increased to ensure full scroll clearance for top nav */
-    padding-bottom: 140px; /* Increased to ensure full scroll clearance for bottom nav */
+    padding-top: 5rem; /* ~80px */
+    padding-bottom: 9rem; /* ~144px to clear floating nav and extra breathing room */
     border-radius: 0;
     box-shadow: none;
   }
@@ -859,26 +868,26 @@
   .mobileBottomBar {
     display: flex;
     position: fixed;
-    bottom: calc(1rem + env(safe-area-inset-bottom));
-    left: 1rem;
-    right: 1rem;
-    height: 72px;
-    background: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.9);
-    border-radius: 36px;
-    box-shadow: 0 20px 40px rgba(181, 107, 245, 0.2), inset 0 2px 5px rgba(255, 255, 255, 0.8);
-    z-index: 50;
-    justify-content: space-between;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: calc(4.6rem + env(safe-area-inset-bottom));
+    background: #ffffff; /* Solid white for absolute clarity */
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 2rem 2rem 0 0 !important;
+    padding: 0 1rem env(safe-area-inset-bottom);
+    z-index: 1000; /* Ensure it stays above everything */
+    justify-content: space-around;
     align-items: center;
-    padding: 0 0.5rem;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.05);
+    margin: 0 !important;
   }
 
   :global([data-theme="dark"]) .mobileBottomBar {
-    background: rgba(15, 15, 15, 0.88);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), inset 0 2px 5px rgba(255, 255, 255, 0.05);
+    background: #111111; /* Solid dark for absolute clarity */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
   }
 
   .mobileTab {
@@ -891,7 +900,7 @@
     text-decoration: none;
     background: transparent;
     border: none;
-    height: 60px;
+    height: 3.75rem;
     flex: 1;
     font-size: 0.65rem;
     font-weight: 700;
@@ -914,6 +923,17 @@
     margin-top: 2px;
     position: relative;
     z-index: 1;
+    font-size: 10px; /* Sharper fit for 6-item bar */
+    letter-spacing: -0.2px;
+  }
+  
+  @media (max-width: 420px) {
+    .mobileTab span {
+       display: none !important;
+    }
+    .mobileTab {
+       height: 3.5rem;
+    }
   }
   
   .mobileTab svg {
@@ -962,20 +982,19 @@
     flex-direction: column;
     position: fixed;
     bottom: 0; left: 0; right: 0;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border-radius: 36px 36px 0 0;
-    z-index: 101;
+    background: #ffffff !important; /* Force solid background */
+    border-radius: 2.5rem 2.5rem 0 0;
+    z-index: 1001;
     max-height: 85vh;
     transform: translateY(100%);
-    transition: transform 0.4s cubic-bezier(0.3, 1, 0.3, 1);
-    box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition: transform 0.5s cubic-bezier(0.3, 1, 0.3, 1);
+    box-shadow: 0 -25px 80px rgba(0, 0, 0, 0.2);
+    margin: 0;
   }
   
   :global([data-theme="dark"]) .mobileSheet {
-    background: rgba(20, 20, 20, 0.85);
-    box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: #0a0a0a !important; 
+    box-shadow: 0 -25px 80px rgba(0, 0, 0, 0.9);
   }
 
   .mobileSheet.open {
@@ -1001,4 +1020,3 @@
 
   /* Removed redundant profilePopup styles from mobile query as they are now global */
 }
-
