@@ -117,8 +117,8 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
               <Image 
                 src="/logo-full.png" 
                 alt="Pixie Logo" 
-                width={150} 
-                height={59} 
+                width={170} 
+                height={67} 
                 priority 
                 className={styles.logoImg}
               />
