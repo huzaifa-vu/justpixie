@@ -15,6 +15,52 @@ interface DownloaderUIProps {
   autoRun?: boolean;
 }
 
+const YouTubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+
+function SkeletonCard() {
+  return (
+    <div className={styles.skeletonCard}>
+      <div className={styles.skeletonThumbnail}></div>
+      <div className={styles.skeletonInfo}>
+        <div className={styles.skeletonTitle}></div>
+        <div className={styles.skeletonMeta}></div>
+        <div className={styles.skeletonOptions}></div>
+      </div>
+    </div>
+  );
+}
+
+function FeatureBento({ accentColor }: { accentColor: string }) {
+  const features = [
+    { icon: Zap, title: "10x Speed", desc: "Multi-threaded local downloads" },
+    { icon: ShieldCheck, title: "Private", desc: "Processed 100% on your device" },
+    { icon: Monitor, title: "4K HDR", desc: "Highest resolution supported" },
+    { icon: Wand2, title: "Smart", desc: "Auto-detects high quality streams" }
+  ];
+  return (
+    <div className={styles.heroArea}>
+      <div className={styles.heroText}>
+        <span className={styles.heroBadge} style={{ borderColor: accentColor }}>Ready for Magic</span>
+        <h1>Paste. Transform. Magic.</h1>
+        <p>Your high-performance private media studio starts here.</p>
+      </div>
+      <div className={styles.featuresGrid}>
+        {features.map((f, i) => (
+          <div key={i} className={styles.featureCard}>
+            <div className={styles.featureIcon} style={{ background: `${accentColor}1A`, color: accentColor }}>
+              <f.icon size={20} />
+            </div>
+            <h3>{f.title}</h3>
+            <p>{f.desc} </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+import { ShieldCheck, Monitor, Wand2, ClipboardPaste } from "lucide-react";
+
 export default function DownloaderUI({ platform, placeholder, accentColor = "var(--mint-green)", initialUrl = "", autoRun = false }: DownloaderUIProps) {
   const [url, setUrl] = useState(initialUrl);
   const [isLoading, setIsLoading] = useState(false);
@@ -69,12 +115,28 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
     load();
   }, []);
 
-  // Trigger analysis if directed by AI
+  // Real-time URL validation for "Magic detect"
+  const isYouTubeLink = YouTubeRegex.test(url);
+
+  // Trigger analysis if directed by AI or via auto-paste detection
   useEffect(() => {
-    if (autoRun && url && !isLoading && !metadata) {
-      handleAnalyze();
+    if ((autoRun || isYouTubeLink) && url && !isLoading && !metadata && !isProcessing) {
+      // Small debounce to let users finish pasting
+      const timer = setTimeout(() => {
+        handleAnalyze();
+      }, 500);
+      return () => clearTimeout(timer);
     }
-  }, [autoRun, url]);
+  }, [autoRun, url, isYouTubeLink]);
+
+  const handlePaste = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) setUrl(text);
+    } catch (err) {
+      console.warn("Clipboard access denied", err);
+    }
+  };
 
   const handleAnalyze = async () => {
     if (!url) return;
@@ -583,16 +645,37 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
         )}
       </AnimatePresence>
 
-      <div className={styles.inputSection} style={{ borderTop: `6px solid ${accentColor}` }}>
+      <div className={`${styles.inputSection} ${isYouTubeLink ? styles.activeInputGlow : ''}`} style={{ borderTop: `6px solid ${accentColor}`, position: 'relative' }}>
+        <AnimatePresence>
+          {isYouTubeLink && !metadata && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10, scale: 0.9 }} 
+              animate={{ opacity: 1, y: 0, scale: 1 }} 
+              exit={{ opacity: 0, y: 10, scale: 0.9 }}
+              className={styles.detectBadge}
+              style={{ background: accentColor }}
+            >
+              <Sparkles size={12} /> YouTube Link Detected
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className={styles.inputGroup}>
-          <input 
-            type="text" 
-            className={styles.urlInput}
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder={placeholder || `Paste ${platform} link here...`}
-            onKeyDown={(e) => e.key === 'Enter' && handleAnalyze()}
-          />
+          <div className={styles.urlInputWrapper}>
+            <input 
+              type="text" 
+              className={styles.urlInput}
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder={placeholder || `Paste ${platform} link here...`}
+              onKeyDown={(e) => e.key === 'Enter' && handleAnalyze()}
+            />
+            {!url && (
+              <button className={styles.pasteInBtn} onClick={handlePaste}>
+                <ClipboardPaste size={16} /> Paste
+              </button>
+            )}
+          </div>
           <button 
             className={styles.actionBtn} 
             onClick={handleAnalyze} 
@@ -618,9 +701,14 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
         </AnimatePresence>
       </div>
 
-      <AnimatePresence>
-        {metadata && (
+      <AnimatePresence mode="wait">
+        {isLoading && !metadata ? (
+            <motion.div key="skeleton" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <SkeletonCard />
+            </motion.div>
+        ) : metadata ? (
           <motion.div 
+            key="result"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
@@ -761,6 +849,10 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
               </div>
               <p className={styles.disclaimer}>Downloaded files are processed locally for maximum privacy and 4K capability.</p>
             </div>
+          </motion.div>
+        ) : (
+          <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <FeatureBento accentColor={accentColor} />
           </motion.div>
         )}
       </AnimatePresence>

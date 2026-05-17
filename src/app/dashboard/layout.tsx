@@ -31,6 +31,11 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
   const supabase = createClient();
   const { guestUsed, guestLimit, guestRemaining, authPromptsUsed, isUnlimited, authLimit, loading } = useQuota(user);
 
+  // Pre-calculate quota numbers for clean rendering & collapsed SVG progress
+  const limit = user ? authLimit : guestLimit;
+  const remaining = user ? Math.max(0, authLimit - authPromptsUsed) : guestRemaining;
+  const percentage = isUnlimited ? 100 : Math.max(0, Math.min(100, limit > 0 ? (remaining / limit) * 100 : 0));
+
   useEffect(() => {
     // Get initial session (wrapped in try/catch for guest mode)
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -128,7 +133,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
 
         <nav className={styles.navMenu}>
           <div className={styles.navGroup}>
-            {!collapsed && <span className={styles.groupLabel}>Tools</span>}
+            <span className={`${styles.groupLabel} ${collapsed ? styles.groupLabelHidden : ""}`}>Tools</span>
             {navItems.map((item) => {
               // For the root dashboard item, only match the exact path
               // For all others, match the exact path OR any sub-route
@@ -142,78 +147,143 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
                   className={`${styles.navItem} ${isActive ? styles.active : ""}`}
                 >
                   <item.icon size={20} />
-                  {!collapsed && <span>{item.name}</span>}
+                  <span className={`${styles.navItemText} ${collapsed ? styles.navItemTextHidden : ""}`}>
+                    {item.name}
+                  </span>
                 </Link>
               );
             })}
           </div>
 
           <div className={styles.navGroup} style={{ marginTop: '1.5rem' }}>
-            {!collapsed && <span className={styles.groupLabel}>Account & Help</span>}
+            <span className={`${styles.groupLabel} ${collapsed ? styles.groupLabelHidden : ""}`}>Account & Help</span>
             <Link
               href="/dashboard/upgrade"
               className={`${styles.navItem} ${pathname === '/dashboard/upgrade' ? styles.active : ""}`}
             >
               <Sparkles size={20} />
-              {!collapsed && <span>Upgrade Plan</span>}
+              <span className={`${styles.navItemText} ${collapsed ? styles.navItemTextHidden : ""}`}>
+                Upgrade Plan
+              </span>
             </Link>
             <Link
               href="/dashboard/about"
               className={`${styles.navItem} ${pathname === '/dashboard/about' ? styles.active : ""}`}
             >
               <Info size={20} />
-              {!collapsed && <span>About Pixie</span>}
+              <span className={`${styles.navItemText} ${collapsed ? styles.navItemTextHidden : ""}`}>
+                About Pixie
+              </span>
             </Link>
             <Link
               href="/dashboard/support"
               className={`${styles.navItem} ${pathname === '/dashboard/support' ? styles.active : ""}`}
             >
               <HelpCircle size={20} />
-              {!collapsed && <span>Help & Support</span>}
+              <span className={`${styles.navItemText} ${collapsed ? styles.navItemTextHidden : ""}`}>
+                Help & Support
+              </span>
             </Link>
           </div>
         </nav>
 
         <div className={styles.sidebarFooter}>
-          <div className={styles.quotaBox}>
-            {!collapsed && user && (
+          <div className={`${styles.quotaBox} ${collapsed ? styles.quotaBoxCollapsed : ""}`}>
+            {collapsed ? (
+              <div className={styles.collapsedQuotaContent}>
+                <svg className={styles.progressRing} width="40" height="40">
+                  <circle
+                    className={styles.progressRingCircleBg}
+                    stroke="rgba(0, 0, 0, 0.05)"
+                    strokeWidth="3"
+                    fill="transparent"
+                    r="16"
+                    cx="20"
+                    cy="20"
+                  />
+                  <circle
+                    className={styles.progressRingCircle}
+                    stroke="url(#quotaGradient)"
+                    strokeWidth="3"
+                    strokeDasharray="100.53"
+                    strokeDashoffset={100.53 - (percentage / 100) * 100.53}
+                    strokeLinecap="round"
+                    fill="transparent"
+                    r="16"
+                    cx="20"
+                    cy="20"
+                  />
+                  <defs>
+                    <linearGradient id="quotaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#a855f7" />
+                      <stop offset="100%" stopColor="#ec4899" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div className={styles.collapsedIcon}>
+                  {isUnlimited ? <Sparkles size={14} className={styles.sparkleActive} /> : <Wand2 size={14} />}
+                </div>
+
+                {/* Premium Glassmorphic Tooltip */}
+                <div className={styles.quotaTooltip}>
+                  <span className={styles.tooltipHeader}>
+                    {user ? (isUnlimited ? "Unlimited Plan" : "Daily Quota") : "Guest Quota"}
+                  </span>
+                  <span className={styles.tooltipValue}>
+                    {loading ? '...' : (isUnlimited ? "∞ Prompts" : `${remaining} / ${limit} Left`)}
+                  </span>
+                  {isUnlimited ? (
+                    <span className={styles.tooltipAction}>Active Forever</span>
+                  ) : user ? (
+                    <Link href="/dashboard/upgrade" className={styles.tooltipAction} style={{ textDecoration: 'none' }}>
+                      Unlock Unlimited
+                    </Link>
+                  ) : (
+                    <Link href="/login" className={styles.tooltipAction} style={{ textDecoration: 'none' }}>
+                      Sign In for More
+                    </Link>
+                  )}
+                </div>
+              </div>
+            ) : (
               <>
-                <div className={styles.quotaHeader}>
-                  <span>Daily Quota</span>
-                  <span>{loading ? '...' : (isUnlimited ? '∞' : `${authLimit - authPromptsUsed} / ${authLimit} Left`)}</span>
-                </div>
-                <div className={styles.quotaBar}>
-                  <div 
-                    className={styles.quotaFill} 
-                    style={{ 
-                      width: isUnlimited ? '100%' : `${Math.max(0, ((authLimit - authPromptsUsed) / authLimit) * 100)}%` 
-                    }}
-                  ></div>
-                </div>
-                {!isUnlimited && (
-                  <Link href="/dashboard/upgrade" style={{ width: '100%' }}>
-                    <button className={styles.upgradeBtn}>Unlock Unlimited</button>
-                  </Link>
+                {user ? (
+                  <>
+                    <div className={styles.quotaHeader}>
+                      <span>Daily Quota</span>
+                      <span>{loading ? '...' : (isUnlimited ? '∞' : `${authLimit - authPromptsUsed} / ${authLimit} Left`)}</span>
+                    </div>
+                    <div className={styles.quotaBar}>
+                      <div 
+                        className={styles.quotaFill} 
+                        style={{ 
+                          width: isUnlimited ? '100%' : `${Math.max(0, ((authLimit - authPromptsUsed) / authLimit) * 100)}%` 
+                        }}
+                      ></div>
+                    </div>
+                    {!isUnlimited && (
+                      <Link href="/dashboard/upgrade" style={{ width: '100%' }}>
+                        <button className={styles.upgradeBtn}>Unlock Unlimited</button>
+                      </Link>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className={styles.quotaHeader}>
+                      <span>Guest Quota</span>
+                      <span>{loading ? '...' : `${guestRemaining} / ${guestLimit} Left`}</span>
+                    </div>
+                    <div className={styles.quotaBar}>
+                      <div className={styles.quotaFill} style={{ width: `${(guestRemaining / guestLimit) * 100}%` }}></div>
+                    </div>
+                    <Link href="/login" style={{ width: '100%', textDecoration: 'none' }}>
+                      <button className={styles.upgradeBtn}>Sign In for More</button>
+                    </Link>
+                  </>
                 )}
               </>
             )}
-            {!collapsed && !user && (
-               <>
-                 <div className={styles.quotaHeader}>
-                   <span>Guest Quota</span>
-                   <span>{loading ? '...' : `${guestRemaining} / ${guestLimit} Left`}</span>
-                 </div>
-                 <div className={styles.quotaBar}>
-                   <div className={styles.quotaFill} style={{ width: `${(guestRemaining / guestLimit) * 100}%` }}></div>
-                 </div>
-                 <Link href="/login" style={{ width: '100%', textDecoration: 'none' }}>
-                   <button className={styles.upgradeBtn}>Sign In for More</button>
-                 </Link>
-               </>
-            )}
-            {collapsed && <Wand2 size={24} className={styles.wandStar} />}
           </div>
-
         </div>
       </aside>
 
