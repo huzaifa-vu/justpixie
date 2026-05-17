@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Wand2, User, LogOut, Settings, LayoutDashboard, CreditCard } from "lucide-react";
 import styles from "@/app/page.module.css";
 import { createClient } from "@/utils/supabase/client";
-import Image from "next/image";
 
 export default function MarketingWrapper({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<any>(null);
@@ -67,7 +67,8 @@ export default function MarketingWrapper({ children }: { children: React.ReactNo
               src="/logo-full.png" 
               alt="Pixie Logo" 
               width={120} 
-              height={32} 
+              height={47} 
+              priority 
               className={styles.logoImg}
             />
           </div>
@@ -172,7 +173,8 @@ export default function MarketingWrapper({ children }: { children: React.ReactNo
                 src="/logo-full.png" 
                 alt="Pixie Logo" 
                 width={100} 
-                height={26} 
+                height={39} 
+                priority 
                 className={styles.logoImg}
               />
             </div>

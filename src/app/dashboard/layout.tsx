@@ -108,19 +108,19 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
               <Image 
                 src="/logo-icon.png" 
                 alt="Pixie Logo" 
-                width={40} 
-                height={40} 
-                className={styles.iconOnly}
-                priority
+                width={36} 
+                height={36} 
+                priority 
+                className={styles.logoImg}
               />
             ) : (
               <Image 
                 src="/logo-full.png" 
                 alt="Pixie Logo" 
-                width={140} 
-                height={36} 
+                width={130} 
+                height={51} 
+                priority 
                 className={styles.logoImg}
-                priority
               />
             )}
           </div>
@@ -211,14 +211,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
                  </Link>
                </>
             )}
-            {collapsed && (
-              <Image 
-                src="/logo-icon.png" 
-                alt="Pixie Logo" 
-                width={24} 
-                height={24} 
-              />
-            )}
+            {collapsed && <Wand2 size={24} className={styles.wandStar} />}
           </div>
 
         </div>
@@ -252,8 +245,9 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
             <Image 
               src="/logo-full.png" 
               alt="Pixie Logo" 
-              width={100} 
-              height={26} 
+              width={110} 
+              height={43} 
+              priority 
               className={styles.logoImg}
             />
           </div>
@@ -346,8 +340,9 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
             <Image 
               src="/logo-full.png" 
               alt="Pixie Logo" 
-              width={100} 
-              height={26} 
+              width={90} 
+              height={35} 
+              priority 
               className={styles.logoImg}
             />
           </div>

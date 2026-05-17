@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Wand2, Mail, Lock, ArrowRight, Sparkles, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import styles from "./page.module.css";
@@ -61,10 +62,10 @@ export default function LoginPage() {
             <Image 
               src="/logo-full.png" 
               alt="Pixie Logo" 
-              width={160} 
-              height={42} 
+              width={150} 
+              height={59} 
+              priority 
               className={styles.logoImg}
-              priority
             />
           </Link>
           <h1 className={styles.title}>{isSignUp ? "Create Account" : "Welcome Back"}</h1>
