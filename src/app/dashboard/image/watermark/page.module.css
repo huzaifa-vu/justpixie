@@ -93,13 +93,16 @@
 :global([data-theme="dark"]) .layerBox { background: rgba(255,255,255,0.03); }
 :global([data-theme="dark"]) .checkerboard { background-image: linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,0.03) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.03) 75%), linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.03) 75%); }
 
-/* ?? AUTO-INJECTED MOBILE OPTIMIZATION */
+/* 📱 AUTO-INJECTED MOBILE OPTIMIZATION */
 @media (max-width: 768px) {
   .mainWorkspace, .workspace {
     flex-direction: column-reverse !important;
     height: auto !important;
     min-height: auto !important;
     gap: 1rem !important;
+  }
+  .layersArea {
+    width: 100% !important;
   }
   .configSidebar { width: 100% !important; }
   .previewArea, .canvasArea, .dropZone, .viewerContainer { width: 100% !important; min-height: 250px !important; padding: 1rem !important; margin: 0 !important; }

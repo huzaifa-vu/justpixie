@@ -355,7 +355,7 @@ Create a \`site.webmanifest\` in your root folder with:
   return (
     <ToolWrapper title="Favicon Generator" description="Create perfectly sized multi-resolution favicons from any image for web and mobile apps." icon={Square}>
       <div className={styles.workspace}>
-        <div className={styles.canvasArea} style={{ flexDirection: 'column', gap: '1.5rem', padding: '2.5rem', overflowY: 'auto' }}>
+        <div className={`${styles.canvasArea} ${styles.faviconWorkspace}`} style={{ flexDirection: 'column', gap: '1.5rem', overflowY: 'auto' }}>
           {!imageSrc && (
             <DropZone 
               onFilesSelected={(files) => handleFile(files[0])} 
@@ -373,17 +373,9 @@ Create a \`site.webmanifest\` in your root folder with:
           )}
 
           {generatedIcons.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', alignItems: 'center' }}>
+            <div className={styles.faviconContainer}>
               {/* Premium Multi-Resolution Bundle Card */}
-              <div style={{
-                background: 'rgba(167, 243, 208, 0.05)',
-                border: '1px solid var(--mint-green)',
-                borderRadius: '16px',
-                padding: '1.5rem',
-                width: '100%',
-                maxWidth: '600px',
-                boxShadow: '0 8px 30px rgba(167, 243, 208, 0.05)'
-              }}>
+              <div className={styles.faviconBundleCard}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
                   <span style={{ fontSize: '1.25rem' }}>✨</span>
                   <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: 'var(--foreground)' }}>Unified favicon.ico Bundle</h3>
@@ -422,45 +414,21 @@ Create a \`site.webmanifest\` in your root folder with:
               </div>
 
               {/* Individual Size Asset Grid */}
-              <div style={{ width: '100%', maxWidth: '600px', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 <h4 style={{ margin: '1rem 0 0.5rem 0', fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
                   Individual Asset Suite
                 </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div className={styles.faviconSuiteList}>
                   {generatedIcons.map(icon => {
                     const meta = SIZE_METADATA[icon.size] || { title: "Custom Icon Size", desc: "Generated asset" };
                     return (
-                      <div 
-                        key={icon.size}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          background: 'var(--pure-white)',
-                          border: '1px solid var(--border)',
-                          borderRadius: '12px',
-                          padding: '0.75rem 1rem',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.01)'
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                          <div
-                            style={{
-                              width: '44px',
-                              height: '44px',
-                              border: '1px solid var(--border)',
-                              borderRadius: '8px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              background: '#f8fafc',
-                              overflow: 'hidden'
-                            }}
-                          >
+                      <div key={icon.size} className={styles.faviconSuiteItem}>
+                        <div className={styles.faviconSuiteItemLeft}>
+                          <div className={styles.faviconSuiteItemPreview}>
                             <img src={icon.url} alt={`${icon.size}px`} style={{ width: Math.min(icon.size, 32), height: Math.min(icon.size, 32), imageRendering: icon.size <= 32 ? 'pixelated' : 'auto' }} />
                           </div>
-                          <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <div className={styles.faviconSuiteItemInfo}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                               <span style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--foreground)' }}>{icon.size}×{icon.size} px</span>
                               <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', background: 'var(--soft-sage)', padding: '2px 6px', borderRadius: '4px' }}>
                                 {meta.title}
@@ -469,23 +437,10 @@ Create a \`site.webmanifest\` in your root folder with:
                             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{meta.desc}</span>
                           </div>
                         </div>
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <div className={styles.faviconSuiteItemButtons}>
                           <button
                             onClick={() => handleDownloadICO(icon.size)}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.4rem',
-                              padding: '0.45rem 0.8rem',
-                              background: 'transparent',
-                              border: '1px solid var(--border)',
-                              borderRadius: '6px',
-                              fontSize: '0.75rem',
-                              fontWeight: 700,
-                              color: 'var(--foreground)',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s'
-                            }}
+                            className={styles.faviconDownloadBtn}
                             onMouseEnter={(e) => {
                               e.currentTarget.style.borderColor = 'var(--mint-green)';
                               e.currentTarget.style.background = 'rgba(167, 243, 208, 0.05)';
@@ -499,20 +454,7 @@ Create a \`site.webmanifest\` in your root folder with:
                           </button>
                           <button
                             onClick={() => handleDownloadPNG(icon.size)}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.4rem',
-                              padding: '0.45rem 0.8rem',
-                              background: 'transparent',
-                              border: '1px solid var(--border)',
-                              borderRadius: '6px',
-                              fontSize: '0.75rem',
-                              fontWeight: 700,
-                              color: 'var(--foreground)',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s'
-                            }}
+                            className={styles.faviconDownloadBtn}
                             onMouseEnter={(e) => {
                               e.currentTarget.style.borderColor = 'var(--gentle-lilac)';
                               e.currentTarget.style.background = 'rgba(196, 181, 253, 0.05)';
