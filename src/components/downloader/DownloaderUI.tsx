@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import styles from "./DownloaderUI.module.css";
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
+import { createPortal } from "react-dom";
 
 interface DownloaderUIProps {
   platform: 'youtube' | 'instagram' | 'twitter' | 'facebook';
@@ -77,6 +78,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
   const [isPopupBlocked, setIsPopupBlocked] = useState(false);
   const [manualDownloadUrl, setManualDownloadUrl] = useState<string | null>(null);
   const [isExternalDownload, setIsExternalDownload] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const boostLevelRef = useRef(1);
   const activeWorkersRef = useRef(0);
   const spawnerRef = useRef<(() => void) | null>(null);
@@ -84,6 +86,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
   const ffmpegRef = useRef<any>(null);
 
   useEffect(() => {
+    setMounted(true);
     setIsFileSystemSupported('showSaveFilePicker' in window);
     const load = async () => {
       ffmpegRef.current = new FFmpeg();
@@ -580,70 +583,73 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
 
   return (
     <div className={styles.downloaderContainer}>
-      <AnimatePresence>
-        {showSuccess && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={styles.successOverlay}
-            onClick={() => setShowSuccess(false)}
-          >
+      {mounted && createPortal(
+        <AnimatePresence>
+          {showSuccess && (
             <motion.div 
-              initial={{ scale: 0.8, opacity: 0, y: 30 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.8, opacity: 0, y: 30 }}
-              className={styles.successCard}
-              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className={styles.successOverlay}
+              onClick={() => setShowSuccess(false)}
             >
-              <div className={styles.confettiContainer}>
-                {[...Array(24)].map((_, i) => (
-                  <motion.div 
-                    key={i}
-                    className={styles.confetti}
-                    initial={{ y: 0, x: 0, opacity: 1, rotate: 0 }}
-                    animate={{ 
-                      y: [0, -250, 250], 
-                      x: [0, (i - 12) * 35, (i - 12) * 70],
-                      opacity: [1, 1, 0],
-                      rotate: [0, 360, 720]
-                    }}
-                    transition={{ duration: 3, delay: i * 0.04, ease: "easeOut" }}
-                  />
-                ))}
-              </div>
-
               <motion.div 
-                animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }} 
-                transition={{ duration: 0.6, repeat: 2, ease: "easeInOut" }}
-                className={styles.partyIcon}
+                initial={{ scale: 0.8, opacity: 0, y: 30 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.8, opacity: 0, y: 30 }}
+                className={styles.successCard}
+                onClick={(e) => e.stopPropagation()}
               >
-                🎉
-              </motion.div>
-              <h2>Success!</h2>
-              <p>Your high-quality media is ready. If it didn't start automatically, use the fallback link below.</p>
-              
-              {manualDownloadUrl && (
-                <div style={{ marginBottom: '2.5rem' }}>
-                  <a 
-                    href={manualDownloadUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className={styles.manualLink}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    📥 Click here if your browser blocked the download
-                  </a>
+                <div className={styles.confettiContainer}>
+                  {[...Array(24)].map((_, i) => (
+                    <motion.div 
+                      key={i}
+                      className={styles.confetti}
+                      initial={{ y: 0, x: 0, opacity: 1, rotate: 0 }}
+                      animate={{ 
+                        y: [0, -250, 250], 
+                        x: [0, (i - 12) * 35, (i - 12) * 70],
+                        opacity: [1, 1, 0],
+                        rotate: [0, 360, 720]
+                      }}
+                      transition={{ duration: 3, delay: i * 0.04, ease: "easeOut" }}
+                    />
+                  ))}
                 </div>
-              )}
 
-              <button className={styles.closeSuccess} onClick={() => setShowSuccess(false)}>
-                Awesome!
-              </button>
+                <motion.div 
+                  animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }} 
+                  transition={{ duration: 0.6, repeat: 2, ease: "easeInOut" }}
+                  className={styles.partyIcon}
+                >
+                  🎉
+                </motion.div>
+                <h2>Success!</h2>
+                <p>Your high-quality media is ready. If it didn't start automatically, use the fallback link below.</p>
+                
+                {manualDownloadUrl && (
+                  <div style={{ marginBottom: '2.5rem' }}>
+                    <a 
+                      href={manualDownloadUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className={styles.manualLink}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      📥 Click here if your browser blocked the download
+                    </a>
+                  </div>
+                )}
+
+                <button className={styles.closeSuccess} onClick={() => setShowSuccess(false)}>
+                  Awesome!
+                </button>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
       <div className={`${styles.inputSection} ${isYouTubeLink ? styles.activeInputGlow : ''}`} style={{ borderTop: `6px solid ${accentColor}`, position: 'relative' }}>
         <AnimatePresence>
