@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Sparkles, CheckCircle2, ArrowRight, HelpCircle, Flame, Star, Vote } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Sparkles, CheckCircle2, ArrowRight, HelpCircle, Flame, Star, Vote, Loader2 } from "lucide-react";
 import styles from "../meta-pages.module.css";
 
 interface FeatureSuggestion {
@@ -10,87 +10,134 @@ interface FeatureSuggestion {
   category: string;
   description: string;
   votes: number;
-  userVoted: boolean;
 }
 
 export default function FeaturesRequestPage() {
   const [formData, setFormData] = useState({ title: '', category: 'Image', description: '' });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
-  
-  const [suggestions, setSuggestions] = useState<FeatureSuggestion[]>([
-    {
-      id: "1",
-      title: "EPUB to PDF Converter",
-      category: "PDF",
-      description: "Convert EPUB e-books directly into print-friendly PDF pages locally.",
-      votes: 142,
-      userVoted: false
-    },
-    {
-      id: "2",
-      title: "Audio Noise Reduction",
-      category: "Video",
-      description: "Strip hums, fan noise, and background static from audio tracks using Web Audio API.",
-      votes: 98,
-      userVoted: false
-    },
-    {
-      id: "3",
-      title: "Smart Image Upscaler",
-      category: "Image",
-      description: "Upscale lower-res images locally using super-resolution neural nets in WASM.",
-      votes: 185,
-      userVoted: false
-    },
-    {
-      id: "4",
-      title: "SQL to JSON Schema Transpiler",
-      category: "Dev",
-      description: "Paste SQL table definitions and transpile them into nested JSON Schema schemas.",
-      votes: 56,
-      userVoted: false
-    }
-  ]);
+  const [suggestions, setSuggestions] = useState<FeatureSuggestion[]>([]);
+  const [votedIds, setVotedIds] = useState<string[]>([]);
+  const [loadingList, setLoadingList] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // 1. Load voted list from localStorage and fetch all wishes from database
+  useEffect(() => {
+    // Sync localStorage wishes
+    try {
+      const saved = localStorage.getItem("pixie_voted_features");
+      if (saved) {
+        setVotedIds(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.error("Local storage wish parsing failed:", e);
+    }
+
+    // Fetch live list
+    async function loadWishes() {
+      try {
+        const res = await fetch("/api/features-request");
+        if (!res.ok) throw new Error("Failed to load wishlist");
+        const data = await res.json();
+        setSuggestions(data || []);
+      } catch (err: any) {
+        setFetchError("Could not retrieve feature sandbox wishes. Check your connection!");
+      } finally {
+        setLoadingList(false);
+      }
+    }
+
+    loadWishes();
+  }, []);
+
+  // 2. Submit new feature wish to Database
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.title.trim() || !formData.description.trim()) return;
     setStatus('loading');
 
-    setTimeout(() => {
-      setStatus('success');
-      
-      // Inject new suggestion locally
-      const newSuggestion: FeatureSuggestion = {
-        id: Date.now().toString(),
-        title: formData.title,
-        category: formData.category,
-        description: formData.description,
-        votes: 1,
-        userVoted: true
-      };
+    try {
+      const res = await fetch("/api/features-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
 
-      setSuggestions(prev => [newSuggestion, ...prev]);
+      if (!res.ok) {
+        throw new Error("Failed to save feature wish");
+      }
+
+      const newWish: FeatureSuggestion = await res.json();
+
+      // Prepend to UI list
+      setSuggestions(prev => [newWish, ...prev]);
+
+      // Optimistically self-vote on newly requested feature
+      const updatedVoted = [...votedIds, newWish.id];
+      setVotedIds(updatedVoted);
+      localStorage.setItem("pixie_voted_features", JSON.stringify(updatedVoted));
+
+      setStatus('success');
       setFormData({ title: '', category: 'Image', description: '' });
-    }, 1000);
+    } catch (err) {
+      alert("Oops! Pixie had trouble casting this feature spell. Please try again.");
+      setStatus('idle');
+    }
   };
 
-  const handleVote = (id: string) => {
+  // 3. Increment/Decrement database count and sync local state & localStorage
+  const handleVote = async (id: string) => {
+    const hasVoted = votedIds.includes(id);
+    const increment = hasVoted ? -1 : 1;
+
+    // Optimistic UI state updates
     setSuggestions(prev => prev.map(s => {
       if (s.id === id) {
-        return {
-          ...s,
-          votes: s.userVoted ? s.votes - 1 : s.votes + 1,
-          userVoted: !s.userVoted
-        };
+        return { ...s, votes: Math.max(0, s.votes + increment) };
       }
       return s;
     }));
+
+    const nextVotedIds = hasVoted 
+      ? votedIds.filter(vId => vId !== id) 
+      : [...votedIds, id];
+
+    setVotedIds(nextVotedIds);
+    localStorage.setItem("pixie_voted_features", JSON.stringify(nextVotedIds));
+
+    // Async DB update
+    try {
+      const res = await fetch("/api/features-request/vote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, increment })
+      });
+
+      if (!res.ok) {
+        throw new Error("Vote update failed");
+      }
+      
+      const updatedWish = await res.json();
+      
+      // Update UI state with correct DB value
+      setSuggestions(prev => prev.map(s => (s.id === id ? updatedWish : s)));
+    } catch (err) {
+      console.error("Voting integration error:", err);
+      // Revert optimistic state upon failure
+      setSuggestions(prev => prev.map(s => {
+        if (s.id === id) {
+          return { ...s, votes: Math.max(0, s.votes - increment) };
+        }
+        return s;
+      }));
+      setVotedIds(votedIds);
+      localStorage.setItem("pixie_voted_features", JSON.stringify(votedIds));
+    }
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div className={styles.badge}><Sparkles size={16} /> Wishlist Core</div>
+        <div className={styles.badge}><Sparkles size={16} /> Wishlist Sandbox</div>
         <h1 className={styles.title}>Request a <span className={styles.titleHighlight}>Feature</span></h1>
         <p className={styles.subtitle}>
           Pixie runs 100% locally in your browser. Want a specific file action, dev utility, or file compiler added? Suggest it below and help guide our workspace spellbooks!
@@ -103,7 +150,7 @@ export default function FeaturesRequestPage() {
             <CheckCircle2 size={64} style={{ color: 'var(--mint-green)', margin: '0 auto 1.5rem' }} />
             <h2 style={{ fontSize: '1.75rem', fontWeight: 800 }}>Spell Added to Sandbox!</h2>
             <p style={{ color: 'var(--text-muted)', marginTop: '0.75rem', maxWidth: '480px', margin: '0.75rem auto 0' }}>
-              Your feature request has been recorded successfully. The community can now view, vote, and accelerate its local WASM synthesis.
+              Your feature request has been recorded successfully in our database. The community can now view, vote, and accelerate its local WASM synthesis.
             </p>
             <button 
               onClick={() => setStatus('idle')} 
@@ -151,6 +198,7 @@ export default function FeaturesRequestPage() {
                     <option value="Video" style={{ background: 'var(--surface-card)' }}>Video Alchemy</option>
                     <option value="Dev" style={{ background: 'var(--surface-card)' }}>Dev Utilities</option>
                     <option value="Text" style={{ background: 'var(--surface-card)' }}>Text & Data</option>
+                    <option value="Other" style={{ background: 'var(--surface-card)' }}>Other</option>
                   </select>
                 </div>
               </div>
@@ -183,53 +231,73 @@ export default function FeaturesRequestPage() {
           <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Popular Sandbox Wishes</h2>
         </div>
         
-        <div className={styles.grid}>
-          {suggestions.map((item) => (
-            <div key={item.id} className={styles.featureCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '200px' }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '999px', background: 'var(--border)', color: 'var(--text-muted)' }}>
-                    {item.category}
-                  </span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#eab308' }}>
-                    <Star size={12} fill="#eab308" />
-                    <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Active</span>
+        {loadingList ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '4rem 0' }}>
+            <Loader2 size={36} className={styles.spinIcon} style={{ color: 'var(--mint-green)' }} />
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.9375rem' }}>Summoning wishes from Database...</span>
+          </div>
+        ) : fetchError ? (
+          <div style={{ textAlign: 'center', padding: '3rem', border: '1px dashed var(--border)', borderRadius: '16px', color: 'var(--text-muted)' }}>
+            <HelpCircle size={40} style={{ marginBottom: '1rem', opacity: 0.5 }} />
+            <p>{fetchError}</p>
+          </div>
+        ) : suggestions.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '3rem', border: '1px dashed var(--border)', borderRadius: '16px', color: 'var(--text-muted)' }}>
+            <Sparkles size={40} style={{ marginBottom: '1rem', opacity: 0.5, color: 'var(--mint-green)' }} />
+            <p>No feature wishes requested yet. Be the first to add a spell!</p>
+          </div>
+        ) : (
+          <div className={styles.grid}>
+            {suggestions.map((item) => {
+              const userVoted = votedIds.includes(item.id);
+              return (
+                <div key={item.id} className={styles.featureCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '200px' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '999px', background: 'var(--border)', color: 'var(--text-muted)' }}>
+                        {item.category}
+                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#eab308' }}>
+                        <Star size={12} fill="#eab308" />
+                        <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Active</span>
+                      </div>
+                    </div>
+                    <h3 className={styles.featureTitle}>{item.title}</h3>
+                    <p className={styles.featureDesc}>{item.description}</p>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                      <strong>{item.votes}</strong> support wishes
+                    </span>
+                    
+                    <button
+                      onClick={() => handleVote(item.id)}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        padding: '0.4rem 0.8rem',
+                        borderRadius: '8px',
+                        border: '1px solid',
+                        borderColor: userVoted ? 'var(--mint-green)' : 'var(--border)',
+                        background: userVoted ? 'rgba(52, 211, 153, 0.15)' : 'transparent',
+                        color: userVoted ? 'var(--mint-green)' : 'var(--foreground)',
+                        cursor: 'pointer',
+                        fontWeight: 700,
+                        fontSize: '0.8rem',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <Vote size={14} />
+                      <span>{userVoted ? 'Wished' : 'Wish'}</span>
+                    </button>
                   </div>
                 </div>
-                <h3 className={styles.featureTitle}>{item.title}</h3>
-                <p className={styles.featureDesc}>{item.description}</p>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                  <strong>{item.votes}</strong> support wishes
-                </span>
-                
-                <button
-                  onClick={() => handleVote(item.id)}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.35rem',
-                    padding: '0.4rem 0.8rem',
-                    borderRadius: '8px',
-                    border: '1px solid',
-                    borderColor: item.userVoted ? 'var(--mint-green)' : 'var(--border)',
-                    background: item.userVoted ? 'rgba(52, 211, 153, 0.15)' : 'transparent',
-                    color: item.userVoted ? 'var(--mint-green)' : 'var(--foreground)',
-                    cursor: 'pointer',
-                    fontWeight: 700,
-                    fontSize: '0.8rem',
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  <Vote size={14} />
-                  <span>{item.userVoted ? 'Wished' : 'Wish'}</span>
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
