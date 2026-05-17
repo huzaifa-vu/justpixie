@@ -2,7 +2,7 @@
 
 import { useState, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wand2, UploadCloud, ArrowRight, FileImage, FileText, Film, Code, Sparkles, Type, Loader2, X, AlertCircle, ChevronDown, Lock, FileCode, LogIn, ArrowDown, Download } from "lucide-react";
+import { Wand2, UploadCloud, ArrowRight, FileImage, FileText, Film, Code, Sparkles, Type, Loader2, X, AlertCircle, ChevronDown, Lock, FileCode, LogIn, ArrowDown, Download, HelpCircle } from "lucide-react";
 import styles from "./page.module.css";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -46,6 +46,7 @@ export default function DashboardHome() {
   const [isThinking, setIsThinking] = useState(false);
   const [aiMessage, setAiMessage] = useState("");
   const [aiError, setAiError] = useState("");
+  const [showUnsupportedModal, setShowUnsupportedModal] = useState(false);
   const [dataExpanded, setDataExpanded] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -183,8 +184,11 @@ export default function DashboardHome() {
 
       const data = await res.json();
 
-      if (!data.route) {
-        throw new Error("Pixie couldn't determine the right tool. Try rephrasing!");
+      if (!data.route || data.params?.unsupported === true) {
+        setShowUnsupportedModal(true);
+        setIsThinking(false);
+        setAiMessage("");
+        return;
       }
 
       // Sync quota state across components
@@ -520,6 +524,54 @@ export default function DashboardHome() {
       <div className={styles.sectionHeader} style={{ marginTop: '3rem' }}>
         <h2>All Categories</h2>
       </div>
+
+      <AnimatePresence>
+        {showUnsupportedModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.modalOverlay}
+            onClick={() => setShowUnsupportedModal(false)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className={styles.modalContent}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={styles.modalIcon}>
+                <HelpCircle size={32} />
+              </div>
+              <h3 className={styles.modalTitle}>Spell Not Found</h3>
+              <p className={styles.modalText}>
+                We can't do this yet! Pixie's local engine does not currently support this specific file action or conversion spell.
+                <br /><br />
+                If you'd like to use this feature, please request it in our Wishlist sandbox!
+              </p>
+              <div className={styles.modalActions}>
+                <button 
+                  className={styles.modalButtonSecondary}
+                  onClick={() => setShowUnsupportedModal(false)}
+                >
+                  Close
+                </button>
+                <button 
+                  className={styles.modalButtonPrimary}
+                  onClick={() => {
+                    setShowUnsupportedModal(false);
+                    router.push("/dashboard/features-request");
+                  }}
+                >
+                  <span>Request Feature</span>
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

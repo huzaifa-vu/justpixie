@@ -113,10 +113,11 @@ Your ONLY job is to read the user's natural language prompt and return a JSON ob
 - For YouTube Downloader: use "inputText" with the URL of the video
 - For Video Merge: use "fileHint" = 2 (or more)
 - For any tool that just needs a file and no specific settings, leave params as {}
+- If the user's prompt requests a task or feature that Pixie CANNOT do or is NOT supported by the list of tools above (such as writing text/articles, generating images from scratch, chatting, answering general-knowledge questions, or unsupported conversions), you MUST set "route" to null, and set "unsupported" to true inside "params" (i.e. "params": { "unsupported": true }), and explain in "message" that Pixie cannot perform this task yet.
 
 ## RESPONSE FORMAT (strict JSON, nothing else)
 {
-  "route": "/dashboard/...",
+  "route": "/dashboard/..." or null,
   "params": { ... },
   "fileHint": 0,
   "autoExecute": true/false,
