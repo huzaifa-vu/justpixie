@@ -19,7 +19,10 @@ export const metadata: Metadata = {
   description: "Complex file transformation made as simple and magical as a single command.",
   icons: {
     icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    apple: [
+      { url: "/apple-touch-icon.png", media: "(prefers-color-scheme: light)" },
+      { url: "/apple-touch-icon-dark.png", media: "(prefers-color-scheme: dark)" }
+    ]
   },
 };
 

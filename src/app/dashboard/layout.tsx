@@ -39,6 +39,9 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
   const remaining = user ? Math.max(0, authLimit - authPromptsUsed) : guestRemaining;
   const percentage = isUnlimited ? 100 : Math.max(0, Math.min(100, limit > 0 ? (remaining / limit) * 100 : 0));
 
+  const logoIconPath = mounted && theme === 'dark' ? '/logo-icon-dark.png' : '/logo-icon.png';
+  const logoFullPath = mounted && theme === 'dark' ? '/logo-full-dark.png' : '/logo-full.png';
+
   useEffect(() => {
     setMounted(true);
     // Get initial session (wrapped in try/catch for guest mode)
@@ -115,7 +118,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
           <div className={styles.logo} onClick={() => setCollapsed(!collapsed)} style={{ cursor: 'pointer' }}>
             {collapsed ? (
               <Image 
-                src="/logo-icon.png" 
+                src={logoIconPath} 
                 alt="Pixie Logo" 
                 width={42} 
                 height={42} 
@@ -124,7 +127,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
               />
             ) : (
               <Image 
-                src="/logo-full.png" 
+                src={logoFullPath} 
                 alt="Pixie Logo" 
                 width={170} 
                 height={67} 
@@ -317,7 +320,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
         <div className={styles.sheetHeader}>
           <div className={styles.logo}>
             <Image 
-              src="/logo-full.png" 
+              src={logoFullPath} 
               alt="Pixie Logo" 
               width={110} 
               height={43} 
@@ -412,7 +415,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
           {/* Mobile Brand (hidden on desktop) */}
           <div className={`${styles.mobileBrand} ${styles.mobileOnly}`}>
             <Image 
-              src="/logo-full.png" 
+              src={logoFullPath} 
               alt="Pixie Logo" 
               width={90} 
               height={35} 

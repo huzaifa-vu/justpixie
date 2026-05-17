@@ -7,14 +7,18 @@ import { usePathname } from "next/navigation";
 import { Wand2, User, LogOut, Settings, LayoutDashboard, CreditCard } from "lucide-react";
 import styles from "@/app/page.module.css";
 import { createClient } from "@/utils/supabase/client";
+import { useTheme } from "next-themes";
 
 export default function MarketingWrapper({ children }: { children: React.ReactNode }) {
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setMounted(true);
     const fetchSession = async () => {
       const supabase = createClient();
       const { data: { session } } = await supabase.auth.getSession();
@@ -64,7 +68,7 @@ export default function MarketingWrapper({ children }: { children: React.ReactNo
         <Link href="/" style={{ textDecoration: 'none' }}>
           <div className={styles.logo}>
             <Image 
-              src="/logo-full.png" 
+              src={mounted && theme === 'dark' ? '/logo-full-dark.png' : '/logo-full.png'} 
               alt="Pixie Logo" 
               width={120} 
               height={47} 
@@ -170,7 +174,7 @@ export default function MarketingWrapper({ children }: { children: React.ReactNo
           <div className={styles.footerCol}>
             <div className={styles.logo} style={{ marginBottom: '1rem' }}>
               <Image 
-                src="/logo-full.png" 
+                src={mounted && theme === 'dark' ? '/logo-full-dark.png' : '/logo-full.png'} 
                 alt="Pixie Logo" 
                 width={100} 
                 height={39} 
