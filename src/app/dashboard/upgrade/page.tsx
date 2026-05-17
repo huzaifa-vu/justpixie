@@ -111,7 +111,7 @@ export default function UpgradePage() {
           <ul className={styles.featuresList}>
             <li><Check size={18} className={styles.checkIcon} /> Standard File Tools</li>
             <li><Check size={18} className={styles.checkIcon} /> Local WASM processing</li>
-            <li><Check size={18} className={styles.checkIcon} /> <strong>10 AI Prompts Daily</strong></li>
+            <li><Check size={18} className={styles.checkIcon} /> <strong>3 AI Prompts Daily</strong></li>
             <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Unlimited AI Prompts</li>
             <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Account Sync</li>
           </ul>
