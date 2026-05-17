@@ -137,7 +137,7 @@ export default function UpgradePage() {
               Current Plan
             </div>
           ) : !user ? (
-            <Link href="/login" className={styles.planBtnSolid} style={{ background: 'var(--deep-charcoal)', color: 'white' }}>
+            <Link href="/login" className={styles.planBtnSolid} style={{ background: 'var(--foreground)', color: 'var(--background)' }}>
               Login to Upgrade
             </Link>
           ) : (

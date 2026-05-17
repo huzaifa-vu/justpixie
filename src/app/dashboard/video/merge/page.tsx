@@ -238,11 +238,11 @@ export default function VideoAudioMerger() {
                       </>
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                         <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--mint-green)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--deep-charcoal)' }}>
+                         <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--mint-green)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-card-fg)' }}>
                             <Volume2 size={32} />
                          </div>
                          <div className={styles.audioBadge}>{selectedAudio.name}</div>
-                         <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>Ready to Overlay</span>
+                         <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Ready to Overlay</span>
                          <button 
                            onClick={(e) => { e.stopPropagation(); setSelectedAudio(null); }}
                            style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%', padding: '5px', color: 'white', cursor: 'pointer' }}

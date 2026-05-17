@@ -90,12 +90,13 @@
   right: 1rem;
   display: flex;
   gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--overlay-card);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   padding: 0.4rem;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border: 1px solid var(--overlay-card-border);
+  box-shadow: 0 4px 12px var(--overlay-card-shadow);
   z-index: 20;
 }
 

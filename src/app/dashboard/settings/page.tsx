@@ -225,10 +225,10 @@ export default function SettingsPage() {
 
         {/* Danger Zone */}
         {isAuth && (
-          <div className={styles.section} style={{ borderColor: '#ef4444' }}>
+          <div className={styles.section} style={{ borderColor: 'var(--danger-border)' }}>
             <div className={styles.sectionHeader}>
-              <Shield size={20} color="#ef4444" />
-              <h2 style={{ color: '#ef4444' }}>Danger Zone</h2>
+              <Shield size={20} color="var(--danger-text)" />
+              <h2 style={{ color: 'var(--danger-text)' }}>Danger Zone</h2>
             </div>
             <div className={styles.sectionBody}>
               <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: "1rem" }}>
@@ -244,12 +244,12 @@ export default function SettingsPage() {
           </div>
         )}
       </div>
-
+ 
       <button className={styles.saveBtn} onClick={handleSave}>
         <Save size={18} />
         {saved ? "Saved!" : "Save Preferences"}
       </button>
-
+ 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className={styles.modalOverlay}>
@@ -257,12 +257,12 @@ export default function SettingsPage() {
             <button className={styles.closeModalBtn} onClick={() => setShowDeleteModal(false)}>
               <X size={20} />
             </button>
-            <AlertTriangle size={48} color="#ef4444" style={{ margin: "0 auto 1rem", display: "block" }} />
-            <h2 style={{ textAlign: "center", marginBottom: "0.5rem", color: "var(--deep-charcoal)" }}>Are you absolutely sure?</h2>
+            <AlertTriangle size={48} color="var(--danger-text)" style={{ margin: "0 auto 1rem", display: "block" }} />
+            <h2 style={{ textAlign: "center", marginBottom: "0.5rem", color: "var(--foreground)" }}>Are you absolutely sure?</h2>
             <p style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: "1.5rem" }}>
               This will permanently purge your account from Pixie. Your Unlimited Magic tier (if purchased) will be invalidated.
             </p>
-            <label style={{ display: "block", fontSize: "0.85rem", fontWeight: "bold", marginBottom: "0.5rem", color: "var(--deep-charcoal)" }}>
+            <label style={{ display: "block", fontSize: "0.85rem", fontWeight: "bold", marginBottom: "0.5rem", color: "var(--foreground)" }}>
               Please type <strong>DELETE</strong> to confirm.
             </label>
             <input 

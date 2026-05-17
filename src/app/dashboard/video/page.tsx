@@ -25,10 +25,10 @@ export default function VideoCategoryHome() {
 
   return (
     <div className={styles.dashboardContainer} style={{ height: 'auto', padding: '1rem', background: 'transparent' }}>
-      <div className={styles.aiCommandBox} style={{ background: 'var(--gentle-lilac)', color: 'var(--deep-charcoal)', marginBottom: '2rem' }}>
+      <div className={styles.aiCommandBox} style={{ background: 'var(--gentle-lilac)', color: 'var(--accent-card-fg)', marginBottom: '2rem' }}>
         <div className={styles.aiHeader}>
-          <Video size={20} className={styles.wandStar} style={{ color: 'var(--deep-charcoal)' }} />
-          <span style={{ color: 'var(--deep-charcoal)' }}>Video Hub</span>
+          <Video size={20} className={styles.wandStar} style={{ color: 'var(--accent-card-fg)' }} />
+          <span style={{ color: 'var(--accent-card-fg)' }}>Video Hub</span>
         </div>
         <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>Video Alchemy</h1>
         <p style={{ opacity: 0.8, maxWidth: '600px' }}>
