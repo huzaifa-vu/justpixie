@@ -232,8 +232,42 @@
 .toggleBtn {
   background: none;
   border: none;
-  color: var(--deep-charcoal);
+  color: var(--foreground);
   font-weight: 700;
   cursor: pointer;
   text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem !important;
+  }
+  .card {
+    padding: 1.5rem !important;
+    border-radius: var(--radius-inner) !important;
+  }
+  .logoLink {
+    margin-bottom: 1rem !important;
+  }
+  .logoImg {
+    height: 2rem !important;
+    width: auto !important;
+  }
+  .title {
+    font-size: 1.5rem !important;
+  }
+  .subtitle {
+    font-size: 0.85rem !important;
+  }
+  .inputGroup {
+    padding: 0.75rem 1rem !important;
+    border-radius: 12px !important;
+  }
+  .submitBtn, .guestBtn {
+    padding: 0.75rem 1rem !important;
+    font-size: 0.875rem !important;
+  }
+  .divider {
+    margin: 1rem 0 !important;
+  }
 }
