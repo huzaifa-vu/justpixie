@@ -54,16 +54,16 @@ export default function WordCounter() {
           </div>
           <div className={styles.configBody}>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-               <div style={{ background: 'rgba(0,0,0,0.03)', padding: '1rem', borderRadius: 'var(--radius-inner)', textAlign: 'center' }}>
-                 <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--deep-charcoal)' }}>{stats.words}</div>
-                 <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 600 }}>Words</div>
-               </div>
-               <div style={{ background: 'rgba(0,0,0,0.03)', padding: '1rem', borderRadius: 'var(--radius-inner)', textAlign: 'center' }}>
-                 <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--deep-charcoal)' }}>{stats.characters}</div>
-                 <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 600 }}>Characters</div>
-               </div>
-            </div>
+             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div style={{ background: 'var(--background)', padding: '1rem', borderRadius: 'var(--radius-inner)', textAlign: 'center', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--foreground)' }}>{stats.words}</div>
+                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 600 }}>Words</div>
+                </div>
+                <div style={{ background: 'var(--background)', padding: '1rem', borderRadius: 'var(--radius-inner)', textAlign: 'center', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--foreground)' }}>{stats.characters}</div>
+                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 600 }}>Characters</div>
+                </div>
+             </div>
 
             <div style={{ background: 'var(--surface-card)', padding: '1rem', border: '1px solid var(--border)', borderRadius: 'var(--radius-inner)', fontSize: '0.9rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--border)' }}>

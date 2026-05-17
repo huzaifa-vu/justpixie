@@ -80,14 +80,14 @@ export default function TimestampConverter() {
         {/* Live Clock Panel */}
         <div style={{ background: 'var(--surface-card)', padding: '2rem', borderRadius: '12px', border: '1px solid var(--border)', textAlign: 'center' }}>
           <div style={{ fontSize: '1rem', color: 'var(--text-muted)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 700 }}>Current Unix Epoch Time</div>
-          <div style={{ fontSize: '4rem', fontWeight: 800, color: 'var(--pixie-teal)', fontFamily: 'monospace' }}>
+          <div style={{ fontSize: 'clamp(2rem, 8vw, 4rem)', fontWeight: 800, color: 'var(--pixie-teal)', fontFamily: 'monospace', wordBreak: 'break-all' }}>
             {now}
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
           {/* Epoch -> Human */}
-          <div style={{ flex: 1, background: 'var(--surface-card)', padding: '2rem', borderRadius: '12px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ background: 'var(--surface-card)', padding: '2rem', borderRadius: '12px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <h3>Epoch to Human Date</h3>
             <input 
               type="text" 
@@ -98,14 +98,14 @@ export default function TimestampConverter() {
             />
             <button className={styles.actionBtnAlt} onClick={handleEpochConvert}>Convert to GMT/Local</button>
             {epochResult && (
-              <div style={{ background: 'var(--background)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border)', fontFamily: 'monospace', marginTop: '1rem' }}>
+              <div style={{ background: 'var(--background)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border)', fontFamily: 'monospace', marginTop: '1rem', wordBreak: 'break-all' }}>
                 {epochResult}
               </div>
             )}
           </div>
 
           {/* Human -> Epoch */}
-          <div style={{ flex: 1, background: 'var(--surface-card)', padding: '2rem', borderRadius: '12px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ background: 'var(--surface-card)', padding: '2rem', borderRadius: '12px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <h3>Human Date to Epoch</h3>
             <input 
               type="text" 
@@ -116,7 +116,7 @@ export default function TimestampConverter() {
             />
             <button className={styles.actionBtnAlt} onClick={handleDateConvert}>Convert to Epoch</button>
             {dateResult && (
-              <div style={{ background: 'var(--background)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border)', fontFamily: 'monospace', marginTop: '1rem', fontSize: '1.5rem', color: 'var(--pixie-teal)' }}>
+              <div style={{ background: 'var(--background)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border)', fontFamily: 'monospace', marginTop: '1rem', fontSize: '1.5rem', color: 'var(--pixie-teal)', wordBreak: 'break-all' }}>
                 {dateResult}
               </div>
             )}

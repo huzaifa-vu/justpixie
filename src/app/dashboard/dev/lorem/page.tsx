@@ -64,13 +64,13 @@ export default function LoremGenerator() {
             
             <div className={styles.fieldGroup}>
               <label className={styles.label}>Generation Type</label>
-              <div style={{ display: 'flex', gap: '1rem', background: 'var(--soft-sage)', padding: '0.4rem', borderRadius: 'var(--radius-pill)', border: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', gap: '1rem', background: 'var(--background)', padding: '0.4rem', borderRadius: 'var(--radius-pill)', border: '1px solid var(--border)' }}>
                 <button 
                   onClick={() => setType("paragraphs")}
                   style={{ 
                     flex: 1, padding: '0.6rem', border: 'none', borderRadius: 'var(--radius-pill)', 
-                    background: type === "paragraphs" ? 'var(--deep-charcoal)' : 'transparent',
-                    color: type === "paragraphs" ? 'var(--pure-white)' : 'var(--text-muted)',
+                    background: type === "paragraphs" ? 'var(--foreground)' : 'transparent',
+                    color: type === "paragraphs" ? 'var(--background)' : 'var(--text-muted)',
                     fontSize: '0.8125rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s'
                   }}
                 >
@@ -80,8 +80,8 @@ export default function LoremGenerator() {
                   onClick={() => setType("characters")}
                   style={{ 
                     flex: 1, padding: '0.6rem', border: 'none', borderRadius: 'var(--radius-pill)', 
-                    background: type === "characters" ? 'var(--deep-charcoal)' : 'transparent',
-                    color: type === "characters" ? 'var(--pure-white)' : 'var(--text-muted)',
+                    background: type === "characters" ? 'var(--foreground)' : 'transparent',
+                    color: type === "characters" ? 'var(--background)' : 'var(--text-muted)',
                     fontSize: '0.8125rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s'
                   }}
                 >

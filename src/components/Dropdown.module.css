@@ -36,7 +36,7 @@
   width: 100%;
   max-height: 250px;
   overflow-y: auto;
-  background: var(--pure-white);
+  background: var(--surface-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-inner);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -64,7 +64,7 @@
   background: transparent;
   border: none;
   border-radius: 6px;
-  color: var(--deep-charcoal);
+  color: var(--foreground);
   font-size: 0.875rem;
   text-align: left;
   cursor: pointer;
@@ -79,6 +79,10 @@
   background: rgba(167, 243, 208, 0.2);
   color: var(--mint-green-dark, #047857);
   font-weight: 600;
+}
+
+:global([data-theme="dark"]) .optionSelected {
+  color: var(--mint-green) !important;
 }
 
 .optionSelected:hover {

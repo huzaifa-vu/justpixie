@@ -72,8 +72,8 @@ export default function RegexTester() {
           
           <div className={styles.textPanel} style={{ flex: 0, height: '120px' }}>
              <div className={styles.panelHeader}>Regular Expression</div>
-             <div style={{ display: 'flex', padding: '1rem', gap: '0.5rem', alignItems: 'center' }}>
-                <span style={{ fontSize: '1.5rem', color: 'var(--text-muted)' }}>/</span>
+             <div className={styles.regexRow}>
+                <span className={styles.regexSlash}>/</span>
                 <input 
                   type="text" 
                   className={styles.textInput} 
@@ -82,11 +82,10 @@ export default function RegexTester() {
                   onChange={e => setPattern(e.target.value)}
                   placeholder="pattern (e.g. \d+)"
                 />
-                <span style={{ fontSize: '1.5rem', color: 'var(--text-muted)' }}>/</span>
+                <span className={styles.regexSlash}>/</span>
                 <input 
                   type="text" 
-                  className={styles.textInput} 
-                  style={{ width: '80px', fontFamily: 'monospace', fontSize: '1.25rem' }}
+                  className={`${styles.textInput} ${styles.regexFlagsInput}`}
                   value={flags}
                   onChange={e => setFlags(e.target.value)}
                   placeholder="gmi"

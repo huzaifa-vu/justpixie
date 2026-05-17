@@ -293,3 +293,20 @@
     width: 100%;
   }
 }
+
+@media (max-width: 768px) {
+  .workspace {
+    flex-direction: column-reverse !important;
+  }
+  .uploadGrid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  .fileSlot {
+    min-height: auto !important;
+    padding: 1.5rem !important;
+  }
+  .previewArea {
+    padding: 1rem !important;
+  }
+}

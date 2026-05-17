@@ -28,7 +28,7 @@ export default function DiffChecker() {
 
       <div className={styles.workspace} style={{ flexDirection: 'column' }}>
         
-        <div style={{ display: 'flex', gap: '1rem', height: '300px' }}>
+        <div className={styles.diffInputsWrapper}>
           <div className={styles.textPanel} style={{ flex: 1 }}>
             <div className={styles.panelHeader} style={{ background: 'rgba(220, 38, 38, 0.05)' }}>Original Text</div>
             <textarea
@@ -39,7 +39,7 @@ export default function DiffChecker() {
               style={{ whiteSpace: 'pre' }}
             />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--border)' }}>
+          <div className={styles.diffArrow}>
              <ArrowRightLeft size={32} />
           </div>
           <div className={styles.textPanel} style={{ flex: 1 }}>
@@ -54,21 +54,21 @@ export default function DiffChecker() {
           </div>
         </div>
 
-        <div className={styles.textPanel} style={{ flex: 1, minHeight: '300px', backgroundColor: 'var(--deep-charcoal)', color: 'var(--pure-white)' }}>
-           <div className={styles.panelHeader} style={{ color: 'var(--pure-white)', borderColor: 'rgba(255,255,255,0.1)' }}>Unified Diff Result</div>
+        <div className={styles.textPanel} style={{ flex: 1, minHeight: '300px', backgroundColor: 'var(--surface-card)', color: 'var(--foreground)' }}>
+           <div className={styles.panelHeader} style={{ color: 'var(--foreground)', borderColor: 'var(--border)' }}>Unified Diff Result</div>
            <div style={{ padding: '1.5rem', fontFamily: 'monospace', fontSize: '1rem', overflowY: 'auto' }}>
               {diffResult.map((part, index) => {
-                 let color = 'inherit';
+                 let color = 'var(--foreground)';
                  let bgColor = 'transparent';
                  let prefix = ' ';
                  
                  if (part.added) {
-                   color = '#a7f3d0';
-                   bgColor = 'rgba(167, 243, 208, 0.1)';
+                   color = 'var(--pixie-teal)';
+                   bgColor = 'rgba(20, 184, 166, 0.1)';
                    prefix = '+';
                  } else if (part.removed) {
-                   color = '#fca5a5';
-                   bgColor = 'rgba(252, 165, 165, 0.1)';
+                   color = 'var(--danger-text)';
+                   bgColor = 'rgba(239, 68, 68, 0.1)';
                    prefix = '-';
                  }
 

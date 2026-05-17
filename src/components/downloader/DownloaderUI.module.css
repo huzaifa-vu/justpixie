@@ -541,6 +541,25 @@
   }
 }
 
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+  .statsContainer {
+    padding: 1rem !important;
+    gap: 1rem !important;
+  }
+  .statusHeader {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+  .statusPulse {
+    font-size: 0.875rem !important;
+  }
+}
+
 @media (max-width: 480px) {
   .featuresGrid {
     grid-template-columns: 1fr;

@@ -6,7 +6,7 @@
 .header p { color: var(--text-muted); }
 .workspace { display: flex; gap: 1.5rem; flex: 1; min-height: 500px; }
 .editorArea { flex: 1; display: flex; flex-direction: column; gap: 1rem; }
-.textPanel { flex: 1; flex-shrink: 0; min-height: 200px; background: var(--surface-card); border-radius: var(--radius-inner); border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-bento); }
+.textPanel { flex: 1; flex-shrink: 0; min-height: 350px; background: var(--surface-card); border-radius: var(--radius-inner); border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-bento); }
 .panelHeader { padding: 1rem 1.75rem; border-bottom: 1px solid var(--border); font-size: 0.875rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
 .textarea { flex: 1; border: none; outline: none; resize: none; padding: 1.5rem; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.875rem; line-height: 1.6; background: transparent; color: var(--foreground); }
 .textarea::placeholder { color: #94a3b8; }
@@ -104,5 +104,35 @@
   }
   .actionBtn, .actionBtnAlt, .copyBtn {
     height: 48px;
+  }
+}
+
+/* Regex Tester specific mobile overrides */
+.regexRow {
+  display: flex;
+  padding: 1rem;
+  gap: 0.5rem;
+  align-items: center;
+}
+.regexSlash {
+  font-size: 1.5rem;
+  color: var(--text-muted);
+}
+.regexFlagsInput {
+  width: 80px;
+  font-family: monospace;
+  font-size: 1.25rem;
+}
+@media (max-width: 768px) {
+  .regexRow {
+    padding: 0.5rem !important;
+    gap: 0.25rem !important;
+  }
+  .regexSlash {
+    font-size: 1.1rem !important;
+  }
+  .regexFlagsInput {
+    width: 60px !important;
+    font-size: 1rem !important;
   }
 }

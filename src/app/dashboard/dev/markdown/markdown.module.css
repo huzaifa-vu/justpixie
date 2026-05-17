@@ -11,12 +11,11 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1.5rem;
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--overlay-card);
   backdrop-filter: blur(20px) saturate(200%);
   border-radius: var(--radius-pill);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08),
-              0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  border: 1px solid var(--overlay-card-border);
+  box-shadow: 0 12px 40px var(--overlay-card-shadow);
   z-index: 10;
 }
 
@@ -24,16 +23,15 @@
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  background: rgba(var(--mint-green-rgb), 0.05);
+  background: var(--border-light);
   padding: 0.5rem 1.5rem;
   border-radius: var(--radius-pill);
-  border: 1px solid rgba(var(--mint-green-rgb), 0.1);
+  border: 1px solid var(--border);
   transition: all 0.3s ease;
 }
 
 .statsCapsule:hover {
-  background: rgba(var(--mint-green-rgb), 0.1);
-  border-color: rgba(var(--mint-green-rgb), 0.2);
+  background: var(--background);
 }
 
 .statSegment {
@@ -112,7 +110,7 @@
 .activeTab {
   background: var(--pure-white);
   border-color: var(--border);
-  color: var(--deep-charcoal);
+  color: var(--foreground);
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
@@ -150,7 +148,7 @@
 
 .statValue {
   font-family: 'JetBrains Mono', monospace;
-  color: var(--deep-charcoal);
+  color: var(--foreground);
   opacity: 0.9;
 }
 
@@ -172,7 +170,7 @@
   font-size: 0.8125rem;
   white-space: pre-wrap;
   color: var(--pixie-teal);
-  background: #fafafa;
+  background: var(--background);
   flex: 1;
   overflow-y: auto;
 }
@@ -183,5 +181,28 @@
   }
   .workspaceStages {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .actionRibbon {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    border-radius: var(--radius-inner) !important;
+    padding: 1rem !important;
+    gap: 1rem !important;
+  }
+  .ribbonSection {
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 0.75rem !important;
+  }
+  .statsCapsule {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 0.5rem 1rem !important;
+  }
+  .previewContent {
+    padding: 1.5rem !important;
   }
 }

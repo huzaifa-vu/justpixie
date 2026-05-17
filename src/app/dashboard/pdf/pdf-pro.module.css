@@ -516,3 +516,30 @@
 .pageCard:hover .gripHandle {
   opacity: 1;
 }
+
+@media (max-width: 768px) {
+  .pageCard {
+    height: 100px !important;
+  }
+  .pageThumb {
+    width: 70px !important;
+  }
+  .cardFooter {
+    padding: 0.5rem 0.75rem !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+  .cardActions {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    gap: 0.5rem !important;
+  }
+  .cardIndex {
+    font-size: 0.75rem !important;
+  }
+  .cardLabel {
+    font-size: 0.55rem !important;
+  }
+}

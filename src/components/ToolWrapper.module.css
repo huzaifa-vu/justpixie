@@ -97,6 +97,10 @@
   }
 
   .content {
-    padding-bottom: 120px; /* Extra buffer for floating mobile navigation bar */
+    padding-bottom: 120px !important; /* Extra buffer for floating mobile navigation bar */
+  }
+
+  .toolWrapper {
+    margin-bottom: 80px !important;
   }
 }
