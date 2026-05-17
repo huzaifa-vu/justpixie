@@ -147,7 +147,7 @@ export default function UpgradePage() {
           )}
 
           <ul className={styles.featuresList}>
-            <li><Check size={18} className={styles.checkIcon} /> All 30+ File Tools forever</li>
+            <li><Check size={18} className={styles.checkIcon} /> All 60+ File Tools forever</li>
             <li><Check size={18} className={styles.checkIcon} /> Local-first WASM processing</li>
             <li><Check size={18} className={styles.checkIcon} /> <strong>100 Free AI Prompts Daily</strong></li>
             <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Unlimited AI Prompts</li>
@@ -189,7 +189,7 @@ export default function UpgradePage() {
             <li><Check size={18} className={styles.checkIcon} /> <strong>Unlimited AI Prompts</strong></li>
             <li><Check size={18} className={styles.checkIcon} /> Intelligent File Routing Engine</li>
             <li><Check size={18} className={styles.checkIcon} /> Priority Conversion Queue</li>
-            <li><Check size={18} className={styles.checkIcon} /> All 30+ File Tools forever</li>
+            <li><Check size={18} className={styles.checkIcon} /> All 60+ File Tools forever</li>
             <li><Check size={18} className={styles.checkIcon} /> Local-first WASM processing</li>
           </ul>
         </div>
