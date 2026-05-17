@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Sparkles, HelpCircle, ArrowRight, ChevronDown, X as XIcon } from "lucide-react";
+import { Check, Sparkles, HelpCircle, ArrowRight, ChevronDown, X as XIcon, Compass, User, Crown } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
@@ -85,6 +85,9 @@ export default function UpgradePage() {
       <div className={styles.pricingGrid}>
         {/* Guest Tier */}
         <div className={styles.pricingCard}>
+          <div className={styles.iconWrapper} style={{ '--accent-color': '#0ea5e9' } as React.CSSProperties}>
+            <Compass size={28} />
+          </div>
           <div className={styles.cardHeader}>
             <div className={styles.tierName}>Guest Explorer</div>
             <div className={styles.priceBlock}>
@@ -116,6 +119,9 @@ export default function UpgradePage() {
 
         {/* Hobbyist Tier */}
         <div className={styles.pricingCard}>
+          <div className={styles.iconWrapper} style={{ '--accent-color': '#8b5cf6' } as React.CSSProperties}>
+            <User size={28} />
+          </div>
           <div className={styles.cardHeader}>
             <div className={styles.tierName}>Hobbyist</div>
             <div className={styles.priceBlock}>
@@ -149,9 +155,12 @@ export default function UpgradePage() {
           </ul>
         </div>
 
-        {/* Unlimited Tier */}
+        {/* Unlimited Magic Tier */}
         <div className={`${styles.pricingCard} ${styles.popularCard}`}>
           <div className={styles.popularBadge}>Most Popular</div>
+          <div className={styles.iconWrapper} style={{ '--accent-color': 'var(--mint-green)' } as React.CSSProperties}>
+            <Crown size={28} />
+          </div>
           <div className={styles.cardHeader}>
             <div className={styles.tierName}>Unlimited Magic</div>
             <div className={styles.priceBlock}>
