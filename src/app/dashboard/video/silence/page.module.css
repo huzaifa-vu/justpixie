@@ -184,8 +184,8 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 1.25rem;
-  background: var(--deep-charcoal);
-  color: var(--pure-white);
+  background: var(--foreground);
+  color: var(--background);
   border: none;
   border-radius: var(--radius-pill);
   font-weight: 700;

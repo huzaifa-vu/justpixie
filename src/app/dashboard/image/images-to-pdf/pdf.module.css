@@ -134,7 +134,7 @@
   gap: 0.5rem;
   padding: 1rem;
   background: var(--mint-green);
-  color: var(--deep-charcoal);
+  color: var(--accent-card-fg);
   border: none;
   border-radius: var(--radius-pill);
   font-weight: 700;
