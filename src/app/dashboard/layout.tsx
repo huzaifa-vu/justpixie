@@ -3,9 +3,10 @@
 import { ReactNode, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Wand2, LayoutDashboard, Image as ImageIcon, FileText, Video, Code, Settings, UserCircle, LogOut, Type, Menu, X, Info, HelpCircle, Sparkles, Download } from "lucide-react";
+import { Wand2, LayoutDashboard, Image as ImageIcon, FileText, Video, Code, Settings, UserCircle, LogOut, Type, Menu, X, Info, HelpCircle, Sparkles, Download, Sun, Moon } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useQuota } from "@/hooks/useQuota";
+import { useTheme } from "next-themes";
 import styles from "./layout.module.css";
 import Image from "next/image";
 import { FileDropProvider } from "@/contexts/FileDropContext";
@@ -23,6 +24,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 function DashboardInnerLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -37,6 +40,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
   const percentage = isUnlimited ? 100 : Math.max(0, Math.min(100, limit > 0 ? (remaining / limit) * 100 : 0));
 
   useEffect(() => {
+    setMounted(true);
     // Get initial session (wrapped in try/catch for guest mode)
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -434,6 +438,20 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
             })}
           </div>
           <div className={styles.topbarActions}>
+            <button 
+              onClick={() => mounted && setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className={styles.iconBtn}
+              title={mounted ? `Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode` : "Toggle Theme"}
+            >
+              {!mounted ? (
+                <Moon size={22} style={{ opacity: 0.5 }} />
+              ) : theme === 'dark' ? (
+                <Sun size={22} />
+              ) : (
+                <Moon size={22} />
+              )}
+            </button>
+
             <div ref={profileRef} style={{ position: 'relative' }}>
               <button 
                 onClick={() => setProfileOpen(!profileOpen)} 
