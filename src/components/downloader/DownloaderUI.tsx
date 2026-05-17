@@ -118,6 +118,12 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
     load();
   }, []);
 
+  useEffect(() => {
+    if (initialUrl) {
+      setUrl(initialUrl);
+    }
+  }, [initialUrl]);
+
   // Real-time URL validation for "Magic detect"
   const isYouTubeLink = YouTubeRegex.test(url);
 
