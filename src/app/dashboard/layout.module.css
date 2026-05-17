@@ -210,7 +210,7 @@
 }
 
 :global([data-theme="dark"]) .navItem:hover {
-  color: var(--text-inverse);
+  color: #ffffff;
 }
 
 .navItem.active {
