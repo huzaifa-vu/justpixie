@@ -124,6 +124,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
                 height={42} 
                 priority 
                 className={styles.logoImg}
+                style={{ height: 'auto' }}
               />
             ) : (
               <Image 
@@ -133,6 +134,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
                 height={67} 
                 priority 
                 className={styles.logoImg}
+                style={{ height: 'auto' }}
               />
             )}
           </div>
@@ -326,6 +328,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
               height={43} 
               priority 
               className={styles.logoImg}
+              style={{ height: 'auto' }}
             />
           </div>
           <button className={styles.iconBtn} onClick={() => setMobileMoreOpen(false)}><X size={24} /></button>
@@ -421,6 +424,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
               height={35} 
               priority 
               className={styles.logoImg}
+              style={{ height: 'auto' }}
             />
           </div>
 
