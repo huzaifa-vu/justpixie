@@ -12,7 +12,6 @@
   width: 18.75rem;
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(30px) saturate(150%);
-  -webkit-backdrop-filter: blur(30px) saturate(150%);
   border-radius: 2.25rem;
   display: flex;
   flex-direction: column;
@@ -398,7 +397,6 @@
   transform: translateY(-50%) translateX(10px);
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(25px) saturate(180%);
-  -webkit-backdrop-filter: blur(25px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 1.25rem;
   padding: 0.85rem 1.1rem;
@@ -519,7 +517,6 @@
   padding: 0.8rem;
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   color: var(--deep-charcoal);
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: var(--radius-pill);
@@ -604,7 +601,6 @@
   flex-direction: column;
   background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border-radius: var(--radius-bento);
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05), inset 0 2px 10px rgba(255, 255, 255, 0.8);
@@ -629,7 +625,6 @@
   justify-content: space-between;
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border-radius: 2.25rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03), inset 0 2px 10px rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.8);
@@ -671,7 +666,6 @@
 .iconBtn {
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.9);
   color: var(--deep-charcoal);
   width: 48px;
@@ -782,7 +776,6 @@
   width: 20rem;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(30px) saturate(180%);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 1.75rem;
   padding: 1.5rem;
@@ -1013,7 +1006,6 @@
     padding: 0 1.25rem;
     background: rgba(255, 255, 255, 0.35);
     backdrop-filter: blur(30px) saturate(180%);
-    -webkit-backdrop-filter: blur(30px) saturate(180%);
     border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* Fixed border for definition */
     border-radius: 0;
     position: fixed;
