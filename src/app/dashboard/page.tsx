@@ -189,12 +189,7 @@ export default function DashboardHome() {
 
       // Sync quota state across components
       if (typeof window !== 'undefined') {
-        if (isLoggedIn === false) {
-          syncLimitReached();
-        } else {
-          // Trigger event for auth users to refresh sidebar metadata
-          window.dispatchEvent(new CustomEvent("pixie_quota_changed"));
-        }
+        window.dispatchEvent(new CustomEvent("pixie_quota_changed"));
       }
 
       setAiMessage(data.message || "Routing you to the right tool...");
