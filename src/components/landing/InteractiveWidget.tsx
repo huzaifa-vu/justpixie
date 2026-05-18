@@ -201,85 +201,87 @@ export default function InteractiveWidget() {
         </div>
 
         {/* Right side: The Live AI Router Demonstration */}
-        <div className="flex flex-col items-center justify-center p-8 rounded-[32px] bg-[var(--foreground)]/[0.01] border border-[var(--border)] min-h-[340px] transition-all duration-300 relative overflow-hidden">
+        <div className="flex flex-col items-center justify-between p-8 rounded-[32px] bg-[var(--foreground)]/[0.01] border border-[var(--border)] min-h-[370px] transition-all duration-300 relative overflow-hidden">
           
-          <AnimatePresence mode="wait">
-            {routing ? (
-              <motion.div
-                key="routing"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="text-center flex flex-col items-center gap-4 w-full"
-              >
-                {/* Router Prompt Shell Visual */}
-                <div className="w-full bg-[var(--pure-white)] border border-[var(--border)] rounded-[20px] p-3 text-left font-mono text-xs flex items-center gap-2 mb-2 shadow-sm">
-                  <Keyboard className="h-3.5 w-3.5 text-[var(--pixie-teal)] flex-shrink-0" />
-                  <span className="text-[var(--foreground)] truncate">{inputText}</span>
-                  <span className="w-2 h-4 bg-[var(--pixie-teal)] animate-pulse flex-shrink-0" />
-                </div>
-
-                <div className="relative flex items-center justify-center my-2">
-                  <motion.div 
-                    animate={{ rotate: 360 }}
-                    transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                    className="h-20 w-20 rounded-full border-2 border-t-[var(--pixie-teal)] border-r-transparent border-b-[var(--gentle-lilac)] border-l-transparent"
-                  />
-                  <Wand2 className="h-8 w-8 text-[var(--pixie-teal)] absolute animate-pulse" />
-                </div>
-                
-                <div>
-                  <h4 className="text-base font-extrabold text-[var(--foreground)] font-sans">Helper is searching...</h4>
-                  <p className="text-xs text-[var(--text-muted)] mt-1 font-sans">
-                    Reading your request...
-                  </p>
-                </div>
-              </motion.div>
-            ) : matchedTool ? (
-              <motion.div
-                key="result"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                className="w-full text-center flex flex-col items-center gap-4"
-              >
-                {/* Completed prompt bar */}
-                <div className="w-full bg-[var(--pure-white)] border border-[var(--border)] rounded-[20px] p-3 text-left font-mono text-xs flex items-center gap-2 shadow-sm">
-                  <Keyboard className="h-3.5 w-3.5 text-[var(--text-muted)] flex-shrink-0" />
-                  <span className="text-[var(--text-muted)] truncate">{matchedTool.prompt}</span>
-                </div>
-
-                <div className="h-16 w-16 rounded-[24px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center shadow-md my-1">
-                  {matchedTool.icon}
-                </div>
-
-                <div>
-                  <span 
-                    className="text-[10px] font-extrabold tracking-wider uppercase px-3 py-1 rounded-full shadow-sm"
-                    style={{ backgroundColor: matchedTool.badgeBg, color: matchedTool.badgeText }}
-                  >
-                    {matchedTool.category}
-                  </span>
-                  <h4 className="text-lg font-extrabold text-[var(--foreground)] mt-3 font-sans">
-                    Found the perfect tool!
-                  </h4>
-                  <p className="text-xs text-[var(--text-muted)] mt-1 font-sans max-w-[220px] mx-auto leading-relaxed">
-                    Your files are 100% safe. Everything runs inside your browser window.
-                  </p>
-                </div>
-
-                <a 
-                  href="/dashboard"
-                  className="flex items-center justify-center gap-2 w-full py-3 rounded-[20px] bg-[var(--foreground)] hover:opacity-90 text-[var(--pure-white)] font-bold text-sm transition-all duration-200 cursor-pointer shadow-md text-decoration-none"
+          <div className="w-full flex-grow flex flex-col items-center justify-center mb-4">
+            <AnimatePresence mode="wait">
+              {routing ? (
+                <motion.div
+                  key="routing"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="text-center flex flex-col items-center gap-4 w-full"
                 >
-                  Open Free Workspace <ArrowRight className="h-4 w-4" />
-                </a>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
+                  {/* Router Prompt Shell Visual */}
+                  <div className="w-full bg-[var(--pure-white)] border border-[var(--border)] rounded-[20px] p-3 text-left font-mono text-xs flex items-center gap-2 mb-2 shadow-sm">
+                    <Keyboard className="h-3.5 w-3.5 text-[var(--pixie-teal)] flex-shrink-0" />
+                    <span className="text-[var(--foreground)] truncate">{inputText}</span>
+                    <span className="w-2 h-4 bg-[var(--pixie-teal)] animate-pulse flex-shrink-0" />
+                  </div>
+
+                  <div className="relative flex items-center justify-center my-2">
+                    <motion.div 
+                      animate={{ rotate: 360 }}
+                      transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                      className="h-20 w-20 rounded-full border-2 border-t-[var(--pixie-teal)] border-r-transparent border-b-[var(--gentle-lilac)] border-l-transparent"
+                    />
+                    <Wand2 className="h-8 w-8 text-[var(--pixie-teal)] absolute animate-pulse" />
+                  </div>
+                  
+                  <div>
+                    <h4 className="text-base font-extrabold text-[var(--foreground)] font-sans">Helper is searching...</h4>
+                    <p className="text-xs text-[var(--text-muted)] mt-1 font-sans">
+                      Reading your request...
+                    </p>
+                  </div>
+                </motion.div>
+              ) : matchedTool ? (
+                <motion.div
+                  key="result"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  className="w-full text-center flex flex-col items-center gap-4"
+                >
+                  {/* Completed prompt bar */}
+                  <div className="w-full bg-[var(--pure-white)] border border-[var(--border)] rounded-[20px] p-3 text-left font-mono text-xs flex items-center gap-2 shadow-sm">
+                    <Keyboard className="h-3.5 w-3.5 text-[var(--text-muted)] flex-shrink-0" />
+                    <span className="text-[var(--text-muted)] truncate">{matchedTool.prompt}</span>
+                  </div>
+
+                  <div className="h-16 w-16 rounded-[24px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center shadow-md my-1">
+                    {matchedTool.icon}
+                  </div>
+
+                  <div>
+                    <span 
+                      className="text-[10px] font-extrabold tracking-wider uppercase px-3 py-1 rounded-full shadow-sm"
+                      style={{ backgroundColor: matchedTool.badgeBg, color: matchedTool.badgeText }}
+                    >
+                      {matchedTool.category}
+                    </span>
+                    <h4 className="text-lg font-extrabold text-[var(--foreground)] mt-3 font-sans">
+                      Found the perfect tool!
+                    </h4>
+                    <p className="text-xs text-[var(--text-muted)] mt-1 font-sans max-w-[220px] mx-auto leading-relaxed">
+                      Your files are 100% safe. Everything runs inside your browser window.
+                    </p>
+                  </div>
+
+                  <a 
+                    href="/dashboard"
+                    className="flex items-center justify-center gap-2 w-full py-3 rounded-[20px] bg-[var(--foreground)] hover:opacity-90 text-[var(--pure-white)] font-bold text-sm transition-all duration-200 cursor-pointer shadow-md text-decoration-none"
+                  >
+                    Open Free Workspace <ArrowRight className="h-4 w-4" />
+                  </a>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+          </div>
 
           {/* Secure local Sandbox footer label */}
-          <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1.5 opacity-60 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider font-sans">
+          <div className="flex items-center justify-center gap-1.5 opacity-60 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider font-sans mt-auto">
             <ShieldAlert className="h-3.5 w-3.5" /> 🔒 Safe and secure. Everything runs on your computer.
           </div>
         </div>
