@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Sparkles, LayoutDashboard, LogIn } from "lucide-react";
+import { Sparkles, LayoutDashboard, LogIn, Menu, X } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 
 export default function Navbar() {
   const [session, setSession] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -21,47 +22,98 @@ export default function Navbar() {
 
   return (
     <header className="fixed top-4 left-0 right-0 z-50 max-w-5xl mx-auto px-4">
-      <div className="w-full h-16 rounded-full border border-white/10 bg-[#0a0a0a]/60 backdrop-blur-xl px-6 flex items-center justify-between shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+      <div className="w-full h-16 rounded-[24px] border border-[var(--border)] bg-[var(--pure-white)]/60 backdrop-blur-xl px-6 flex items-center justify-between shadow-[var(--shadow-bento)] transition-all duration-300">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group cursor-pointer text-decoration-none">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-teal-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-200">
-            <Sparkles className="h-5 w-5 text-white" />
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-[var(--gentle-lilac)] to-[var(--mint-green)] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-200">
+            <Sparkles className="h-5 w-5 text-neutral-900" />
           </div>
-          <span className="font-extrabold text-lg text-white tracking-tight font-sans">
-            Just<span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-indigo-400">Pixie</span>
+          <span className="font-extrabold text-lg text-[var(--foreground)] tracking-tight font-sans">
+            Just<span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--pixie-teal)] to-[var(--gentle-lilac)]">Pixie</span>
           </span>
         </Link>
 
-        {/* Navigation Links (Hidden on small screens for premium cleanliness) */}
+        {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-1">
-          <Link href="#features" className="text-xs font-semibold text-neutral-400 hover:text-white px-4 py-2 rounded-full hover:bg-white/[0.03] transition-all duration-200 text-decoration-none">
+          <Link href="#features" className="text-xs font-bold text-[var(--text-muted)] hover:text-[var(--foreground)] px-4 py-2 rounded-full hover:bg-[var(--foreground)]/[0.04] transition-all duration-200 text-decoration-none">
             Features
           </Link>
-          <a href="#how-it-works" className="text-xs font-semibold text-neutral-400 hover:text-white px-4 py-2 rounded-full hover:bg-white/[0.03] transition-all duration-200 text-decoration-none">
+          <a href="#how-it-works" className="text-xs font-bold text-[var(--text-muted)] hover:text-[var(--foreground)] px-4 py-2 rounded-full hover:bg-[var(--foreground)]/[0.04] transition-all duration-200 text-decoration-none">
             How it works
           </a>
-          <Link href="/pricing" className="text-xs font-semibold text-neutral-400 hover:text-white px-4 py-2 rounded-full hover:bg-white/[0.03] transition-all duration-200 text-decoration-none">
+          <Link href="/pricing" className="text-xs font-bold text-[var(--text-muted)] hover:text-[var(--foreground)] px-4 py-2 rounded-full hover:bg-[var(--foreground)]/[0.04] transition-all duration-200 text-decoration-none">
             Pricing
           </Link>
         </nav>
 
-        {/* Action Button */}
+        {/* Action Button & Mobile Toggle */}
         <div className="flex items-center gap-3">
+          <div className="hidden md:block">
+            {mounted && session ? (
+              <Link href="/dashboard" className="text-decoration-none">
+                <button className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--foreground)] text-[var(--pure-white)] hover:opacity-90 font-bold text-xs transition-all duration-200 cursor-pointer shadow-sm">
+                  <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
+                </button>
+              </Link>
+            ) : (
+              <Link href="/login" className="text-decoration-none">
+                <button className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--mint-green)] text-neutral-900 hover:opacity-90 font-bold text-xs transition-all duration-200 cursor-pointer shadow-sm shadow-[var(--mint-green)]/20">
+                  <LogIn className="h-3.5 w-3.5" /> Get Started
+                </button>
+              </Link>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button 
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden p-2 rounded-xl border border-[var(--border)] bg-[var(--pure-white)]/40 hover:bg-[var(--foreground)]/[0.04] cursor-pointer transition-colors"
+          >
+            {isOpen ? <X className="h-5 w-5 text-[var(--foreground)]" /> : <Menu className="h-5 w-5 text-[var(--foreground)]" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Drawer menu */}
+      {isOpen && (
+        <div className="absolute top-20 left-4 right-4 p-5 rounded-[24px] border border-[var(--border)] bg-[var(--pure-white)]/95 backdrop-blur-xl shadow-2xl md:hidden flex flex-col gap-4 animate-in fade-in slide-in-from-top-5 duration-200">
+          <Link 
+            href="#features" 
+            onClick={() => setIsOpen(false)}
+            className="text-sm font-bold text-[var(--text-muted)] hover:text-[var(--foreground)] py-2 text-decoration-none"
+          >
+            Features
+          </Link>
+          <a 
+            href="#how-it-works" 
+            onClick={() => setIsOpen(false)}
+            className="text-sm font-bold text-[var(--text-muted)] hover:text-[var(--foreground)] py-2 text-decoration-none"
+          >
+            How it works
+          </a>
+          <Link 
+            href="/pricing" 
+            onClick={() => setIsOpen(false)}
+            className="text-sm font-bold text-[var(--text-muted)] hover:text-[var(--foreground)] py-2 text-decoration-none"
+          >
+            Pricing
+          </Link>
+          <div className="h-[1px] bg-[var(--border)] w-full my-1" />
           {mounted && session ? (
-            <Link href="/dashboard" className="text-decoration-none">
-              <button className="flex items-center gap-2 px-5 py-2 rounded-full bg-white text-black hover:bg-neutral-200 font-bold text-xs transition-all duration-200 cursor-pointer shadow-lg shadow-white/5">
-                <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
+            <Link href="/dashboard" onClick={() => setIsOpen(false)} className="text-decoration-none">
+              <button className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-full bg-[var(--foreground)] text-[var(--pure-white)] font-bold text-sm transition-all duration-200 cursor-pointer shadow-sm">
+                <LayoutDashboard className="h-4 w-4" /> Dashboard
               </button>
             </Link>
           ) : (
-            <Link href="/login" className="text-decoration-none">
-              <button className="flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-teal-500 hover:from-indigo-400 hover:to-teal-400 text-white font-bold text-xs transition-all duration-200 cursor-pointer shadow-lg shadow-indigo-500/20">
-                <LogIn className="h-3.5 w-3.5" /> Get Started
+            <Link href="/login" onClick={() => setIsOpen(false)} className="text-decoration-none">
+              <button className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-full bg-[var(--mint-green)] text-neutral-900 font-bold text-sm transition-all duration-200 cursor-pointer shadow-sm">
+                <LogIn className="h-4 w-4" /> Get Started
               </button>
             </Link>
           )}
         </div>
-      </div>
+      )}
     </header>
   );
 }

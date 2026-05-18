@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   FileText, 
@@ -27,8 +27,6 @@ export default function InteractiveWidget() {
   const [activeFile, setActiveFile] = useState<FileType | null>(null);
   const [transforming, setTransforming] = useState(false);
   const [result, setResult] = useState<FileType | null>(null);
-  
-  const crucibleRef = useRef<HTMLDivElement>(null);
 
   const sampleFiles: FileType[] = [
     {
@@ -36,7 +34,7 @@ export default function InteractiveWidget() {
       name: "raw_photo.png",
       type: "image",
       size: "8.4 MB",
-      icon: <ImageIcon className="h-6 w-6 text-indigo-400" />,
+      icon: <ImageIcon className="h-6 w-6 text-[var(--pixie-teal)]" />,
       resultName: "optimized.webp",
       resultSize: "420 KB (95% saved)",
       actionText: "WebP Alchemy"
@@ -46,7 +44,7 @@ export default function InteractiveWidget() {
       name: "unsigned_contract.pdf",
       type: "pdf",
       size: "2.1 MB",
-      icon: <FileText className="h-6 w-6 text-amber-400" />,
+      icon: <FileText className="h-6 w-6 text-[var(--gentle-lilac)]" />,
       resultName: "signed_watermarked.pdf",
       resultSize: "2.1 MB (Client Secures)",
       actionText: "PDF Alchemy"
@@ -56,7 +54,7 @@ export default function InteractiveWidget() {
       name: "raw_footage.mov",
       type: "video",
       size: "145 MB",
-      icon: <Video className="h-6 w-6 text-rose-400" />,
+      icon: <Video className="h-6 w-6 text-rose-500" />,
       resultName: "compressed_h264.mp4",
       resultSize: "12 MB (Fast WASM)",
       actionText: "WASM Alchemy"
@@ -81,17 +79,17 @@ export default function InteractiveWidget() {
   };
 
   return (
-    <div className="relative mx-auto w-full max-w-2xl rounded-3xl border border-white/10 bg-[#0a0a0a]/60 p-6 backdrop-blur-xl shadow-2xl shadow-indigo-500/5">
-      {/* Dynamic ambient background glow inside the card */}
-      <div className="absolute -inset-px rounded-3xl bg-gradient-to-r from-indigo-500/10 via-teal-500/10 to-rose-500/10 opacity-30 blur-sm pointer-events-none" />
+    <div className="relative mx-auto w-full max-w-3xl rounded-[48px] border border-[var(--border)] bg-[var(--pure-white)]/80 p-8 md:p-10 backdrop-blur-xl shadow-[var(--shadow-bento)] transition-all duration-300">
+      {/* Subtle organic ambient inner glow */}
+      <div className="absolute -inset-px rounded-[48px] bg-gradient-to-r from-[var(--gentle-lilac)]/5 to-[var(--mint-green)]/5 opacity-40 blur-sm pointer-events-none" />
 
-      <div className="relative grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+      <div className="relative grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         {/* Left side: Source File Picker */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-indigo-400">Step 1</span>
-            <h3 className="text-xl font-bold text-white mt-1">Select a File</h3>
-            <p className="text-sm text-neutral-400 mt-1">Simulate local file conversion inside your browser.</p>
+            <span className="text-xs font-extrabold uppercase tracking-wider text-[var(--pixie-teal)]">Step 1</span>
+            <h3 className="text-2xl font-extrabold text-[var(--foreground)] mt-1 font-sans">Select a File</h3>
+            <p className="text-sm text-[var(--text-muted)] mt-1 font-sans">Simulate local file conversion inside your browser.</p>
           </div>
 
           <div className="flex flex-col gap-3">
@@ -101,23 +99,23 @@ export default function InteractiveWidget() {
                 <button
                   key={file.id}
                   onClick={() => handleSelectFile(file)}
-                  className={`flex items-center justify-between p-3.5 rounded-xl border text-left transition-all duration-200 cursor-pointer ${
+                  className={`flex items-center justify-between p-4 rounded-[24px] border text-left transition-all duration-300 cursor-pointer ${
                     isSelected
-                      ? "border-indigo-500/50 bg-indigo-500/10 shadow-lg shadow-indigo-500/5"
-                      : "border-white/5 bg-white/[0.02] hover:bg-white/[0.05]"
+                      ? "border-[var(--pixie-teal)] bg-[var(--pixie-teal)]/10 shadow-[0_8px_32px_0_rgba(20,184,166,0.05)]"
+                      : "border-[var(--border)] bg-[var(--foreground)]/[0.01] hover:bg-[var(--foreground)]/[0.04]"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-neutral-900 border border-white/5">
+                    <div className="p-2.5 rounded-[16px] bg-[var(--pure-white)] border border-[var(--border)] shadow-sm">
                       {file.icon}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-white">{file.name}</p>
-                      <p className="text-xs text-neutral-500">{file.size}</p>
+                      <p className="text-sm font-bold text-[var(--foreground)] font-sans">{file.name}</p>
+                      <p className="text-xs text-[var(--text-muted)] font-sans">{file.size}</p>
                     </div>
                   </div>
-                  <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-                    isSelected ? "bg-indigo-500/20 text-indigo-300" : "bg-neutral-800 text-neutral-400"
+                  <span className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider ${
+                    isSelected ? "bg-[var(--pixie-teal)]/20 text-[var(--pixie-teal)]" : "bg-[var(--foreground)]/[0.05] text-[var(--text-muted)]"
                   }`}>
                     {file.type}
                   </span>
@@ -128,7 +126,7 @@ export default function InteractiveWidget() {
         </div>
 
         {/* Right side: The Transformation Crucible */}
-        <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-white/[0.01] border border-white/5 min-h-[300px]">
+        <div className="flex flex-col items-center justify-center p-8 rounded-[32px] bg-[var(--foreground)]/[0.01] border border-[var(--border)] min-h-[320px] transition-all duration-300">
           <AnimatePresence mode="wait">
             {!activeFile ? (
               <motion.div
@@ -138,11 +136,11 @@ export default function InteractiveWidget() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="text-center flex flex-col items-center gap-3"
               >
-                <div className="h-16 w-16 rounded-full bg-neutral-900 border border-dashed border-white/20 flex items-center justify-center animate-pulse">
-                  <Sparkles className="h-6 w-6 text-neutral-500" />
+                <div className="h-16 w-16 rounded-[24px] bg-[var(--pure-white)] border border-dashed border-[var(--border)] flex items-center justify-center shadow-sm">
+                  <Sparkles className="h-6 w-6 text-[var(--text-muted)] animate-pulse" />
                 </div>
-                <p className="text-sm font-medium text-neutral-400">Waiting for a file selection...</p>
-                <p className="text-xs text-neutral-500">Pick a source file on the left.</p>
+                <p className="text-sm font-bold text-[var(--foreground)] font-sans">Waiting for a file...</p>
+                <p className="text-xs text-[var(--text-muted)] font-sans">Select a source file on the left.</p>
               </motion.div>
             ) : transforming ? (
               <motion.div
@@ -156,12 +154,12 @@ export default function InteractiveWidget() {
                   <motion.div 
                     animate={{ rotate: 360 }}
                     transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                    className="h-20 w-20 rounded-full border-2 border-t-indigo-500 border-r-transparent border-b-teal-500 border-l-transparent"
+                    className="h-20 w-20 rounded-full border-2 border-t-[var(--pixie-teal)] border-r-transparent border-b-[var(--gentle-lilac)] border-l-transparent"
                   />
-                  <Wand2 className="h-8 w-8 text-teal-400 absolute animate-pulse" />
+                  <Wand2 className="h-8 w-8 text-[var(--pixie-teal)] absolute animate-pulse" />
                 </div>
-                <h4 className="text-base font-bold text-white mt-2">Performing Alchemy...</h4>
-                <p className="text-xs text-neutral-500">Processing file 100% locally in browser memory</p>
+                <h4 className="text-base font-extrabold text-[var(--foreground)] mt-2 font-sans">Performing Alchemy...</h4>
+                <p className="text-xs text-[var(--text-muted)] font-sans">Processing file 100% locally in browser memory</p>
               </motion.div>
             ) : result ? (
               <motion.div
@@ -169,18 +167,20 @@ export default function InteractiveWidget() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="w-full text-center flex flex-col items-center gap-4"
+                className="w-full text-center flex flex-col items-center gap-5"
               >
-                <div className="h-16 w-16 rounded-full bg-teal-500/10 border border-teal-500/30 flex items-center justify-center">
-                  <Wand2 className="h-8 w-8 text-teal-400" />
+                <div className="h-16 w-16 rounded-[24px] bg-[var(--mint-green)] border border-[var(--border)] flex items-center justify-center shadow-md">
+                  <Wand2 className="h-8 w-8 text-neutral-900" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold text-teal-400 tracking-widest uppercase bg-teal-500/10 px-2 py-0.5 rounded-full">Success</span>
-                  <h4 className="text-base font-bold text-white mt-2">{result.resultName}</h4>
-                  <p className="text-xs text-teal-300 font-medium mt-1">{result.resultSize}</p>
+                  <span className="text-[10px] font-extrabold text-neutral-900 tracking-wider uppercase bg-[var(--mint-green)] px-3 py-1 rounded-full shadow-sm">
+                    Success
+                  </span>
+                  <h4 className="text-base font-extrabold text-[var(--foreground)] mt-3 font-sans">{result.resultName}</h4>
+                  <p className="text-xs text-[var(--pixie-teal)] font-bold mt-1 font-sans">{result.resultSize}</p>
                 </div>
                 <div className="w-full flex flex-col gap-2 mt-2">
-                  <button className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-neutral-900 font-bold text-sm transition-all duration-200 cursor-pointer shadow-lg shadow-teal-500/10">
+                  <button className="flex items-center justify-center gap-2 w-full py-3 rounded-[20px] bg-[var(--foreground)] hover:opacity-90 text-[var(--pure-white)] font-bold text-sm transition-all duration-200 cursor-pointer shadow-md">
                     <Download className="h-4 w-4" /> Download Result
                   </button>
                   <button 
@@ -188,7 +188,7 @@ export default function InteractiveWidget() {
                       setActiveFile(null);
                       setResult(null);
                     }}
-                    className="text-xs text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                    className="text-xs font-bold text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
                   >
                     Reset Spell
                   </button>
@@ -202,24 +202,24 @@ export default function InteractiveWidget() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="w-full text-center flex flex-col items-center gap-5"
               >
-                <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-xl bg-neutral-900 border border-white/5">
+                <div className="flex items-center gap-4">
+                  <div className="p-3.5 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] shadow-sm">
                     {activeFile.icon}
                   </div>
-                  <ArrowRight className="h-5 w-5 text-neutral-500" />
-                  <div className="p-3 rounded-xl bg-neutral-900 border border-white/5 animate-pulse">
-                    <Wand2 className="h-6 w-6 text-teal-400" />
+                  <ArrowRight className="h-5 w-5 text-[var(--text-muted)]" />
+                  <div className="p-3.5 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] shadow-sm animate-pulse">
+                    <Wand2 className="h-6 w-6 text-[var(--pixie-teal)]" />
                   </div>
                 </div>
 
                 <div>
-                  <h4 className="text-base font-bold text-white">{activeFile.name}</h4>
-                  <p className="text-xs text-neutral-400 mt-1">Ready for transformation</p>
+                  <h4 className="text-base font-extrabold text-[var(--foreground)] font-sans">{activeFile.name}</h4>
+                  <p className="text-xs text-[var(--text-muted)] mt-1 font-sans">Ready for transformation</p>
                 </div>
 
                 <button 
                   onClick={triggerTransformation}
-                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-bold text-sm transition-all duration-200 cursor-pointer shadow-lg shadow-indigo-500/20"
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-[20px] bg-[var(--foreground)] hover:opacity-90 text-[var(--pure-white)] font-bold text-sm transition-all duration-200 cursor-pointer shadow-md"
                 >
                   <Sparkles className="h-4 w-4" /> Cast {activeFile.actionText}
                 </button>

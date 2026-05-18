@@ -30,11 +30,10 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative w-full min-h-screen flex flex-col items-center justify-center pt-32 pb-16 px-6 overflow-hidden bg-[#030303]">
-      {/* Dynamic Ambient Blur Mesh Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/10 via-transparent to-transparent blur-3xl pointer-events-none" />
-      <div className="absolute -top-[10%] left-[20%] h-[350px] w-[350px] rounded-full bg-indigo-500/[0.04] blur-3xl pointer-events-none" />
-      <div className="absolute top-[40%] right-[10%] h-[400px] w-[400px] rounded-full bg-teal-500/[0.03] blur-3xl pointer-events-none animate-pulse" />
+    <section className="relative w-full min-h-screen flex flex-col items-center justify-center pt-36 pb-16 px-6 overflow-hidden bg-transparent">
+      {/* Warm & Soft Pastel Ambient Blur Mesh Glows (V3) */}
+      <div className="absolute top-0 right-[-10%] h-[500px] w-[500px] rounded-full bg-[var(--mint-green)] opacity-25 dark:opacity-[0.08] blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-[20%] left-[-10%] h-[500px] w-[500px] rounded-full bg-[var(--gentle-lilac)] opacity-20 dark:opacity-[0.05] blur-[130px] pointer-events-none" />
 
       {/* Main Orchestrated Container */}
       <motion.div
@@ -46,20 +45,20 @@ export default function HeroSection() {
         {/* Animated Badge */}
         <motion.div
           variants={itemVariants}
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]"
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--pure-white)]/40 border border-[var(--border)] shadow-[var(--shadow-bento)]"
         >
-          <Sparkles className="h-3.5 w-3.5 text-indigo-400 animate-pulse" />
-          <span className="text-xs text-neutral-400 font-medium tracking-wide">
+          <Sparkles className="h-3.5 w-3.5 text-[var(--pixie-teal)] animate-pulse" />
+          <span className="text-xs text-[var(--text-muted)] font-bold tracking-wide">
             Next-Gen Browser File Alchemy
           </span>
         </motion.div>
 
-        {/* Headline */}
+        {/* Headline (Friendly rounded Plus Jakarta display) */}
         <motion.div variants={itemVariants} className="flex flex-col gap-3">
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-[1.1]">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-[var(--foreground)] leading-[1.1] font-sans">
             Effortless File Spells.
             <br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-teal-300 to-rose-400">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--gentle-lilac)] via-[var(--pixie-teal)] to-[var(--mint-green)]">
               100% Local AI.
             </span>
           </h1>
@@ -68,7 +67,7 @@ export default function HeroSection() {
         {/* Subtitle */}
         <motion.p
           variants={itemVariants}
-          className="text-base sm:text-lg md:text-xl text-neutral-400 font-light leading-relaxed max-w-xl mx-auto"
+          className="text-base sm:text-lg md:text-xl text-[var(--text-muted)] font-medium leading-relaxed max-w-xl mx-auto font-sans"
         >
           Cast background removals, metadata wipes, and high-performance video conversions instantly in your cache. Your data never touches a server.
         </motion.p>
@@ -82,8 +81,8 @@ export default function HeroSection() {
         </motion.div>
       </motion.div>
 
-      {/* Elegant Fade Out Transition to next section */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#030303] to-transparent pointer-events-none" />
+      {/* Soft overlay gradient transition to next section */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[var(--soft-sage)] to-transparent pointer-events-none" />
     </section>
   );
 }
