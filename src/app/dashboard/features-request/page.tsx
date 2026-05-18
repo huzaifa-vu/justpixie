@@ -19,6 +19,7 @@ export default function FeaturesRequestPage() {
   const [votedIds, setVotedIds] = useState<string[]>([]);
   const [loadingList, setLoadingList] = useState<boolean>(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [quotaError, setQuotaError] = useState<string | null>(null);
 
   // 1. Load voted list from localStorage and fetch all wishes from database
   useEffect(() => {
@@ -66,6 +67,7 @@ export default function FeaturesRequestPage() {
     setStatus('loading');
 
     try {
+      setQuotaError(null);
       const res = await fetch("/api/features-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -73,6 +75,12 @@ export default function FeaturesRequestPage() {
       });
 
       if (!res.ok) {
+        if (res.status === 429) {
+          const errData = await res.json();
+          setQuotaError(errData.error || "Daily limit reached.");
+          setStatus('idle');
+          return;
+        }
         throw new Error("Failed to save feature wish");
       }
 
@@ -179,7 +187,7 @@ export default function FeaturesRequestPage() {
                   <input 
                     required 
                     value={formData.title} 
-                    onChange={e => setFormData({...formData, title: e.target.value})} 
+                    onChange={e => { setFormData({...formData, title: e.target.value}); setQuotaError(null); }} 
                     type="text" 
                     placeholder="e.g. SVG Optimizer" 
                   />
@@ -201,7 +209,7 @@ export default function FeaturesRequestPage() {
                       cursor: 'pointer'
                     }}
                     value={formData.category}
-                    onChange={e => setFormData({...formData, category: e.target.value})}
+                    onChange={e => { setFormData({...formData, category: e.target.value}); setQuotaError(null); }}
                   >
                     <option value="Image" style={{ background: 'var(--surface-card)' }}>Image Magic</option>
                     <option value="PDF" style={{ background: 'var(--surface-card)' }}>PDF Spells</option>
@@ -220,13 +228,51 @@ export default function FeaturesRequestPage() {
                 <textarea 
                   required 
                   value={formData.description} 
-                  onChange={e => setFormData({...formData, description: e.target.value})} 
+                  onChange={e => { setFormData({...formData, description: e.target.value}); setQuotaError(null); }} 
                   rows={4} 
                   placeholder="Explain exactly what this feature does, how it runs locally, and why it is useful..."
                   style={{ resize: 'vertical' }}
                 />
               </div>
             </div>
+
+            {quotaError && (
+              <div style={{
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.2)',
+                borderRadius: '12px',
+                padding: '1.25rem',
+                color: '#ef4444',
+                fontSize: '0.9rem',
+                lineHeight: '1.5',
+                marginBottom: '1.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+                textAlign: 'left'
+              }}>
+                <strong style={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  🔮 Quota Limit Reached
+                </strong>
+                <span>{quotaError}</span>
+                {quotaError.includes("Guest") && (
+                  <a 
+                    href="/login" 
+                    style={{
+                      color: 'var(--mint-green)',
+                      fontWeight: 700,
+                      textDecoration: 'underline',
+                      marginTop: '0.25rem',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.25rem'
+                    }}
+                  >
+                    Sign in to your account <ArrowRight size={14} />
+                  </a>
+                )}
+              </div>
+            )}
 
             <button disabled={status === 'loading'} className={styles.submitBtn} type="submit">
               {status === 'loading' ? 'Casting...' : 'Submit Request'} <ArrowRight size={20} />

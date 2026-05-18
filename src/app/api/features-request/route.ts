@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Description is required" }, { status: 400 });
     }
 
-    // Extract client's IP
+    // Extract client's IP address
     const ip = (req as any).ip || req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
 
     // Limit long input hacks
@@ -69,14 +69,65 @@ export async function POST(req: NextRequest) {
 
     const supabase = await createClient();
 
-    // 1. Insert new feature wish
+    // 1. Fetch user to check authorization status
+    const { data: { user }, error: authErr } = await supabase.auth.getUser();
+    if (authErr) {
+      console.error("Auth status query failed, treating as guest:", authErr);
+    }
+
+    // 2. Compute the start of today in UTC
+    const startOfToday = new Date();
+    startOfToday.setUTCHours(0, 0, 0, 0);
+
+    // 3. Enforce submission rate quotas
+    if (user) {
+      // Registered User Quota Check: 10 wishes per day
+      const { count, error: countErr } = await supabase
+        .from("feature_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .gte("created_at", startOfToday.toISOString());
+
+      if (countErr) throw countErr;
+
+      if (count && count >= 10) {
+        return NextResponse.json(
+          { error: "Daily quota limit reached. Registered creators are limited to 10 feature wishes per day!" },
+          { status: 429 }
+        );
+      }
+    } else {
+      // Guest User Quota Check: 1 wish per day (IP tracked to prevent cookie-clearing spam)
+      const { count, error: countErr } = await supabase
+        .from("feature_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("ip_address", ip)
+        .is("user_id", null)
+        .gte("created_at", startOfToday.toISOString());
+
+      if (countErr) throw countErr;
+
+      if (count && count >= 1) {
+        return NextResponse.json(
+          { 
+            error: "Daily quota limit reached. Guest explorers are limited to 1 feature request per day! Please sign in or upgrade to request more spells.",
+            limitExceeded: true 
+          },
+          { status: 429 }
+        );
+      }
+    }
+
+    // 4. Insert new feature wish
     const { data: newWish, error: insertErr } = await supabase
       .from("feature_requests")
       .insert({
         title: cleanTitle,
         category: cleanCategory,
         description: cleanDescription,
-        votes: 1
+        votes: 1,
+        ip_address: ip,
+        user_id: user ? user.id : null
       })
       .select()
       .single();
@@ -85,7 +136,7 @@ export async function POST(req: NextRequest) {
       throw insertErr;
     }
 
-    // 2. Automatically record this creator's IP in feature_votes (optimistic self-vote)
+    // 5. Automatically record this creator's IP in feature_votes (optimistic self-vote)
     const { error: selfVoteErr } = await supabase
       .from("feature_votes")
       .insert({
