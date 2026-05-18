@@ -2,10 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Sparkles, LayoutDashboard, LogIn, Menu, X } from "lucide-react";
+import { LayoutDashboard, LogIn, Menu, X } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
+import { useTheme } from "next-themes";
+import Image from "next/image";
 
 export default function Navbar() {
+  const { theme, resolvedTheme } = useTheme();
   const [session, setSession] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -25,12 +28,14 @@ export default function Navbar() {
       <div className="w-full h-16 rounded-[24px] border border-[var(--border)] bg-[var(--pure-white)]/60 backdrop-blur-xl px-6 flex items-center justify-between shadow-[var(--shadow-bento)] transition-all duration-300">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group cursor-pointer text-decoration-none">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-[var(--gentle-lilac)] to-[var(--mint-green)] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-200">
-            <Sparkles className="h-5 w-5 text-neutral-900" />
-          </div>
-          <span className="font-extrabold text-lg text-[var(--foreground)] tracking-tight font-sans">
-            Just<span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--pixie-teal)] to-[var(--gentle-lilac)]">Pixie</span>
-          </span>
+          <Image 
+            src={mounted && (theme === "dark" || resolvedTheme === "dark") ? "/logo-full-dark.png" : "/logo-full.png"}
+            alt="Pixie Logo" 
+            width={120} 
+            height={47} 
+            priority 
+            className="h-8 w-auto object-contain"
+          />
         </Link>
 
         {/* Desktop Navigation Links */}

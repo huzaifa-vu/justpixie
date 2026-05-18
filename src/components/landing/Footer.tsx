@@ -1,22 +1,31 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { useTheme } from "next-themes";
+import Image from "next/image";
 
 export default function Footer() {
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <footer className="w-full bg-transparent border-t border-[var(--border)] py-16 px-6 relative z-10">
       <div className="max-w-5xl ml-auto mr-auto grid grid-cols-1 md:grid-cols-4 gap-10 items-start">
         {/* Branding Column */}
         <div className="flex flex-col gap-4 md:col-span-2">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-[var(--gentle-lilac)] to-[var(--mint-green)] flex items-center justify-center">
-              <Sparkles className="h-4.5 w-4.5 text-neutral-900" />
-            </div>
-            <span className="font-extrabold text-base text-[var(--foreground)] tracking-tight">
-              Just<span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--pixie-teal)] to-[var(--gentle-lilac)]">Pixie</span>
-            </span>
+            <Image 
+              src={mounted && (theme === "dark" || resolvedTheme === "dark") ? "/logo-full-dark.png" : "/logo-full.png"}
+              alt="Pixie Logo" 
+              width={120} 
+              height={47} 
+              className="h-8 w-auto object-contain"
+            />
           </div>
           <p className="text-[var(--text-muted)] text-xs leading-relaxed max-w-sm font-sans font-medium">
             Tell Pixie what you want to do. We find the right tool instantly. Everything runs safely on your computer — no uploads, no sign ups.
