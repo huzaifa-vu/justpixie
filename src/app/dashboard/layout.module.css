@@ -738,6 +738,61 @@
   border-color: rgba(255, 255, 255, 0.1);
 }
 
+.topbarSearchTrigger {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.85rem;
+  border-radius: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  width: 240px;
+  margin-left: auto;
+  margin-right: 1.5rem;
+}
+
+:global([data-theme="dark"]) .topbarSearchTrigger {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.topbarSearchTrigger:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.15);
+  color: var(--foreground);
+}
+
+:global([data-theme="dark"]) .topbarSearchTrigger:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.topbarSearchBadge {
+  font-size: 0.65rem;
+  padding: 0.12rem 0.35rem;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+:global([data-theme="dark"]) .topbarSearchBadge {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 850px) {
+  .topbarSearchTrigger {
+    display: none !important;
+  }
+}
+
 .breadcrumbs {
   font-weight: 600;
   color: var(--text-muted);

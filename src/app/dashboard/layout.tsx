@@ -478,6 +478,19 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
               );
             })}
           </div>
+
+          {/* Topbar Search Bar Trigger */}
+          <button 
+            type="button"
+            className={styles.topbarSearchTrigger}
+            onClick={() => setCmdOpen(true)}
+            title="Search spells... (Ctrl+K)"
+          >
+            <Search size={16} className={styles.cmdSearchIcon} />
+            <span>Search spells...</span>
+            <span className={styles.topbarSearchBadge}>⌘K</span>
+          </button>
+
           <div className={styles.topbarActions}>
             <button 
               onClick={() => mounted && setTheme(theme === 'dark' ? 'light' : 'dark')}
