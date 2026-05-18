@@ -52,7 +52,7 @@ export default function Navbar() {
             {mounted && session ? (
               <Link href="/dashboard" className="text-decoration-none">
                 <button className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--foreground)] text-[var(--pure-white)] hover:opacity-90 font-bold text-xs transition-all duration-200 cursor-pointer shadow-sm">
-                  <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
+                  <LayoutDashboard className="h-3.5 w-3.5" /> Go to Workspace
                 </button>
               </Link>
             ) : (
@@ -102,7 +102,7 @@ export default function Navbar() {
           {mounted && session ? (
             <Link href="/dashboard" onClick={() => setIsOpen(false)} className="text-decoration-none">
               <button className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-full bg-[var(--foreground)] text-[var(--pure-white)] font-bold text-sm transition-all duration-200 cursor-pointer shadow-sm">
-                <LayoutDashboard className="h-4 w-4" /> Dashboard
+                <LayoutDashboard className="h-4 w-4" /> Go to Workspace
               </button>
             </Link>
           ) : (

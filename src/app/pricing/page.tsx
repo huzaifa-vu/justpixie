@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Check, Sparkles, Zap, Shield, HelpCircle } from "lucide-react";
+import { Check, Sparkles, Zap, HelpCircle } from "lucide-react";
 import Navbar from "@/components/landing/Navbar";
 import NoiseOverlay from "@/components/landing/NoiseOverlay";
 import Footer from "@/components/landing/Footer";
@@ -34,20 +34,20 @@ export default function PricingPage() {
 
   const faqItems = [
     {
-      q: "Do you ever upload my files to your servers?",
-      a: "Never. Pixie processes all file conversions, image background removals, and video compressions locally in your browser memory (RAM/GPU) using WebAssembly. Your files stay on your machine."
+      q: "Do you keep my files?",
+      a: "No. Everything runs inside your web browser. Your files never leave your computer."
     },
     {
-      q: "Why is there a prompt limit on the Free Guest tier?",
-      a: "While all 50+ file tools are 100% free and run locally in your browser, the AI Routing prompt requires secure external semantic parsing models. We cover the cost of these queries for guests, and offer unlimited access to signed-in Pro members."
+      q: "Why is there a limit for guests?",
+      a: "Using AI to understand typing costs us real money. We pay for guests to try it, and offer unlimited typing to members."
     },
     {
-      q: "Can I use the tools completely offline?",
-      a: "Yes! Once the dashboard loads, all tools compile and execute in-memory inside your tab. You can disconnect from the internet completely and continue converting PDFs, compressing images, or formatting CSVs."
+      q: "Can I use it without internet?",
+      a: "Yes! Once the page loads, you can turn off your internet. The tools will still work perfectly on your computer."
     },
     {
-      q: "How does the subscription payment work?",
-      a: "We process billing securely via Stripe and Lemon Squeezy. You can cancel at any time directly from your dashboard account portal with a single click."
+      q: "How do I cancel my plan?",
+      a: "We use standard billing systems. You can cancel your plan anytime with just one click."
     }
   ];
 
@@ -75,7 +75,7 @@ export default function PricingPage() {
             >
               <Sparkles className="h-3.5 w-3.5 text-[var(--pixie-teal)] animate-pulse" />
               <span className="text-xs text-[var(--text-muted)] font-bold tracking-wide uppercase">
-                Pricing Plans
+                Simple Pricing
               </span>
             </motion.div>
 
@@ -83,14 +83,14 @@ export default function PricingPage() {
               variants={itemVariants}
               className="text-4xl sm:text-6xl font-extrabold tracking-tight text-[var(--foreground)] leading-[1.1] font-sans"
             >
-              Simple, transparent pricing.
+              Simple pricing. No hidden fees.
             </motion.h1>
 
             <motion.p 
               variants={itemVariants}
               className="text-base sm:text-lg text-[var(--text-muted)] font-semibold leading-relaxed max-w-xl font-sans"
             >
-              Start transforming files for free with zero accounts. Upgrade to Pro Alchemist for unlimited AI routing and maximum processing priorities.
+              Use our tools for free without an account. Upgrade to Pro if you want unlimited typing help and faster speeds.
             </motion.p>
           </div>
 
@@ -110,19 +110,19 @@ export default function PricingPage() {
                 
                 <div className="flex items-baseline gap-1 mb-2">
                   <span className="text-5xl font-extrabold text-[var(--foreground)] font-sans">$0</span>
-                  <span className="text-xs font-extrabold text-[var(--text-muted)] uppercase tracking-wider">/ Free Lifetime</span>
+                  <span className="text-xs font-extrabold text-[var(--text-muted)] uppercase tracking-wider">/ Free forever</span>
                 </div>
                 <p className="text-xs text-[var(--text-muted)] font-semibold leading-relaxed mb-6 font-sans">
-                  Process quick conversions and minor edits without registering an account.
+                  Best for quick fixes. No email or sign up needed.
                 </p>
 
                 <div className="border-t border-[var(--border)] pt-6 flex flex-col gap-4">
                   {[
-                    "Access to all 50+ local tools",
-                    "100% private client-side processing",
-                    "3 AI Routing prompts per day",
-                    "High-speed browser-side downloads",
-                    "No credit card or sign up required"
+                    "Use all 50+ tools for free",
+                    "100% private (files never leave your computer)",
+                    "3 typing helper prompts per day",
+                    "Quick downloads inside your browser",
+                    "No sign up or login needed"
                   ].map((feat, idx) => (
                     <div key={idx} className="flex items-center gap-3 text-xs font-bold text-[var(--foreground)]/80 font-sans">
                       <Check className="h-4 w-4 text-[var(--pixie-teal)] flex-shrink-0" />
@@ -137,7 +137,7 @@ export default function PricingPage() {
                   href="/dashboard"
                   className="flex items-center justify-center gap-2 w-full py-4 rounded-[24px] border border-[var(--border)] hover:bg-[var(--foreground)]/[0.04] text-[var(--foreground)] font-bold text-xs transition-all duration-200 cursor-pointer shadow-sm text-decoration-none"
                 >
-                  Open Guest Workspace
+                  Open Free Workspace
                 </Link>
               </div>
             </div>
@@ -147,7 +147,7 @@ export default function PricingPage() {
               <div>
                 <div className="flex justify-between items-center mb-6">
                   <span className="text-xs font-extrabold uppercase tracking-widest text-[#166534] bg-[var(--mint-green)] px-3.5 py-1.5 rounded-full shadow-sm">
-                    Pro Alchemist
+                    Pro Helper
                   </span>
                   <span className="text-[10px] font-extrabold tracking-widest text-[var(--pixie-teal)] uppercase">
                     Most Popular
@@ -159,17 +159,17 @@ export default function PricingPage() {
                   <span className="text-xs font-extrabold text-[var(--text-muted)] uppercase tracking-wider">/ month</span>
                 </div>
                 <p className="text-xs text-[var(--text-muted)] font-semibold leading-relaxed mb-6 font-sans">
-                  Perfect for creators, developers, and professionals needing absolute conversion freedom.
+                  Best for power users who want unlimited help.
                 </p>
 
                 <div className="border-t border-[var(--border)] pt-6 flex flex-col gap-4">
                   {[
-                    "Everything in Free Guest",
-                    "Unlimited AI Routing prompts",
-                    "Zero prompt limit timers or queues",
-                    "Priority local compilation processing",
-                    "Developer sandbox feature requests",
-                    "Dynamic customizable theme palettes"
+                    "Everything in the Free Guest plan",
+                    "Unlimited typing helper prompts",
+                    "No daily limits or wait times",
+                    "Faster processing speed",
+                    "Suggest new tools you want us to build",
+                    "Change colors of your dashboard"
                   ].map((feat, idx) => (
                     <div key={idx} className="flex items-center gap-3 text-xs font-bold text-[var(--foreground)]/80 font-sans">
                       <Zap className="h-4 w-4 text-[var(--pixie-teal)] flex-shrink-0 animate-pulse" />
@@ -184,7 +184,7 @@ export default function PricingPage() {
                   href="/login"
                   className="flex items-center justify-center gap-2 w-full py-4 rounded-[24px] bg-[var(--foreground)] hover:opacity-90 text-[var(--pure-white)] font-bold text-xs transition-all duration-200 cursor-pointer shadow-md text-decoration-none"
                 >
-                  Upgrade to Pro Alchemist
+                  Upgrade to Pro Helper
                 </Link>
               </div>
             </div>

@@ -38,9 +38,9 @@ export default function InteractiveWidget() {
   const sampleIntents: IntentType[] = [
     {
       id: "img",
-      prompt: "remove background from raw_photo.png",
+      prompt: "remove the background from raw_photo.png",
       toolName: "Background Remover",
-      category: "Image Magic",
+      category: "Image Tools",
       route: "/dashboard/image/bg-remove",
       icon: <ImageIcon className="h-6 w-6 text-[var(--pixie-teal)]" />,
       color: "var(--pixie-teal)",
@@ -49,9 +49,9 @@ export default function InteractiveWidget() {
     },
     {
       id: "pdf",
-      prompt: "merge my unsigned_contract.pdf invoice bundle",
-      toolName: "PDF Merge Spells",
-      category: "PDF Spells",
+      prompt: "combine my contract and invoice PDFs",
+      toolName: "PDF Combiner",
+      category: "PDF Tools",
       route: "/dashboard/pdf/merge",
       icon: <FileText className="h-6 w-6 text-[var(--gentle-lilac)]" />,
       color: "var(--gentle-lilac)",
@@ -60,9 +60,9 @@ export default function InteractiveWidget() {
     },
     {
       id: "vid",
-      prompt: "compress raw_footage.mov to web MP4 format",
+      prompt: "make my raw_footage.mov video file smaller",
       toolName: "Video Compressor",
-      category: "Video Alchemy",
+      category: "Video Tools",
       route: "/dashboard/video/compress",
       icon: <Video className="h-6 w-6 text-rose-500" />,
       color: "#f43f5e",
@@ -71,9 +71,9 @@ export default function InteractiveWidget() {
     },
     {
       id: "csv",
-      prompt: "format messy CSV invoice data to clean JSON",
+      prompt: "turn my messy CSV table into a clean JSON list",
       toolName: "CSV to JSON Parser",
-      category: "Text & Data",
+      category: "Text & List Tools",
       route: "/dashboard/text/csv",
       icon: <Code className="h-6 w-6 text-[var(--mint-green)]" />,
       color: "var(--mint-green)",
@@ -146,9 +146,9 @@ export default function InteractiveWidget() {
         <div className="flex flex-col gap-6">
           <div>
             <span className="text-xs font-extrabold uppercase tracking-wider text-[var(--pixie-teal)]">Step 1</span>
-            <h3 className="text-2xl font-extrabold text-[var(--foreground)] mt-1 font-sans">Type Your Request</h3>
+            <h3 className="text-2xl font-extrabold text-[var(--foreground)] mt-1 font-sans">Write what you want</h3>
             <p className="text-sm text-[var(--text-muted)] mt-1 font-sans">
-              Click a sample intent below to test how Pixie semantically routes your files.
+              Click any example below to see how our helper finds the right tool for you instantly.
             </p>
           </div>
 
@@ -216,9 +216,9 @@ export default function InteractiveWidget() {
                 </div>
                 
                 <div>
-                  <h4 className="text-base font-extrabold text-[var(--foreground)] font-sans">AI Routing Core Active</h4>
+                  <h4 className="text-base font-extrabold text-[var(--foreground)] font-sans">Helper is thinking...</h4>
                   <p className="text-xs text-[var(--text-muted)] mt-1 font-sans">
-                    Analyzing intent semantic tokens...
+                    Reading your words...
                   </p>
                 </div>
               </motion.div>
@@ -248,10 +248,10 @@ export default function InteractiveWidget() {
                     {matchedTool.category}
                   </span>
                   <h4 className="text-lg font-extrabold text-[var(--foreground)] mt-3 font-sans">
-                    {matchedTool.toolName} Match!
+                    Found the perfect tool!
                   </h4>
                   <p className="text-xs text-[var(--text-muted)] mt-1 font-sans max-w-[220px] mx-auto leading-relaxed">
-                    Pixie is ready to process files instantly on your GPU.
+                    Your files are 100% safe. Everything runs inside your browser window.
                   </p>
                 </div>
 
@@ -259,7 +259,7 @@ export default function InteractiveWidget() {
                   href="/dashboard"
                   className="flex items-center justify-center gap-2 w-full py-3 rounded-[20px] bg-[var(--foreground)] hover:opacity-90 text-[var(--pure-white)] font-bold text-sm transition-all duration-200 cursor-pointer shadow-md text-decoration-none"
                 >
-                  Open Sandbox Workspace <ArrowRight className="h-4 w-4" />
+                  Open Free Workspace <ArrowRight className="h-4 w-4" />
                 </a>
               </motion.div>
             ) : null}
@@ -267,7 +267,7 @@ export default function InteractiveWidget() {
 
           {/* Secure local Sandbox footer label */}
           <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1.5 opacity-60 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider font-sans">
-            <ShieldAlert className="h-3.5 w-3.5" /> 100% Client-Side execution guaranteed
+            <ShieldAlert className="h-3.5 w-3.5" /> 🔒 Safe and secure. Everything runs on your computer.
           </div>
         </div>
       </div>

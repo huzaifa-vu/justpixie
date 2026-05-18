@@ -26,15 +26,15 @@ export default function TerminalCTA() {
         <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto">
           {/* Badge */}
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[var(--mint-green)]/35 border border-[var(--border)] text-xs text-[#166534] font-extrabold tracking-wide uppercase shadow-sm">
-            <Zap className="h-3.5 w-3.5" /> Instant Guest Sandbox
+            <Zap className="h-3.5 w-3.5" /> 100% Free to Use
           </div>
 
           <h2 className="text-3xl sm:text-5xl font-extrabold text-[var(--foreground)] tracking-tight leading-tight font-sans">
-            Start transforming files privately right now.
+            Start working on your files now.
           </h2>
           
           <p className="text-[var(--text-muted)] text-base font-semibold leading-relaxed font-sans">
-            No registration. No server queues. No hidden fees. Access over 50 client-side alchemical tools right inside your browser window.
+            No sign up needed. No waiting lines. No payments. Access over 50 free tools right inside your internet browser window.
           </p>
 
           {/* Action button */}
@@ -42,18 +42,18 @@ export default function TerminalCTA() {
             onClick={handleStart}
             className="group flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[var(--foreground)] hover:opacity-90 text-[var(--pure-white)] font-extrabold text-sm transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl"
           >
-            Open Sandbox Workspace <ArrowRight className="h-4.5 w-4.5 transition-transform group-hover:translate-x-1" />
+            Open Free Workspace <ArrowRight className="h-4.5 w-4.5 transition-transform group-hover:translate-x-1" />
           </button>
 
           {/* Helper items */}
           <div className="flex flex-wrap items-center justify-center gap-6 mt-4 text-xs font-bold text-[var(--text-muted)] font-sans">
             <div className="flex items-center gap-1.5">
               <ShieldCheck className="h-4 w-4 text-[var(--pixie-teal)]" />
-              <span>100% Client-Side RAM Processing</span>
+              <span>100% Safe on your computer</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Zap className="h-4 w-4 text-[var(--gentle-lilac)]" />
-              <span>No account or sign up required</span>
+              <span>No sign up or login needed</span>
             </div>
           </div>
         </div>

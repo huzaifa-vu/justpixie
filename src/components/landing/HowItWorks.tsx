@@ -7,24 +7,24 @@ export default function HowItWorks() {
   const steps = [
     {
       num: "01",
-      title: "Describe Your Intent",
-      desc: "Type what you need in plain English — like 'convert raw.mov to mp4' or 'clean my PDF metadata'. No complex navigation required.",
+      title: "Write what you want",
+      desc: "Type what you want to do in plain English. Like 'make my video file smaller' or 'combine my PDF papers'.",
       icon: <Terminal className="h-6 w-6 text-[var(--pixie-teal)]" />,
       badgeBg: "rgba(20, 184, 166, 0.1)",
       badgeText: "var(--pixie-teal)"
     },
     {
       num: "02",
-      title: "Semantic Routing",
-      desc: "Our secure client-side AI parses your prompt semantic tokens and automatically prepares the perfect local sandbox tool.",
+      title: "Pixie finds the tool",
+      desc: "Our smart helper reads your words and opens the perfect tool for you in just one second.",
       icon: <Cpu className="h-6 w-6 text-[var(--gentle-lilac)]" />,
       badgeBg: "rgba(168, 85, 247, 0.1)",
       badgeText: "var(--gentle-lilac)"
     },
     {
       num: "03",
-      title: "Warp-Speed Sandbox",
-      desc: "Your files are compiled and processed inside your browser cache. No server queues, no telemetry, and absolute privacy.",
+      title: "Download your file",
+      desc: "Your computer does all the work inside your web browser. No files are uploaded, so your files are 100% safe.",
       icon: <ShieldCheck className="h-6 w-6 text-[var(--mint-green)]" />,
       badgeBg: "rgba(74, 222, 128, 0.15)",
       badgeText: "#166534"
@@ -38,13 +38,13 @@ export default function HowItWorks() {
 
       <div className="text-center mb-16">
         <span className="text-xs font-extrabold uppercase tracking-widest text-neutral-900 bg-[var(--gentle-lilac)] px-4 py-1.5 rounded-full shadow-sm">
-          Workflow
+          Simple Guide
         </span>
         <h2 className="text-3xl md:text-5xl font-extrabold text-[var(--foreground)] mt-6 tracking-tight leading-tight font-sans">
-          Magic in 3 Simple Steps.
+          Three simple steps to finish your task.
         </h2>
         <p className="text-[var(--text-muted)] mt-4 max-w-xl ml-auto mr-auto text-base font-medium font-sans">
-          Forget legacy uploads. Here's exactly how the browser-side file alchemy works.
+          Your files stay safe on your computer. Here is how it works.
         </p>
       </div>
 

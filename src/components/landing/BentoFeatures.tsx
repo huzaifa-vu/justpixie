@@ -51,10 +51,10 @@ export default function BentoFeatures() {
           Features
         </span>
         <h2 className="text-3xl md:text-5xl font-extrabold text-[var(--foreground)] mt-6 tracking-tight leading-tight font-sans">
-          50+ Spells. All Processed Locally.
+          50+ Simple Tools. Everything Runs on Your Computer.
         </h2>
         <p className="text-[var(--text-muted)] mt-4 max-w-xl ml-auto mr-auto text-base font-medium font-sans">
-          From image compression to PDF merging to video conversion — every spell runs inside your browser tab using WebAssembly. Nothing is uploaded anywhere.
+          From making images smaller to combining files — every tool runs safely inside your web browser window. We never upload anything.
         </p>
       </div>
 
@@ -66,18 +66,18 @@ export default function BentoFeatures() {
             <div className="h-12 w-12 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center mb-6 shadow-sm">
               <Wand2 className="h-5 w-5 text-[var(--pixie-teal)]" />
             </div>
-            <h3 className="text-2xl font-extrabold text-[var(--foreground)] font-sans">AI-Powered Intent Routing</h3>
+            <h3 className="text-2xl font-extrabold text-[var(--foreground)] font-sans">Type and Find</h3>
             <p className="text-[var(--text-muted)] text-sm mt-3 max-w-md leading-relaxed font-sans font-medium">
-              Don't waste time hunting through menus. Type what you need in plain English — like *"compress raw.mov to mp4"* — and our AI automatically prepares the correct local sandbox page for you.
+              Don't waste time looking through long menus. Just write what you want to do in simple English. Our helper will open the right tool for you instantly.
             </p>
           </div>
           
           <div className="mt-8 flex flex-wrap gap-3 overflow-hidden pointer-events-none opacity-90">
             <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-[var(--pure-white)] border border-[var(--border)] text-xs text-[var(--foreground)] font-bold shadow-sm">
-              <Terminal className="h-3.5 w-3.5 text-[var(--pixie-teal)]" /> Natural Language Sandbox
+              <Terminal className="h-3.5 w-3.5 text-[var(--pixie-teal)]" /> Simple Helper
             </div>
             <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-[var(--pure-white)] border border-[var(--border)] text-xs text-[var(--foreground)] font-bold shadow-sm">
-              <Sparkles className="h-3.5 w-3.5 text-[var(--gentle-lilac)]" /> Intent Classification Core
+              <Sparkles className="h-3.5 w-3.5 text-[var(--gentle-lilac)]" /> Quick Search
             </div>
           </div>
         </BentoCard>
@@ -88,50 +88,50 @@ export default function BentoFeatures() {
             <div className="h-12 w-12 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center mb-6 shadow-sm">
               <Shield className="h-5 w-5 text-[var(--pixie-teal)]" />
             </div>
-            <h3 className="text-xl font-extrabold text-[var(--foreground)] font-sans">100% Private</h3>
+            <h3 className="text-xl font-extrabold text-[var(--foreground)] font-sans">100% Safe & Private</h3>
             <p className="text-[var(--text-muted)] text-xs mt-3 leading-relaxed font-sans font-medium">
-              Every operation happens completely inside browser RAM. Files never leave your machine — 0 KB sent to cloud hosts.
+              We never upload your photos, documents, or videos to any website. Everything happens inside your computer. 0 KB sent to the internet.
             </p>
           </div>
           <div className="relative mt-6 h-16 w-full rounded-[24px] bg-[var(--foreground)]/[0.02] border border-[var(--border)] overflow-hidden flex items-center justify-center pointer-events-none opacity-95">
             <span className="text-[9px] uppercase tracking-widest text-[#166534] font-extrabold bg-[var(--mint-green)] px-3 py-1.5 rounded-full shadow-sm">
-              0 KB Cloud Telemetry
+              0 KB Sent to Internet
             </span>
           </div>
         </BentoCard>
 
-        {/* Row 2, Card 1: Image Spells (Small, 1 col) */}
+        {/* Row 2, Card 1: Image Tools (Small, 1 col) */}
         <BentoCard className="flex flex-col justify-between min-h-[350px]">
           <div>
             <div className="h-12 w-12 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center mb-6 shadow-sm">
               <ImageIcon className="h-5 w-5 text-[var(--pixie-teal)]" />
             </div>
-            <h3 className="text-xl font-extrabold text-[var(--foreground)] font-sans">Image Spells</h3>
+            <h3 className="text-xl font-extrabold text-[var(--foreground)] font-sans">Image Tools</h3>
             <p className="text-[var(--text-muted)] text-sm mt-3 leading-relaxed font-sans font-medium">
-              Precise background removals, WebP conversions, crops, metadata wipes, and canvas filter magic.
+              Remove photo backgrounds, make pictures smaller, change image formats, and crop photos.
             </p>
           </div>
           <div className="relative mt-6 h-16 w-full rounded-[24px] bg-[var(--foreground)]/[0.02] border border-[var(--border)] overflow-hidden flex items-center justify-center">
             <Link href="/dashboard/image" className="text-[10px] uppercase tracking-widest text-neutral-900 font-extrabold bg-[var(--mint-green)] px-4 py-2 rounded-full shadow-sm hover:opacity-90 transition-opacity text-decoration-none">
-              Explore Images
+              See Image Tools
             </Link>
           </div>
         </BentoCard>
 
-        {/* Row 2, Card 2: Video Alchemy (Small, 1 col) */}
+        {/* Row 2, Card 2: Video Tools (Small, 1 col) */}
         <BentoCard className="flex flex-col justify-between min-h-[350px]">
           <div>
             <div className="h-12 w-12 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center mb-6 shadow-sm">
               <Video className="h-5 w-5 text-rose-500" />
             </div>
-            <h3 className="text-xl font-extrabold text-[var(--foreground)] font-sans">Video Alchemy</h3>
+            <h3 className="text-xl font-extrabold text-[var(--foreground)] font-sans">Video Tools</h3>
             <p className="text-[var(--text-muted)] text-sm mt-3 leading-relaxed font-sans font-medium">
-              FFmpeg WASM-powered high-performance compression, custom MP3 audio extraction, GIF loops, and merges.
+              Make video files smaller, turn videos into music sound, or make looping GIFs.
             </p>
           </div>
           <div className="mt-6 flex flex-col gap-2 w-full">
             <div className="flex justify-between text-[10px] text-[var(--text-muted)] uppercase font-extrabold tracking-wider">
-              <span>WASM FFmpeg</span>
+              <span>WASM Loader</span>
               <span>Loaded</span>
             </div>
             <div className="h-2 w-full rounded-full bg-[var(--foreground)]/[0.04] border border-[var(--border)] overflow-hidden">
@@ -144,60 +144,60 @@ export default function BentoFeatures() {
           </div>
         </BentoCard>
 
-        {/* Row 2, Card 3: PDF Spells (Small, 1 col) */}
+        {/* Row 2, Card 3: PDF Tools (Small, 1 col) */}
         <BentoCard className="flex flex-col justify-between min-h-[350px]">
           <div>
             <div className="h-12 w-12 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center mb-6 shadow-sm">
               <FileText className="h-5 w-5 text-[var(--gentle-lilac)]" />
             </div>
-            <h3 className="text-xl font-extrabold text-[var(--foreground)] font-sans">PDF Spells</h3>
+            <h3 className="text-xl font-extrabold text-[var(--foreground)] font-sans">PDF Tools</h3>
             <p className="text-[var(--text-muted)] text-sm mt-3 leading-relaxed font-sans font-medium">
-              Watermark contracts, merge invoice piles, scrub structural profiles, and rotate pages in-memory.
+              Add text watermarks to files, combine invoice papers, and rotate pages.
             </p>
           </div>
           <div className="mt-6 flex flex-wrap gap-2">
             <span className="text-[9px] font-bold bg-[var(--pure-white)] border border-[var(--border)] px-2.5 py-1 rounded-full shadow-sm text-[var(--text-muted)]">Watermark</span>
-            <span className="text-[9px] font-bold bg-[var(--pure-white)] border border-[var(--border)] px-2.5 py-1 rounded-full shadow-sm text-[var(--text-muted)]">Merge</span>
-            <span className="text-[9px] font-bold bg-[var(--pure-white)] border border-[var(--border)] px-2.5 py-1 rounded-full shadow-sm text-[var(--text-muted)]">Scrub</span>
+            <span className="text-[9px] font-bold bg-[var(--pure-white)] border border-[var(--border)] px-2.5 py-1 rounded-full shadow-sm text-[var(--text-muted)]">Combine</span>
+            <span className="text-[9px] font-bold bg-[var(--pure-white)] border border-[var(--border)] px-2.5 py-1 rounded-full shadow-sm text-[var(--text-muted)]">Rotate</span>
           </div>
         </BentoCard>
 
-        {/* Row 3, Card 1: Dev Utilities (Small, 1 col) */}
+        {/* Row 3, Card 1: Developer Tools (Small, 1 col) */}
         <BentoCard className="flex flex-col justify-between min-h-[350px]">
           <div>
             <div className="h-12 w-12 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center mb-6 shadow-sm">
               <Code className="h-5 w-5 text-[var(--pixie-teal)]" />
             </div>
-            <h3 className="text-xl font-extrabold text-[var(--foreground)] font-sans">Dev Utilities</h3>
+            <h3 className="text-xl font-extrabold text-[var(--foreground)] font-sans">Developer Tools</h3>
             <p className="text-[var(--text-muted)] text-sm mt-3 leading-relaxed font-sans font-medium">
-              JWT token decoders, JSON formatting engines, local regex sandboxes, and offline QR builders.
+              Format JSON code, build quick QR codes, read web link addresses, and translate timestamps.
             </p>
           </div>
           <div className="relative mt-6 h-16 w-full rounded-[24px] bg-[var(--foreground)]/[0.02] border border-[var(--border)] overflow-hidden flex items-center justify-center">
             <Link href="/dashboard/dev" className="text-[10px] uppercase tracking-widest text-neutral-900 font-extrabold bg-[var(--gentle-lilac)] px-4 py-2 rounded-full shadow-sm hover:opacity-90 transition-opacity text-decoration-none">
-              Explore Dev
+              See Dev Tools
             </Link>
           </div>
         </BentoCard>
 
-        {/* Row 3, Card 2: Text & Data Spells (Large, 2 cols on md) */}
+        {/* Row 3, Card 2: Text & List Tools (Large, 2 cols on md) */}
         <BentoCard className="md:col-span-2 flex flex-col justify-between min-h-[350px]">
           <div>
             <div className="h-12 w-12 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center mb-6 shadow-sm">
               <Type className="h-5 w-5 text-[var(--gentle-lilac)]" />
             </div>
-            <h3 className="text-2xl font-extrabold text-[var(--foreground)] font-sans">Text & Data Spells</h3>
+            <h3 className="text-2xl font-extrabold text-[var(--foreground)] font-sans">Text & List Tools</h3>
             <p className="text-[var(--text-muted)] text-sm mt-3 max-w-md leading-relaxed font-sans font-medium">
-              Convert database CSV files to JSON payloads, calculate words, search and replace text blocks, and utilize high-fidelity local text-to-speech generators.
+              Change table CSV files to list JSON files, count words in your papers, and read text out loud using friendly computer voices.
             </p>
           </div>
           
           <div className="mt-8 grid grid-cols-3 gap-4">
             <div className="p-3.5 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] text-center text-xs font-bold text-[var(--foreground)] shadow-sm">
-              CSV Parser
+              Table Parser
             </div>
             <div className="p-3.5 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] text-center text-xs font-bold text-[var(--foreground)] shadow-sm">
-              Speech Synthesis
+              Voice Reader
             </div>
             <div className="p-3.5 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] text-center text-xs font-bold text-[var(--foreground)] shadow-sm">
               Word Count

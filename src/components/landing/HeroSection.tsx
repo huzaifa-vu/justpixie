@@ -49,17 +49,17 @@ export default function HeroSection() {
         >
           <Sparkles className="h-3.5 w-3.5 text-[var(--pixie-teal)] animate-pulse" />
           <span className="text-xs text-[var(--text-muted)] font-bold tracking-wide">
-            50+ Tools · Zero Uploads · 100% Private
+            50+ Free Tools · 100% Private · No Sign Up Needed
           </span>
         </motion.div>
 
         {/* Headline (Friendly rounded Plus Jakarta display) */}
         <motion.div variants={itemVariants} className="flex flex-col gap-3">
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-[var(--foreground)] leading-[1.1] font-sans">
-            Just describe what you need.
+            Just tell us what you want to do.
             <br />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--gentle-lilac)] via-[var(--pixie-teal)] to-[var(--mint-green)]">
-              Your files stay on your device.
+              Your files never leave your computer.
             </span>
           </h1>
         </motion.div>
@@ -69,7 +69,7 @@ export default function HeroSection() {
           variants={itemVariants}
           className="text-base sm:text-lg md:text-xl text-[var(--text-muted)] font-medium leading-relaxed max-w-xl ml-auto mr-auto font-sans"
         >
-          Tell Pixie "compress my PDF" or "remove the background from this photo" and we'll route you to the right tool in seconds — no uploads, no accounts needed.
+          Type simple sentences like "make my video file smaller" or "combine my PDF papers". Our smart helper instantly finds the right tool. No waiting, no uploads, and no logins needed.
         </motion.p>
 
         {/* The Interactive Crucible Widget */}

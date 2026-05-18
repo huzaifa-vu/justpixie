@@ -19,37 +19,37 @@ export default function Footer() {
             </span>
           </div>
           <p className="text-[var(--text-muted)] text-xs leading-relaxed max-w-sm font-sans font-medium">
-            Tell Pixie what you need. We find the right tool and process your files locally — no uploads, no accounts, no limits.
+            Tell Pixie what you want to do. We find the right tool instantly. Everything runs safely on your computer — no uploads, no sign ups.
           </p>
         </div>
 
         {/* Links Column 1 */}
         <div className="flex flex-col gap-3">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)] font-sans">Spells</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)] font-sans">All Tools</h4>
           <ul className="flex flex-col gap-2 p-0 m-0 list-none font-sans font-semibold">
             <li>
               <Link href="/dashboard/image" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-decoration-none">
-                Image Spells
+                Image Tools
               </Link>
             </li>
             <li>
               <Link href="/dashboard/pdf" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-decoration-none">
-                PDF Spells
+                PDF Tools
               </Link>
             </li>
             <li>
               <Link href="/dashboard/video" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-decoration-none">
-                Video Alchemy
+                Video Tools
               </Link>
             </li>
             <li>
               <Link href="/dashboard/dev" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-decoration-none">
-                Dev Utilities
+                Developer Tools
               </Link>
             </li>
             <li>
               <Link href="/dashboard/text" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-decoration-none">
-                Text & Data Spells
+                Text & List Tools
               </Link>
             </li>
           </ul>
@@ -74,8 +74,8 @@ export default function Footer() {
       </div>
 
       <div className="max-w-5xl ml-auto mr-auto border-t border-[var(--border)] mt-12 pt-8 flex items-center justify-between text-[var(--text-muted)] text-[10px] uppercase font-bold tracking-wider font-sans">
-        <span>&copy; {new Date().getFullYear()} Pixie Magic. All rights reserved.</span>
-        <span>Made with Local WASM</span>
+        <span>&copy; {new Date().getFullYear()} Pixie. All rights reserved.</span>
+        <span>Runs safely on your computer</span>
       </div>
     </footer>
   );
