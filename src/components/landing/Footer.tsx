@@ -19,7 +19,7 @@ export default function Footer() {
             </span>
           </div>
           <p className="text-[var(--text-muted)] text-xs leading-relaxed max-w-sm font-sans font-medium">
-            Effortless, local, and magical file transformation power inside your browser. No server uploads. 100% private.
+            Tell Pixie what you need. We find the right tool and process your files locally — no uploads, no accounts, no limits.
           </p>
         </div>
 
@@ -34,12 +34,22 @@ export default function Footer() {
             </li>
             <li>
               <Link href="/dashboard/pdf" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-decoration-none">
-                PDF Alchemy
+                PDF Spells
               </Link>
             </li>
             <li>
               <Link href="/dashboard/video" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-decoration-none">
                 Video Alchemy
+              </Link>
+            </li>
+            <li>
+              <Link href="/dashboard/dev" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-decoration-none">
+                Dev Utilities
+              </Link>
+            </li>
+            <li>
+              <Link href="/dashboard/text" className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-decoration-none">
+                Text & Data Spells
               </Link>
             </li>
           </ul>

@@ -49,17 +49,17 @@ export default function HeroSection() {
         >
           <Sparkles className="h-3.5 w-3.5 text-[var(--pixie-teal)] animate-pulse" />
           <span className="text-xs text-[var(--text-muted)] font-bold tracking-wide">
-            Next-Gen Browser File Alchemy
+            50+ Tools · Zero Uploads · 100% Private
           </span>
         </motion.div>
 
         {/* Headline (Friendly rounded Plus Jakarta display) */}
         <motion.div variants={itemVariants} className="flex flex-col gap-3">
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-[var(--foreground)] leading-[1.1] font-sans">
-            Effortless File Spells.
+            Just describe what you need.
             <br />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--gentle-lilac)] via-[var(--pixie-teal)] to-[var(--mint-green)]">
-              100% Local AI.
+              Your files stay on your device.
             </span>
           </h1>
         </motion.div>
@@ -69,7 +69,7 @@ export default function HeroSection() {
           variants={itemVariants}
           className="text-base sm:text-lg md:text-xl text-[var(--text-muted)] font-medium leading-relaxed max-w-xl ml-auto mr-auto font-sans"
         >
-          Cast background removals, metadata wipes, and high-performance video conversions instantly in your cache. Your data never touches a server.
+          Tell Pixie "compress my PDF" or "remove the background from this photo" and we'll route you to the right tool in seconds — no uploads, no accounts needed.
         </motion.p>
 
         {/* The Interactive Crucible Widget */}

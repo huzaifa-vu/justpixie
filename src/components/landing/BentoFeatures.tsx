@@ -2,7 +2,8 @@
 
 import React from "react";
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
-import { Shield, Sparkles, Image as ImageIcon, Video, FileText, Cpu } from "lucide-react";
+import { Shield, Sparkles, Image as ImageIcon, Video, FileText, Cpu, Code, Type, Wand2, Terminal } from "lucide-react";
+import Link from "next/link";
 
 interface BentoCardProps {
   children: React.ReactNode;
@@ -50,40 +51,56 @@ export default function BentoFeatures() {
           Features
         </span>
         <h2 className="text-3xl md:text-5xl font-extrabold text-[var(--foreground)] mt-6 tracking-tight leading-tight font-sans">
-          Everything You Need.<br />Done in Milliseconds.
+          50+ Spells. All Processed Locally.
         </h2>
         <p className="text-[var(--text-muted)] mt-4 max-w-xl ml-auto mr-auto text-base font-medium font-sans">
-          Unlock standard file alchemical spells with lightning speed, complete privacy, and zero server queues.
+          From image compression to PDF merging to video conversion — every spell runs inside your browser tab using WebAssembly. Nothing is uploaded anywhere.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Card 1: Local-First Security (Large, takes 2 cols on md) */}
+        
+        {/* Row 1, Card 1: AI Routing Core (Large, 2 cols on md) */}
         <BentoCard className="md:col-span-2 flex flex-col justify-between min-h-[350px]">
           <div>
             <div className="h-12 w-12 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center mb-6 shadow-sm">
-              <Shield className="h-5 w-5 text-[var(--pixie-teal)]" />
+              <Wand2 className="h-5 w-5 text-[var(--pixie-teal)]" />
             </div>
-            <h3 className="text-2xl font-extrabold text-[var(--foreground)] font-sans">100% Client-Side Privacy</h3>
+            <h3 className="text-2xl font-extrabold text-[var(--foreground)] font-sans">AI-Powered Intent Routing</h3>
             <p className="text-[var(--text-muted)] text-sm mt-3 max-w-md leading-relaxed font-sans font-medium">
-              Unlike other tools, Pixie processes every single document, image, and video directly inside your browser. No server uploads. No leaking data. Your files never leave your device.
+              Don't waste time hunting through menus. Type what you need in plain English — like *"compress raw.mov to mp4"* — and our AI automatically prepares the correct local sandbox page for you.
             </p>
           </div>
           
           <div className="mt-8 flex flex-wrap gap-3 overflow-hidden pointer-events-none opacity-90">
             <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-[var(--pure-white)] border border-[var(--border)] text-xs text-[var(--foreground)] font-bold shadow-sm">
-              <span className="h-2.5 w-2.5 rounded-full bg-[var(--pixie-teal)] animate-pulse" /> Wasm Engine Active
+              <Terminal className="h-3.5 w-3.5 text-[var(--pixie-teal)]" /> Natural Language Sandbox
             </div>
             <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-[var(--pure-white)] border border-[var(--border)] text-xs text-[var(--foreground)] font-bold shadow-sm">
-              <Shield className="h-3.5 w-3.5 text-[var(--gentle-lilac)]" /> 0 KB Sent to Cloud
-            </div>
-            <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-[var(--pure-white)] border border-[var(--border)] text-xs text-[var(--foreground)] font-bold shadow-sm">
-              <Cpu className="h-3.5 w-3.5 text-[var(--pixie-teal)]" /> Powered by Local GPU
+              <Sparkles className="h-3.5 w-3.5 text-[var(--gentle-lilac)]" /> Intent Classification Core
             </div>
           </div>
         </BentoCard>
 
-        {/* Card 2: Image Spells (Small, 1 col) */}
+        {/* Row 1, Card 2: 100% Client-Side Privacy (Small, 1 col) */}
+        <BentoCard className="flex flex-col justify-between min-h-[350px]">
+          <div>
+            <div className="h-12 w-12 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center mb-6 shadow-sm">
+              <Shield className="h-5 w-5 text-[var(--pixie-teal)]" />
+            </div>
+            <h3 className="text-xl font-extrabold text-[var(--foreground)] font-sans">100% Private</h3>
+            <p className="text-[var(--text-muted)] text-xs mt-3 leading-relaxed font-sans font-medium">
+              Every operation happens completely inside browser RAM. Files never leave your machine — 0 KB sent to cloud hosts.
+            </p>
+          </div>
+          <div className="relative mt-6 h-16 w-full rounded-[24px] bg-[var(--foreground)]/[0.02] border border-[var(--border)] overflow-hidden flex items-center justify-center pointer-events-none opacity-95">
+            <span className="text-[9px] uppercase tracking-widest text-[#166534] font-extrabold bg-[var(--mint-green)] px-3 py-1.5 rounded-full shadow-sm">
+              0 KB Cloud Telemetry
+            </span>
+          </div>
+        </BentoCard>
+
+        {/* Row 2, Card 1: Image Spells (Small, 1 col) */}
         <BentoCard className="flex flex-col justify-between min-h-[350px]">
           <div>
             <div className="h-12 w-12 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center mb-6 shadow-sm">
@@ -91,17 +108,17 @@ export default function BentoFeatures() {
             </div>
             <h3 className="text-xl font-extrabold text-[var(--foreground)] font-sans">Image Spells</h3>
             <p className="text-[var(--text-muted)] text-sm mt-3 leading-relaxed font-sans font-medium">
-              Background removal, PNG compression, and instant conversion to optimal modern WebP files directly in your cache.
+              Precise background removals, WebP conversions, crops, metadata wipes, and canvas filter magic.
             </p>
           </div>
-          <div className="relative mt-6 h-20 w-full rounded-[24px] bg-[var(--foreground)]/[0.02] border border-[var(--border)] overflow-hidden flex items-center justify-center">
-            <span className="text-[10px] uppercase tracking-widest text-neutral-900 font-extrabold bg-[var(--mint-green)] px-3 py-1.5 rounded-full shadow-sm">
-              Remove Background
-            </span>
+          <div className="relative mt-6 h-16 w-full rounded-[24px] bg-[var(--foreground)]/[0.02] border border-[var(--border)] overflow-hidden flex items-center justify-center">
+            <Link href="/dashboard/image" className="text-[10px] uppercase tracking-widest text-neutral-900 font-extrabold bg-[var(--mint-green)] px-4 py-2 rounded-full shadow-sm hover:opacity-90 transition-opacity text-decoration-none">
+              Explore Images
+            </Link>
           </div>
         </BentoCard>
 
-        {/* Card 3: Video Alchemy (Wide, 1 col) */}
+        {/* Row 2, Card 2: Video Alchemy (Small, 1 col) */}
         <BentoCard className="flex flex-col justify-between min-h-[350px]">
           <div>
             <div className="h-12 w-12 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center mb-6 shadow-sm">
@@ -109,13 +126,13 @@ export default function BentoFeatures() {
             </div>
             <h3 className="text-xl font-extrabold text-[var(--foreground)] font-sans">Video Alchemy</h3>
             <p className="text-[var(--text-muted)] text-sm mt-3 leading-relaxed font-sans font-medium">
-              Compress raw MOV recordings to lightweight MP4s using specialized WASM-compiled FFmpeg directly in the background.
+              FFmpeg WASM-powered high-performance compression, custom MP3 audio extraction, GIF loops, and merges.
             </p>
           </div>
           <div className="mt-6 flex flex-col gap-2 w-full">
             <div className="flex justify-between text-[10px] text-[var(--text-muted)] uppercase font-extrabold tracking-wider">
               <span>WASM FFmpeg</span>
-              <span>Compiling...</span>
+              <span>Loaded</span>
             </div>
             <div className="h-2 w-full rounded-full bg-[var(--foreground)]/[0.04] border border-[var(--border)] overflow-hidden">
               <motion.div
@@ -127,29 +144,67 @@ export default function BentoFeatures() {
           </div>
         </BentoCard>
 
-        {/* Card 4: PDF Spells (Wide, takes 2 cols on md) */}
-        <BentoCard className="md:col-span-2 flex flex-col justify-between min-h-[350px]">
+        {/* Row 2, Card 3: PDF Spells (Small, 1 col) */}
+        <BentoCard className="flex flex-col justify-between min-h-[350px]">
           <div>
             <div className="h-12 w-12 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center mb-6 shadow-sm">
               <FileText className="h-5 w-5 text-[var(--gentle-lilac)]" />
             </div>
-            <h3 className="text-2xl font-extrabold text-[var(--foreground)] font-sans">PDF Spells</h3>
-            <p className="text-[var(--text-muted)] text-sm mt-3 max-w-md leading-relaxed font-sans font-medium">
-              Securely watermark contracts, merge invoices, convert pages to PNG, and edit metadata without exposing corporate documents to third-party APIs.
+            <h3 className="text-xl font-extrabold text-[var(--foreground)] font-sans">PDF Spells</h3>
+            <p className="text-[var(--text-muted)] text-sm mt-3 leading-relaxed font-sans font-medium">
+              Watermark contracts, merge invoice piles, scrub structural profiles, and rotate pages in-memory.
             </p>
           </div>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <span className="text-[9px] font-bold bg-[var(--pure-white)] border border-[var(--border)] px-2.5 py-1 rounded-full shadow-sm text-[var(--text-muted)]">Watermark</span>
+            <span className="text-[9px] font-bold bg-[var(--pure-white)] border border-[var(--border)] px-2.5 py-1 rounded-full shadow-sm text-[var(--text-muted)]">Merge</span>
+            <span className="text-[9px] font-bold bg-[var(--pure-white)] border border-[var(--border)] px-2.5 py-1 rounded-full shadow-sm text-[var(--text-muted)]">Scrub</span>
+          </div>
+        </BentoCard>
+
+        {/* Row 3, Card 1: Dev Utilities (Small, 1 col) */}
+        <BentoCard className="flex flex-col justify-between min-h-[350px]">
+          <div>
+            <div className="h-12 w-12 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center mb-6 shadow-sm">
+              <Code className="h-5 w-5 text-[var(--pixie-teal)]" />
+            </div>
+            <h3 className="text-xl font-extrabold text-[var(--foreground)] font-sans">Dev Utilities</h3>
+            <p className="text-[var(--text-muted)] text-sm mt-3 leading-relaxed font-sans font-medium">
+              JWT token decoders, JSON formatting engines, local regex sandboxes, and offline QR builders.
+            </p>
+          </div>
+          <div className="relative mt-6 h-16 w-full rounded-[24px] bg-[var(--foreground)]/[0.02] border border-[var(--border)] overflow-hidden flex items-center justify-center">
+            <Link href="/dashboard/dev" className="text-[10px] uppercase tracking-widest text-neutral-900 font-extrabold bg-[var(--gentle-lilac)] px-4 py-2 rounded-full shadow-sm hover:opacity-90 transition-opacity text-decoration-none">
+              Explore Dev
+            </Link>
+          </div>
+        </BentoCard>
+
+        {/* Row 3, Card 2: Text & Data Spells (Large, 2 cols on md) */}
+        <BentoCard className="md:col-span-2 flex flex-col justify-between min-h-[350px]">
+          <div>
+            <div className="h-12 w-12 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] flex items-center justify-center mb-6 shadow-sm">
+              <Type className="h-5 w-5 text-[var(--gentle-lilac)]" />
+            </div>
+            <h3 className="text-2xl font-extrabold text-[var(--foreground)] font-sans">Text & Data Spells</h3>
+            <p className="text-[var(--text-muted)] text-sm mt-3 max-w-md leading-relaxed font-sans font-medium">
+              Convert database CSV files to JSON payloads, calculate words, search and replace text blocks, and utilize high-fidelity local text-to-speech generators.
+            </p>
+          </div>
+          
           <div className="mt-8 grid grid-cols-3 gap-4">
             <div className="p-3.5 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] text-center text-xs font-bold text-[var(--foreground)] shadow-sm">
-              Watermark
+              CSV Parser
             </div>
             <div className="p-3.5 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] text-center text-xs font-bold text-[var(--foreground)] shadow-sm">
-              Merge
+              Speech Synthesis
             </div>
             <div className="p-3.5 rounded-[20px] bg-[var(--pure-white)] border border-[var(--border)] text-center text-xs font-bold text-[var(--foreground)] shadow-sm">
-              Metadata
+              Word Count
             </div>
           </div>
         </BentoCard>
+
       </div>
     </section>
   );
