@@ -11,7 +11,8 @@ import {
   Wand2,
   Code,
   ShieldAlert,
-  Terminal
+  Terminal,
+  Keyboard
 } from "lucide-react";
 
 interface IntentType {
@@ -32,8 +33,16 @@ export default function InteractiveWidget() {
   const [matchedTool, setMatchedTool] = useState<IntentType | null>(null);
   const [currentCycleIndex, setCurrentCycleIndex] = useState(0);
   const [inputText, setInputText] = useState("");
+  
   const autoCycleTimerRef = useRef<NodeJS.Timeout | null>(null);
   const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const routingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const activeIntentRef = useRef<IntentType | null>(null);
+
+  // Sync activeIntent in a ref to avoid React stale closures in timer callbacks
+  useEffect(() => {
+    activeIntentRef.current = activeIntent;
+  }, [activeIntent]);
 
   const sampleIntents: IntentType[] = [
     {
@@ -103,7 +112,8 @@ export default function InteractiveWidget() {
   const startAutoCycle = () => {
     if (autoCycleTimerRef.current) clearTimeout(autoCycleTimerRef.current);
     autoCycleTimerRef.current = setTimeout(() => {
-      const nextIndex = (currentCycleIndex + 1) % sampleIntents.length;
+      const currentIndex = sampleIntents.findIndex(i => i.id === activeIntentRef.current?.id);
+      const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % sampleIntents.length;
       setCurrentCycleIndex(nextIndex);
       triggerSimulation(sampleIntents[nextIndex]);
     }, 5000);
@@ -112,14 +122,16 @@ export default function InteractiveWidget() {
   const triggerSimulation = (intent: IntentType) => {
     if (autoCycleTimerRef.current) clearTimeout(autoCycleTimerRef.current);
     if (typingTimerRef.current) clearInterval(typingTimerRef.current);
+    if (routingTimerRef.current) clearTimeout(routingTimerRef.current);
 
     setActiveIntent(intent);
     setMatchedTool(null);
     setRouting(true);
 
     typePrompt(intent.prompt, () => {
+      if (routingTimerRef.current) clearTimeout(routingTimerRef.current);
       // Simulate Pixie semantic router parsing delay
-      setTimeout(() => {
+      routingTimerRef.current = setTimeout(() => {
         setRouting(false);
         setMatchedTool(intent);
         startAutoCycle();
@@ -133,6 +145,7 @@ export default function InteractiveWidget() {
     return () => {
       if (autoCycleTimerRef.current) clearTimeout(autoCycleTimerRef.current);
       if (typingTimerRef.current) clearInterval(typingTimerRef.current);
+      if (routingTimerRef.current) clearTimeout(routingTimerRef.current);
     };
   }, []);
 
@@ -146,9 +159,9 @@ export default function InteractiveWidget() {
         <div className="flex flex-col gap-6">
           <div>
             <span className="text-xs font-extrabold uppercase tracking-wider text-[var(--pixie-teal)]">Step 1</span>
-            <h3 className="text-2xl font-extrabold text-[var(--foreground)] mt-1 font-sans">Write what you want</h3>
+            <h3 className="text-2xl font-extrabold text-[var(--foreground)] mt-1 font-sans">Try the helper</h3>
             <p className="text-sm text-[var(--text-muted)] mt-1 font-sans">
-              Click any example below to see how our helper finds the right tool for you instantly.
+              Click any button below to see how our helper finds the perfect tool for you in one second.
             </p>
           </div>
 
@@ -157,13 +170,13 @@ export default function InteractiveWidget() {
               const isSelected = activeIntent?.id === intent.id;
               return (
                 <button
-                  key={intent.id}
-                  onClick={() => triggerSimulation(intent)}
-                  className={`flex items-center justify-between p-4 rounded-[24px] border text-left transition-all duration-300 cursor-pointer ${
-                    isSelected
-                      ? "border-[var(--pixie-teal)] bg-[var(--pixie-teal)]/10 shadow-[0_8px_32px_0_rgba(20,184,166,0.05)]"
-                      : "border-[var(--border)] bg-[var(--foreground)]/[0.01] hover:bg-[var(--foreground)]/[0.04]"
-                  }`}
+                   key={intent.id}
+                   onClick={() => triggerSimulation(intent)}
+                   className={`flex items-center justify-between p-4 rounded-[24px] border text-left transition-all duration-300 cursor-pointer ${
+                     isSelected
+                       ? "border-[var(--pixie-teal)] bg-[var(--pixie-teal)]/10 shadow-[0_8px_32px_0_rgba(20,184,166,0.05)]"
+                       : "border-[var(--border)] bg-[var(--foreground)]/[0.01] hover:bg-[var(--foreground)]/[0.04]"
+                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 rounded-[16px] bg-[var(--pure-white)] border border-[var(--border)] shadow-sm">
@@ -179,7 +192,7 @@ export default function InteractiveWidget() {
                   <span className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider ${
                     isSelected ? "bg-[var(--pixie-teal)]/20 text-[var(--pixie-teal)]" : "bg-[var(--foreground)]/[0.05] text-[var(--text-muted)]"
                   }`}>
-                    Test
+                    Try it
                   </span>
                 </button>
               );
@@ -201,7 +214,7 @@ export default function InteractiveWidget() {
               >
                 {/* Router Prompt Shell Visual */}
                 <div className="w-full bg-[var(--pure-white)] border border-[var(--border)] rounded-[20px] p-3 text-left font-mono text-xs flex items-center gap-2 mb-2 shadow-sm">
-                  <Terminal className="h-3.5 w-3.5 text-[var(--pixie-teal)] flex-shrink-0" />
+                  <Keyboard className="h-3.5 w-3.5 text-[var(--pixie-teal)] flex-shrink-0" />
                   <span className="text-[var(--foreground)] truncate">{inputText}</span>
                   <span className="w-2 h-4 bg-[var(--pixie-teal)] animate-pulse flex-shrink-0" />
                 </div>
@@ -216,9 +229,9 @@ export default function InteractiveWidget() {
                 </div>
                 
                 <div>
-                  <h4 className="text-base font-extrabold text-[var(--foreground)] font-sans">Helper is thinking...</h4>
+                  <h4 className="text-base font-extrabold text-[var(--foreground)] font-sans">Helper is searching...</h4>
                   <p className="text-xs text-[var(--text-muted)] mt-1 font-sans">
-                    Reading your words...
+                    Reading your request...
                   </p>
                 </div>
               </motion.div>
@@ -232,7 +245,7 @@ export default function InteractiveWidget() {
               >
                 {/* Completed prompt bar */}
                 <div className="w-full bg-[var(--pure-white)] border border-[var(--border)] rounded-[20px] p-3 text-left font-mono text-xs flex items-center gap-2 shadow-sm">
-                  <Terminal className="h-3.5 w-3.5 text-[var(--text-muted)] flex-shrink-0" />
+                  <Keyboard className="h-3.5 w-3.5 text-[var(--text-muted)] flex-shrink-0" />
                   <span className="text-[var(--text-muted)] truncate">{matchedTool.prompt}</span>
                 </div>
 
