@@ -40,7 +40,7 @@ export default function HeroSection() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="relative z-10 w-full max-w-4xl flex flex-col items-center text-center gap-8"
+        className="relative z-10 w-full max-w-4xl ml-auto mr-auto flex flex-col items-center text-center gap-8"
       >
         {/* Animated Badge */}
         <motion.div
@@ -67,7 +67,7 @@ export default function HeroSection() {
         {/* Subtitle */}
         <motion.p
           variants={itemVariants}
-          className="text-base sm:text-lg md:text-xl text-[var(--text-muted)] font-medium leading-relaxed max-w-xl mx-auto font-sans"
+          className="text-base sm:text-lg md:text-xl text-[var(--text-muted)] font-medium leading-relaxed max-w-xl ml-auto mr-auto font-sans"
         >
           Cast background removals, metadata wipes, and high-performance video conversions instantly in your cache. Your data never touches a server.
         </motion.p>

@@ -21,7 +21,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="fixed top-4 left-0 right-0 z-50 max-w-5xl mx-auto px-4">
+    <header className="fixed top-4 left-0 right-0 z-50 max-w-5xl ml-auto mr-auto px-4">
       <div className="w-full h-16 rounded-[24px] border border-[var(--border)] bg-[var(--pure-white)]/60 backdrop-blur-xl px-6 flex items-center justify-between shadow-[var(--shadow-bento)] transition-all duration-300">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group cursor-pointer text-decoration-none">

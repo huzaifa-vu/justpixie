@@ -55,7 +55,7 @@ export default function TerminalCTA() {
   };
 
   return (
-    <section className="relative w-full max-w-4xl mx-auto px-6 py-24 flex flex-col items-center z-10 bg-transparent">
+    <section className="relative w-full max-w-4xl ml-auto mr-auto px-6 py-24 flex flex-col items-center z-10 bg-transparent">
       {/* Background soft ambient blur */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-72 w-72 rounded-full bg-[var(--gentle-lilac)] opacity-10 blur-3xl pointer-events-none" />
 

@@ -79,7 +79,7 @@ export default function InteractiveWidget() {
   };
 
   return (
-    <div className="relative mx-auto w-full max-w-3xl rounded-[48px] border border-[var(--border)] bg-[var(--pure-white)]/80 p-8 md:p-10 backdrop-blur-xl shadow-[var(--shadow-bento)] transition-all duration-300">
+    <div className="relative ml-auto mr-auto w-full max-w-3xl rounded-[48px] border border-[var(--border)] bg-[var(--pure-white)]/80 p-8 md:p-10 backdrop-blur-xl shadow-[var(--shadow-bento)] transition-all duration-300">
       {/* Subtle organic ambient inner glow */}
       <div className="absolute -inset-px rounded-[48px] bg-gradient-to-r from-[var(--gentle-lilac)]/5 to-[var(--mint-green)]/5 opacity-40 blur-sm pointer-events-none" />
 

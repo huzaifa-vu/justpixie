@@ -7,7 +7,7 @@ import { Sparkles } from "lucide-react";
 export default function Footer() {
   return (
     <footer className="w-full bg-transparent border-t border-[var(--border)] py-16 px-6 relative z-10">
-      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 items-start">
+      <div className="max-w-5xl ml-auto mr-auto grid grid-cols-1 md:grid-cols-4 gap-10 items-start">
         {/* Branding Column */}
         <div className="flex flex-col gap-4 md:col-span-2">
           <div className="flex items-center gap-2">
@@ -63,7 +63,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto border-t border-[var(--border)] mt-12 pt-8 flex items-center justify-between text-[var(--text-muted)] text-[10px] uppercase font-bold tracking-wider font-sans">
+      <div className="max-w-5xl ml-auto mr-auto border-t border-[var(--border)] mt-12 pt-8 flex items-center justify-between text-[var(--text-muted)] text-[10px] uppercase font-bold tracking-wider font-sans">
         <span>&copy; {new Date().getFullYear()} Pixie Magic. All rights reserved.</span>
         <span>Made with Local WASM</span>
       </div>

@@ -44,7 +44,7 @@ function BentoCard({ children, className = "" }: BentoCardProps) {
 
 export default function BentoFeatures() {
   return (
-    <section id="features" className="relative w-full max-w-5xl mx-auto px-6 py-24 bg-transparent z-10">
+    <section id="features" className="relative w-full max-w-5xl ml-auto mr-auto px-6 py-24 bg-transparent z-10">
       <div className="text-center mb-16">
         <span className="text-xs font-extrabold uppercase tracking-widest text-neutral-900 bg-[var(--mint-green)] px-4 py-1.5 rounded-full shadow-sm">
           Features
@@ -52,7 +52,7 @@ export default function BentoFeatures() {
         <h2 className="text-3xl md:text-5xl font-extrabold text-[var(--foreground)] mt-6 tracking-tight leading-tight font-sans">
           Everything You Need.<br />Done in Milliseconds.
         </h2>
-        <p className="text-[var(--text-muted)] mt-4 max-w-xl mx-auto text-base font-medium font-sans">
+        <p className="text-[var(--text-muted)] mt-4 max-w-xl ml-auto mr-auto text-base font-medium font-sans">
           Unlock standard file alchemical spells with lightning speed, complete privacy, and zero server queues.
         </p>
       </div>
