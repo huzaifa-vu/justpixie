@@ -1650,6 +1650,7 @@
   margin-bottom: 2rem;
   gap: 1.5rem;
   flex-wrap: wrap;
+  padding: 0 1.25rem;
 }
 
 .hubStatsText {
