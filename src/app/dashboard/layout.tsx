@@ -3,7 +3,7 @@
 import { ReactNode, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Wand2, LayoutDashboard, Image as ImageIcon, FileText, Video, Code, Settings, UserCircle, LogOut, Type, Menu, X, Info, HelpCircle, Sparkles, Download, Sun, Moon } from "lucide-react";
+import { Wand2, LayoutDashboard, Image as ImageIcon, FileText, Video, Code, Settings, UserCircle, LogOut, Type, Menu, X, Info, HelpCircle, Sparkles, Download, Sun, Moon, Lightbulb } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useQuota } from "@/hooks/useQuota";
 import { useTheme } from "next-themes";
@@ -108,6 +108,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
     { name: "Video Alchemy", href: "/dashboard/video", icon: Video },
     { name: "Dev Utilities", href: "/dashboard/dev", icon: Code },
     { name: "Text & Data", href: "/dashboard/text", icon: Type },
+    { name: "Wishlist", href: "/dashboard/features-request", icon: Lightbulb },
   ];
 
   return (

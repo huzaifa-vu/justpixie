@@ -187,6 +187,13 @@
 }
 
 @media (max-width: 640px) {
+  .container {
+    padding: 1.5rem 1rem;
+    gap: 1.5rem;
+  }
+  .card {
+    padding: 1.5rem;
+  }
   .formGrid {
     grid-template-columns: 1fr;
   }
