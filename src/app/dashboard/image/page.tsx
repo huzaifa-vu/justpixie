@@ -1,11 +1,14 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Wand2, Image as ImageIcon, Shrink, Eraser, Replace, Stamp, Maximize, Crop, RotateCcw, Sliders, Square, Palette, Pencil, FileText , ArrowRight } from "lucide-react";
 import styles from "../page.module.css";
 import Link from "next/link";
 
 export default function ImageCategoryHome() {
+  const [searchQuery, setSearchQuery] = useState("");
+
   const tools = [
     { name: 'Image Compressor', type: 'Image', desc: 'Instant shrink ray magic for heavy images.', href: '/dashboard/image/compress', icon: Shrink },
     { name: 'Background Remover', type: 'Image', desc: 'AI-powered exact subject cutout.', href: '/dashboard/image/bg-remove', icon: Eraser },
@@ -21,6 +24,13 @@ export default function ImageCategoryHome() {
     { name: 'Images to PDF', type: 'Image', desc: 'Combine multiple images into a PDF.', href: '/dashboard/image/images-to-pdf', icon: FileText }
   ];
 
+  const filteredTools = useMemo(() => {
+    return tools.filter(tool => 
+      tool.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      tool.desc.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery]);
+
   return (
     <div className={styles.dashboardContainer} style={{ height: 'auto', padding: '1rem', background: 'transparent' }}>
       <div className={styles.aiCommandBox} style={{ background: 'var(--gentle-lilac)', color: 'var(--deep-charcoal)', marginBottom: '2rem' }}>
@@ -35,31 +45,60 @@ export default function ImageCategoryHome() {
         </p>
       </div>
 
-      <div className={styles.toolsGrid}>
-        {tools.map((tool, idx) => (
-          <Link href={tool.href} key={idx} style={{ textDecoration: 'none' }}>
-            <motion.div 
-              className={styles.toolCard}
-              whileHover={{ y: -5 }}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-            >
-              <div className={styles.toolHeader}>
-                <div className={styles.toolIconContainer}>
-                  <tool.icon size={24} className={styles.toolIcon} />
-                </div>
-                <span className={styles.toolBadge}>{tool.type}</span>
-              </div>
-              <h4 className={styles.toolName}>{tool.name}</h4>
-              <p className={styles.toolDesc}>{tool.desc}</p>
-              <div className={styles.toolArrowBtn}>
-                <ArrowRight size={18} />
-              </div>
-            </motion.div>
-          </Link>
-        ))}
+      <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'flex-start' }}>
+        <input 
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="🔍 Search for an image tool..."
+          style={{
+            width: '100%',
+            maxWidth: '400px',
+            padding: '0.85rem 1.25rem',
+            borderRadius: '16px',
+            border: '1px solid var(--border)',
+            background: 'var(--pure-white)',
+            boxShadow: 'var(--shadow-inner)',
+            fontSize: '0.95rem',
+            outline: 'none',
+            color: 'var(--foreground)',
+            transition: 'all 0.2s'
+          }}
+        />
       </div>
+
+      {filteredTools.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+          <p style={{ fontSize: '1.1rem', fontWeight: 600 }}>No spells found matching "{searchQuery}"</p>
+          <span style={{ fontSize: '0.9rem' }}>Try looking under another category or requesting this feature!</span>
+        </div>
+      ) : (
+        <div className={styles.toolsGrid}>
+          {filteredTools.map((tool, idx) => (
+            <Link href={tool.href} key={idx} style={{ textDecoration: 'none' }}>
+              <motion.div 
+                className={styles.toolCard}
+                whileHover={{ y: -5 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.05 }}
+              >
+                <div className={styles.toolHeader}>
+                  <div className={styles.toolIconContainer}>
+                    <tool.icon size={24} className={styles.toolIcon} />
+                  </div>
+                  <span className={styles.toolBadge}>{tool.type}</span>
+                </div>
+                <h4 className={styles.toolName}>{tool.name}</h4>
+                <p className={styles.toolDesc}>{tool.desc}</p>
+                <div className={styles.toolArrowBtn}>
+                  <ArrowRight size={18} />
+                </div>
+              </motion.div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -51,6 +51,39 @@ export default function AboutPage() {
         ))}
       </div>
 
+      {/* WASM Micro-Explainer Section */}
+      <div className={styles.card} style={{ marginTop: '3rem', padding: '3.5rem 3rem' }}>
+        <h2 style={{ fontSize: '1.85rem', fontWeight: 800, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <Globe size={24} style={{ color: 'var(--gentle-lilac)' }} />
+          What is WebAssembly (WASM)?
+        </h2>
+        <p style={{ color: 'var(--text-muted)', lineHeight: 1.7, fontSize: '1.05rem', marginBottom: '2.5rem' }}>
+          Normally, websites have to send your files to their remote cloud servers to perform complex transformations (like editing a PDF, resizing an image, or rendering a video). 
+          <strong> WebAssembly</strong> changes everything. It is a revolutionary browser technology that allows desktop-grade performance engines to run securely inside your browser tab.
+        </p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
+          <div style={{ background: 'rgba(0, 0, 0, 0.02)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(0, 0, 0, 0.04)' }}>
+            <h4 style={{ fontWeight: 800, fontSize: '1.05rem', marginBottom: '0.5rem', color: '#10b981' }}>🔒 Zero Server Uploads</h4>
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              Since the conversion logic executes right on your computer's browser engine, your raw files are never transmitted over the internet.
+            </p>
+          </div>
+          <div style={{ background: 'rgba(0, 0, 0, 0.02)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(0, 0, 0, 0.04)' }}>
+            <h4 style={{ fontWeight: 800, fontSize: '1.05rem', marginBottom: '0.5rem', color: '#a855f7' }}>⚡ Near-Native Speed</h4>
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              WASM is compiled to high-speed binary instructions that execute directly on your processor, making local conversions instantly responsive.
+            </p>
+          </div>
+          <div style={{ background: 'rgba(0, 0, 0, 0.02)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(0, 0, 0, 0.04)' }}>
+            <h4 style={{ fontWeight: 800, fontSize: '1.05rem', marginBottom: '0.5rem', color: '#06b6d4' }}>📶 Works 100% Offline</h4>
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              Once the web app loads, you can completely disconnect your Wi-Fi or go offline. All spells and engines continue to work perfectly.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Meet the Creator Section */}
       <div className={styles.card} style={{ marginTop: '4rem', padding: '3rem 2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '3rem', flexWrap: 'wrap', justifyContent: 'center' }}>
