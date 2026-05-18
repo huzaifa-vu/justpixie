@@ -46,8 +46,8 @@ export default function PricingPage() {
       a: "Yes! Once the page loads, you can turn off your internet. The tools will still work perfectly on your computer."
     },
     {
-      q: "How do I cancel my plan?",
-      a: "We use standard billing systems. You can cancel your plan anytime with just one click."
+      q: "How does the Patreon upgrade work?",
+      a: "After joining our Patreon tier for $1/month, send a quick email to huzaifaramzan10@gmail.com with your account details for an instant manual upgrade. Otherwise, your account will be auto-upgraded within 24–48 hours."
     }
   ];
 
@@ -140,14 +140,12 @@ export default function PricingPage() {
                   Open Free Workspace
                 </Link>
               </div>
-            </div>
-
-            {/* Pro Tier */}
+            </div>            {/* Pro Tier */}
             <div className="group relative rounded-[48px] border border-[var(--pixie-teal)]/30 bg-gradient-to-tr from-[var(--gentle-lilac)]/5 via-[var(--pure-white)]/80 to-[var(--pixie-teal)]/5 p-8 md:p-10 backdrop-blur-md overflow-hidden flex flex-col justify-between shadow-[var(--shadow-bento)] transition-all duration-300 hover:shadow-xl">
               <div>
                 <div className="flex justify-between items-center mb-6">
                   <span className="text-xs font-extrabold uppercase tracking-widest text-[#166534] bg-[var(--mint-green)] px-3.5 py-1.5 rounded-full shadow-sm">
-                    Pro Helper
+                    Unlimited Magic
                   </span>
                   <span className="text-[10px] font-extrabold tracking-widest text-[var(--pixie-teal)] uppercase">
                     Most Popular
@@ -155,21 +153,21 @@ export default function PricingPage() {
                 </div>
                 
                 <div className="flex items-baseline gap-1 mb-2">
-                  <span className="text-5xl font-extrabold text-[var(--foreground)] font-sans">$9</span>
+                  <span className="text-5xl font-extrabold text-[var(--foreground)] font-sans">$1</span>
                   <span className="text-xs font-extrabold text-[var(--text-muted)] uppercase tracking-wider">/ month</span>
                 </div>
                 <p className="text-xs text-[var(--text-muted)] font-semibold leading-relaxed mb-6 font-sans">
-                  Best for power users who want unlimited help.
+                  Support Pixie on Patreon and unlock absolute power.
                 </p>
-
+ 
                 <div className="border-t border-[var(--border)] pt-6 flex flex-col gap-4">
                   {[
                     "Everything in the Free Guest plan",
                     "Unlimited typing helper prompts",
                     "No daily limits or wait times",
-                    "Faster processing speed",
-                    "Suggest new tools you want us to build",
-                    "Change colors of your dashboard"
+                    "Faster local processing queue",
+                    "Suggest new features & tools directly",
+                    "Support indie development"
                   ].map((feat, idx) => (
                     <div key={idx} className="flex items-center gap-3 text-xs font-bold text-[var(--foreground)]/80 font-sans">
                       <Zap className="h-4 w-4 text-[var(--pixie-teal)] flex-shrink-0 animate-pulse" />
@@ -178,13 +176,13 @@ export default function PricingPage() {
                   ))}
                 </div>
               </div>
-
+ 
               <div className="mt-8">
                 <Link 
-                  href="/login"
+                  href="/dashboard/upgrade"
                   className="flex items-center justify-center gap-2 w-full py-4 rounded-[24px] bg-[var(--foreground)] hover:opacity-90 text-[var(--pure-white)] font-bold text-xs transition-all duration-200 cursor-pointer shadow-md text-decoration-none"
                 >
-                  Upgrade to Pro Helper
+                  Upgrade to Unlimited Magic
                 </Link>
               </div>
             </div>

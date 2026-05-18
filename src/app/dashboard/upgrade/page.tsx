@@ -1,16 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { Check, Sparkles, HelpCircle, ArrowRight, ChevronDown, X as XIcon, Compass, User, Crown } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Check, Sparkles, HelpCircle, ArrowRight, ChevronDown, X as XIcon, Compass, User, Crown, ExternalLink, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import { createClient } from "@/utils/supabase/client";
-import { useEffect } from "react";
 
 export default function UpgradePage() {
-  const [loading, setLoading] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
   const [user, setUser] = useState<any>(null);
@@ -25,24 +24,27 @@ export default function UpgradePage() {
   }, []);
 
   const handleUpgrade = async () => {
-    setLoading(true);
-    try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
 
-      if (!session) {
-        router.push("/login");
-        return;
-      }
-      const response = await fetch("/api/checkout", { method: "POST" });
-      if (!response.ok) throw new Error("Failed to generate checkout link");
-      const { url } = await response.json();
-      window.location.href = url;
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong connecting to the checkout server. Please try again.");
-      setLoading(false);
+    if (!session) {
+      router.push("/login");
+      return;
     }
+
+    // Open Patreon in a new tab
+    window.open("https://patreon.com/u71272467", "_blank");
+    
+    // Show the Activation Wizard Modal
+    setShowModal(true);
+  };
+
+  const getMailtoLink = () => {
+    const subject = encodeURIComponent("Pixie Upgrade Request (Patreon)");
+    const body = encodeURIComponent(
+      `Hi Huzaifa,\n\nI just subscribed to the Unlimited Magic tier on Patreon!\n\nPlease activate my Pixie account.\n\nMy Pixie Account Email: ${user?.email || ""}\nMy Patreon Profile Name: [Write your Patreon name here]\n\nThank you!`
+    );
+    return `mailto:huzaifaramzan10@gmail.com?subject=${subject}&body=${body}`;
   };
 
   const faqItems = [
@@ -55,30 +57,30 @@ export default function UpgradePage() {
       a: "100%. Pixie runs transformations like Background Removal and Image Compression directly in your browser using WASM (WebAssembly). We strictly use our AI only to parse your instructions — your files never leave your device."
     },
     {
-      q: "Is this really a one-time payment?",
-      a: "Yes! Upgrading to Unlimited Magic grants you lifetime access to unlimited AI Prompt parsing without any recurring subscriptions or hidden bandwidth fees."
+      q: "How does the Patreon subscription work?",
+      a: "By supporting us at Patreon for just $1/month, you unlock Unlimited Magic. You can cancel at any time directly through Patreon with zero hassle."
+    },
+    {
+      q: "How long does activation take?",
+      a: "If you email us at huzaifaramzan10@gmail.com after subscribing, we will activate your account instantly. Otherwise, accounts are automatically matched and upgraded within 24–48 hours."
     },
     {
       q: "Can I use the tools without writing prompts?",
-      a: "Absolutely. You can manually navigate to any of our 30+ utilities via the dashboard menu and use them without consuming any AI Prompts whatsoever."
-    },
-    {
-      q: "Do you support team or API access?",
-      a: "Currently, Pixie is designed for individual power users. If you are interested in commercial API access, please reach out via our contact options!"
+      a: "Absolutely. You can manually navigate to any of our 50+ utilities via the dashboard menu and use them without consuming any AI Prompts whatsoever."
     },
     {
       q: "What if I exceed my 100 free prompts?",
-      a: "Free tier users will fall back to manual tool navigation for the remainder of the day once their prompt limit is reached. The limit automatically resets every 24 hours."
+      a: "Free tier users will fall back to manual tool navigation for the remainder of the day once their prompt limit is reached. The limit resets automatically every 24 hours."
     },
   ];
 
   return (
     <div className={styles.dashboardPricing}>
       <div className={styles.headerArea}>
-        <div className={styles.badge}><Sparkles size={16} /> Unlock your full potential</div>
+        <div className={styles.badge}><Sparkles size={16} /> Support Indie Devs</div>
         <h1 className={styles.title}>Simple pricing, <br/><span className={styles.titleHighlight}>magical results.</span></h1>
         <p className={styles.subtitle}>
-          Pixie's core tools will always be free. Upgrade to Unlimited Magic for heavy-duty AI usage and priority processing.
+          Pixie's core tools will always be free. Upgrade to Unlimited Magic for heavy-duty AI usage and priority local processing.
         </p>
       </div>
 
@@ -147,7 +149,7 @@ export default function UpgradePage() {
           )}
 
           <ul className={styles.featuresList}>
-            <li><Check size={18} className={styles.checkIcon} /> All 60+ File Tools forever</li>
+            <li><Check size={18} className={styles.checkIcon} /> All 50+ File Tools forever</li>
             <li><Check size={18} className={styles.checkIcon} /> Local-first WASM processing</li>
             <li><Check size={18} className={styles.checkIcon} /> <strong>100 Free AI Prompts Daily</strong></li>
             <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Unlimited AI Prompts</li>
@@ -165,23 +167,22 @@ export default function UpgradePage() {
             <div className={styles.tierName}>Unlimited Magic</div>
             <div className={styles.priceBlock}>
               <span className={styles.currency}>$</span>
-              <span className={styles.price}>19</span>
-              <span className={styles.period}>/lifetime</span>
+              <span className={styles.price}>1</span>
+              <span className={styles.period}>/month</span>
             </div>
-            <p className={styles.tierDesc}>One single payment. Unlimited magic forever.</p>
+            <p className={styles.tierDesc}>Support on Patreon. Cancel anytime.</p>
           </div>
           
           {isLifetime ? (
             <div className={styles.planBtnOutline} style={{ border: '2px solid var(--mint-green)', color: 'var(--mint-green)', cursor: 'default' }}>
-              Current Plan
+              Current Plan ✓
             </div>
           ) : (
             <button 
               className={styles.planBtnSolid} 
               onClick={handleUpgrade}
-              disabled={loading}
             >
-              {loading ? "Warming up..." : user ? "Unlock Lifetime Access" : "Sign In to Buy"} <ArrowRight size={18} />
+              {user ? "Upgrade via Patreon" : "Sign In to Buy"} <ArrowRight size={18} />
             </button>
           )}
 
@@ -189,7 +190,7 @@ export default function UpgradePage() {
             <li><Check size={18} className={styles.checkIcon} /> <strong>Unlimited AI Prompts</strong></li>
             <li><Check size={18} className={styles.checkIcon} /> Intelligent File Routing Engine</li>
             <li><Check size={18} className={styles.checkIcon} /> Priority Conversion Queue</li>
-            <li><Check size={18} className={styles.checkIcon} /> All 60+ File Tools forever</li>
+            <li><Check size={18} className={styles.checkIcon} /> All 50+ File Tools forever</li>
             <li><Check size={18} className={styles.checkIcon} /> Local-first WASM processing</li>
           </ul>
         </div>
@@ -212,6 +213,65 @@ export default function UpgradePage() {
           ))}
         </div>
       </div>
+
+      {/* Patreon Activation Modal */}
+      {showModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <button 
+              className={styles.modalCloseBtn}
+              onClick={() => setShowModal(false)}
+              aria-label="Close modal"
+            >
+              <XIcon size={20} />
+            </button>
+            
+            <h2 className={styles.modalTitle}>🪄 Step 2: Activate Your Upgrade</h2>
+            <p className={styles.modalSub}>
+              We have opened Patreon in a new tab for you to subscribe. Once you complete your subscription, choose how you would like to activate your Unlimited Magic tier:
+            </p>
+            
+            <div className={styles.stepsContainer}>
+              <div className={styles.stepCard}>
+                <div className={styles.stepNum}>A</div>
+                <div className={styles.stepDetails}>
+                  <h4 className={styles.stepTitle}>Instant Activation (Recommended)</h4>
+                  <p className={styles.stepDesc}>
+                    Click the button below to email me. I will manually upgrade your account immediately.
+                  </p>
+                </div>
+              </div>
+              
+              <div className={styles.stepCard}>
+                <div className={styles.stepNum}>B</div>
+                <div className={styles.stepDetails}>
+                  <h4 className={styles.stepTitle}>Automatic Match (24–48 Hours)</h4>
+                  <p className={styles.stepDesc}>
+                    We sync Patreon registers daily. If your Patreon email matches your Pixie email ({user?.email}), you'll be upgraded automatically.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className={styles.modalActionRow}>
+              <a 
+                href={getMailtoLink()}
+                className={styles.secondaryEmailBtn}
+              >
+                <Mail size={18} /> Email for Instant Activation
+              </a>
+              <a 
+                href="https://patreon.com/u71272467" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className={styles.primaryPatreonBtn}
+              >
+                Go back to Patreon <ExternalLink size={16} />
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
