@@ -5,17 +5,20 @@ import { Check, Sparkles, HelpCircle, ArrowRight, ChevronDown, X as XIcon, Compa
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
+import { createPortal } from "react-dom";
 import { createClient } from "@/utils/supabase/client";
 
 export default function UpgradePage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
   const [user, setUser] = useState<any>(null);
   const [isLifetime, setIsLifetime] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const supabase = createClient();
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -215,7 +218,7 @@ export default function UpgradePage() {
       </div>
 
       {/* Patreon Activation Modal */}
-      {showModal && (
+      {showModal && mounted && createPortal(
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
             <button 
@@ -272,7 +275,8 @@ export default function UpgradePage() {
               </a>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
