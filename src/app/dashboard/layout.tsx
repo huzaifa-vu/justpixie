@@ -289,6 +289,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
                     <Link href="/login" style={{ width: '100%', textDecoration: 'none' }}>
                       <button className={styles.upgradeBtn}>Sign In for More</button>
                     </Link>
+                    <span className={styles.quotaNotice}>All tools work 100% free without an account</span>
                   </>
                 )}
               </>
@@ -379,6 +380,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
                   <Link href="/login" style={{ width: '100%', textDecoration: 'none' }}>
                     <button className={styles.upgradeBtn}>Sign In for More</button>
                   </Link>
+                  <span className={styles.quotaNotice}>All tools work 100% free without an account</span>
                 </>
               )}
             </div>

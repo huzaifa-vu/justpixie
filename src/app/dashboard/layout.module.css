@@ -544,6 +544,16 @@
   box-shadow: 0 10px 25px rgba(181, 107, 245, 0.4);
 }
 
+.quotaNotice {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-top: 0.6rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
 .userProfile {
   display: flex;
   align-items: center;

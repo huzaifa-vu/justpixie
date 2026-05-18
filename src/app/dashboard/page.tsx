@@ -2,7 +2,7 @@
 
 import { useState, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wand2, UploadCloud, ArrowRight, FileImage, FileText, Film, Code, Sparkles, Type, Loader2, X, AlertCircle, ChevronDown, Lock, FileCode, LogIn, ArrowDown, Download, HelpCircle } from "lucide-react";
+import { Wand2, UploadCloud, ArrowRight, FileImage, FileText, Film, Code, Sparkles, Type, Loader2, X, AlertCircle, ChevronDown, Lock, FileCode, LogIn, ArrowDown, Download, HelpCircle, CornerDownLeft, WifiOff } from "lucide-react";
 import styles from "./page.module.css";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -39,6 +39,51 @@ const FilePreview = ({ file, onRemove }: { file: File, onRemove: () => void }) =
   );
 };
 
+// Typewriter effect custom hook for dashboard input
+const useTypewriter = () => {
+  const placeholders = [
+    "Compress this image to 200kb...",
+    "Remove audio from this video...",
+    "Turn this PDF into images...",
+    "Remove the background from this JPG...",
+    "Merge these PDFs together...",
+    "Convert my CSV to JSON...",
+  ];
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentText, setCurrentText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    
+    if (isDeleting) {
+      if (currentText === "") {
+        setIsDeleting(false);
+        setCurrentIndex((prev) => (prev + 1) % placeholders.length);
+        timeout = setTimeout(() => {}, 500);
+      } else {
+        timeout = setTimeout(() => {
+          setCurrentText(currentText.slice(0, -1));
+        }, 30);
+      }
+    } else {
+      if (currentText === placeholders[currentIndex]) {
+        timeout = setTimeout(() => {
+          setIsDeleting(true);
+        }, 1800);
+      } else {
+        timeout = setTimeout(() => {
+          setCurrentText(placeholders[currentIndex].slice(0, currentText.length + 1));
+        }, 60);
+      }
+    }
+
+    return () => clearTimeout(timeout);
+  }, [currentText, isDeleting, currentIndex]);
+
+  return currentText;
+};
+
 export default function DashboardHome() {
   const [instruction, setInstruction] = useState("");
   const [dataText, setDataText] = useState("");
@@ -47,13 +92,80 @@ export default function DashboardHome() {
   const [aiMessage, setAiMessage] = useState("");
   const [aiError, setAiError] = useState("");
   const [showUnsupportedModal, setShowUnsupportedModal] = useState(false);
-  const [dataExpanded, setDataExpanded] = useState(true);
+  const [dataExpanded, setDataExpanded] = useState(false); // Collapsed by default
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const { guestUsed, guestLimit, guestRemaining, syncLimitReached } = useQuota(user);
   const { setInternalDragging } = useFileDropContext();
+
+  // Onboarding & Trust Helpers
+  const typewriterPlaceholder = useTypewriter();
+  const [showTipBanner, setShowTipBanner] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsOnline(navigator.onLine);
+      const handleOnline = () => setIsOnline(true);
+      const handleOffline = () => setIsOnline(false);
+      window.addEventListener("online", handleOnline);
+      window.addEventListener("offline", handleOffline);
+      return () => {
+        window.removeEventListener("online", handleOnline);
+        window.removeEventListener("offline", handleOffline);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const dismissed = localStorage.getItem("pixie_onboarded");
+      if (!dismissed) {
+        setShowTipBanner(true);
+      }
+    }
+  }, []);
+
+  const dismissTipBanner = () => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("pixie_onboarded", "1");
+    }
+    setShowTipBanner(false);
+  };
+
+  // Sample load helpers
+  const handleSampleCSV = () => {
+    setInstruction("Convert my CSV to JSON");
+    setDataText(`id,name,role,department\n1,Alice Vance,Software Engineer,Engineering\n2,Bob Miller,UX Designer,Product\n3,Charlie Dev,WASM Wizard,Core`);
+    setSelectedFiles([]);
+    setDataExpanded(true);
+  };
+
+  const handleSampleImage = async () => {
+    setInstruction("Compress this image");
+    setDataText("");
+    setDataExpanded(true);
+    setIsThinking(true);
+    try {
+      const res = await fetch("/apple-touch-icon.png");
+      const blob = await res.blob();
+      const file = new File([blob], "apple-touch-icon.png", { type: "image/png" });
+      setSelectedFiles([file]);
+    } catch (e) {
+      console.error("Failed to load sample image", e);
+    } finally {
+      setIsThinking(false);
+    }
+  };
+
+  const handleSampleWordCount = () => {
+    setInstruction("Count the words in my text");
+    setDataText("Pixie is a high-performance, local-first, serverless file conversion application.\n100% of processing happens inside your browser using WebAssembly (WASM). No files are ever uploaded to a server, ensuring absolute privacy and zero lag!");
+    setSelectedFiles([]);
+    setDataExpanded(true);
+  };
 
   // Register with global D&D system
   useFileDrop({
@@ -236,11 +348,11 @@ export default function DashboardHome() {
   };
 
   const categories = [
-    { id: 'image', name: "Image Magic", icon: FileImage, color: "#D0EFFF", text: "#007799", href: "/dashboard/image" },
-    { id: 'pdf', name: "PDF Spells", icon: FileText, color: "#FFE4E6", text: "#E11D48", href: "/dashboard/pdf" },
-    { id: 'video', name: "Video Alchemy", icon: Film, color: "#E0E7FF", text: "#4338CA", href: "/dashboard/video" },
-    { id: 'dev', name: "Dev Utilities", icon: Code, color: "#DCFCE7", text: "#15803D", href: "/dashboard/dev" },
-    { id: 'text', name: "Text & Data", icon: Type, color: "#FDE8EF", text: "#BE185D", href: "/dashboard/text" },
+    { id: 'image', name: "Image Magic", icon: FileImage, color: "#D0EFFF", text: "#007799", href: "/dashboard/image", desc: "Resize, compress, remove backgrounds & filter images." },
+    { id: 'pdf', name: "PDF Spells", icon: FileText, color: "#FFE4E6", text: "#E11D48", href: "/dashboard/pdf", desc: "Merge, split, compress, watermark & secure PDF files." },
+    { id: 'video', name: "Video Alchemy", icon: Film, color: "#E0E7FF", text: "#4338CA", href: "/dashboard/video", desc: "Convert, speed, trim, silence & extract video soundtracks." },
+    { id: 'dev', name: "Dev Utilities", icon: Code, color: "#DCFCE7", text: "#15803D", href: "/dashboard/dev", desc: "JSON formatting, Base64 codecs, UUIDs, diffs & QR codes." },
+    { id: 'text', name: "Text & Data", icon: Type, color: "#FDE8EF", text: "#BE185D", href: "/dashboard/text", desc: "Word counters, case conversion, CSV-to-JSON & voice output." },
   ];
 
   const greeting = useMemo(() => {
@@ -250,10 +362,44 @@ export default function DashboardHome() {
     return "Good Evening";
   }, []);
 
-  const displayName = user?.email ? user.email.split('@')[0] : "Pixie";
+  const displayName = user?.email ? user.email.split('@')[0] : "Explorer";
 
   return (
     <div className={styles.dashboardHome}>
+      {!isOnline && (
+        <div className={styles.offlineBanner}>
+          <div className={styles.offlineIconBox}>
+            <WifiOff size={18} />
+          </div>
+          <div className={styles.offlineContent}>
+            <strong>⚡ Offline Mode Active</strong>
+            <span>Pixie runs 100% locally on your machine. You can convert, edit, and compress files completely offline!</span>
+          </div>
+        </div>
+      )}
+
+      <AnimatePresence>
+        {showTipBanner && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginBottom: '1.5rem' }}
+            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+            className={styles.tipBanner}
+          >
+            <div className={styles.tipIconBox}>
+              <Sparkles size={18} />
+            </div>
+            <div className={styles.tipContent}>
+              <strong>New here?</strong>
+              <span>Pixie is a local-first playground. Everything runs entirely inside your browser using WebAssembly. Type what you want to convert below, or click any category to browse tools.</span>
+            </div>
+            <button onClick={dismissTipBanner} className={styles.tipDismissBtn} type="button">
+              Got it ✓
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className={styles.headerArea}>
         <div className={styles.welcomeBlock}>
           <h1 className={styles.title}>{greeting}, {displayName.charAt(0).toUpperCase() + displayName.slice(1)}</h1>
@@ -263,7 +409,7 @@ export default function DashboardHome() {
         <div className={styles.aiCommandBox}>
           <div className={styles.aiHeader}>
             <Sparkles size={18} className={styles.wandStar} />
-            <span className={styles.aiHeaderTitle}>Pixie AI Core</span>
+            <span className={styles.aiHeaderTitle}>Ask Pixie Anything</span>
           </div>
 
           <AnimatePresence>
@@ -282,15 +428,33 @@ export default function DashboardHome() {
               onPaste={handlePromptPaste}
               maxLength={200}
               className={styles.promptInput}
-              placeholder='Tell Pixie what to do — e.g. "Convert my CSV to JSON"'
+              placeholder={typewriterPlaceholder || 'Tell Pixie what to do — e.g. "Convert my CSV to JSON"'}
               disabled={isThinking}
             />
+            {instruction.trim() && (
+              <span className={styles.keyboardBadge} title="Press Enter to submit">
+                <CornerDownLeft size={10} /> Enter
+              </span>
+            )}
             <button 
               className={styles.submitBtn}
               disabled={!instruction.trim() || isThinking || guestLimitReached || dataInPromptWarning}
               onClick={() => handleSubmit()}
             >
               {isThinking ? <Loader2 size={18} className={styles.spinIcon} /> : <ArrowRight size={18} />}
+            </button>
+          </div>
+
+          <div className={styles.suggestionsContainer}>
+            <span className={styles.suggestionLabel}>Try a quick spell:</span>
+            <button onClick={handleSampleCSV} className={styles.suggestionChip} type="button">
+              📄 CSV to JSON
+            </button>
+            <button onClick={handleSampleImage} className={styles.suggestionChip} type="button">
+              📸 Compress Image
+            </button>
+            <button onClick={handleSampleWordCount} className={styles.suggestionChip} type="button">
+              📝 Word Count
             </button>
           </div>
 
@@ -346,8 +510,14 @@ export default function DashboardHome() {
             <motion.div animate={{ rotate: dataExpanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
               <ChevronDown size={16} />
             </motion.div>
-            <span>{dataExpanded ? 'Collapse Data' : 'Attach Data'}</span>
-            <span className={styles.localBadge}><Lock size={10} /> Local only</span>
+            <span>{dataExpanded ? 'Hide Attachment Panel' : 'Attach a File or Paste Data'}</span>
+            <span className={styles.localBadgeWrapper}>
+              <span className={styles.localBadge}><Lock size={10} /> Local only</span>
+              <span className={styles.localTooltip}>
+                <strong>100% Private & Offline</strong>
+                <span>Everything runs directly inside your browser using WebAssembly. No files or data ever leave your machine. Try turning off your Wi-Fi—it still works!</span>
+              </span>
+            </span>
             {!dataExpanded && (dataText.trim() || selectedFiles.length > 0) && (
               <span className={styles.dataDot} />
             )}
@@ -445,8 +615,32 @@ export default function DashboardHome() {
           )}
         </div>
         
+        <div className={styles.onboardingSection}>
+          <div className={styles.onboardingHeader}>
+            <Wand2 size={22} className={styles.wandStar} />
+            <h2>Magic in 3 steps</h2>
+          </div>
+          <div className={styles.onboardingGrid}>
+            <div className={styles.onboardingCard}>
+              <div className={styles.stepNum}>1</div>
+              <h3 className={styles.stepTitle}>Drop your Media</h3>
+              <p className={styles.stepDesc}>Attach your image, PDF, or video to the Data Zone. It stays 100% private and never leaves your PC.</p>
+            </div>
+            <div className={styles.onboardingCard}>
+              <div className={styles.stepNum}>2</div>
+              <h3 className={styles.stepTitle}>Type your Intent</h3>
+              <p className={styles.stepDesc}>Tell Pixie what you need in plain English. Our AI routes you to the perfect local tool instantly.</p>
+            </div>
+            <div className={styles.onboardingCard}>
+              <div className={styles.stepNum}>3</div>
+              <h3 className={styles.stepTitle}>Grab your File</h3>
+              <p className={styles.stepDesc}>Our local engine processes your file at warp speed. Download the result immediately—no waiting, no server logs.</p>
+            </div>
+          </div>
+        </div>
+
         <div className={styles.sectionHeader} style={{ marginTop: '2rem' }}>
-          <h2>Trending Spells (Tools)</h2>
+          <h2>✨ Popular Spells</h2>
         </div>
 
         <div className={styles.toolsGrid}>
@@ -471,30 +665,6 @@ export default function DashboardHome() {
             </Link>
           ))}
         </div>
-
-        <div className={styles.onboardingSection}>
-          <div className={styles.onboardingHeader}>
-            <Wand2 size={22} className={styles.wandStar} />
-            <h2>Magic in 3 steps</h2>
-          </div>
-          <div className={styles.onboardingGrid}>
-            <div className={styles.onboardingCard}>
-              <div className={styles.stepNum}>1</div>
-              <h3 className={styles.stepTitle}>Drop your Media</h3>
-              <p className={styles.stepDesc}>Attach your image, PDF, or video to the Data Zone. It stays 100% private and never leaves your PC.</p>
-            </div>
-            <div className={styles.onboardingCard}>
-              <div className={styles.stepNum}>2</div>
-              <h3 className={styles.stepTitle}>Type your Intent</h3>
-              <p className={styles.stepDesc}>Tell Pixie what you need in plain English. Our AI routes you to the perfect local tool instantly.</p>
-            </div>
-            <div className={styles.onboardingCard}>
-              <div className={styles.stepNum}>3</div>
-              <h3 className={styles.stepTitle}>Grab your File</h3>
-              <p className={styles.stepDesc}>Our local engine processes your file at warp speed. Download the result immediately—no waiting, no server logs.</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div className={styles.sectionHeader}>
@@ -513,16 +683,13 @@ export default function DashboardHome() {
               </div>
               <div className={styles.catInfo}>
                 <h3>{cat.name}</h3>
-                <span>{TOOLS_REGISTRY[cat.id]?.length || 0} Tools</span>
+                <span className={styles.catCount}>{TOOLS_REGISTRY[cat.id]?.length || 0} Tools</span>
+                <p className={styles.catDesc}>{cat.desc}</p>
               </div>
               <button className={styles.catAction}>View All</button>
             </motion.div>
           </Link>
         ))}
-      </div>
-
-      <div className={styles.sectionHeader} style={{ marginTop: '3rem' }}>
-        <h2>All Categories</h2>
       </div>
 
       <AnimatePresence>
