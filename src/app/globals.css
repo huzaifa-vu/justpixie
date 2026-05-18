@@ -27,7 +27,7 @@
   --gentle-lilac: #C4B5FD;
   --pixie-teal: #14b8a6;
   --pixie-teal-hover: #0d9488;
-  --dot-color: rgba(17, 24, 39, 0.06);
+  --dot-color: rgba(17, 24, 39, 0.09);
 
   /* UI Tokens */
   --sidebar-bg: var(--deep-charcoal);
@@ -81,7 +81,7 @@
   --gentle-lilac: #6d28d9;
   --pixie-teal: #0d9488;
   --pixie-teal-hover: #0f766e;
-  --dot-color: rgba(243, 244, 246, 0.05);
+  --dot-color: rgba(243, 244, 246, 0.08);
   
   --sidebar-bg: #111111;
   --background: #000000;
