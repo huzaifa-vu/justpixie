@@ -402,8 +402,13 @@ export default function DashboardHome() {
 
       <div className={styles.headerArea}>
         <div className={styles.welcomeBlock}>
-          <h1 className={styles.title}>{greeting}, {displayName.charAt(0).toUpperCase() + displayName.slice(1)}</h1>
-          <p className={styles.subtitle}>Welcome to your personal transformation workspace.</p>
+          <h1 className={styles.title}>
+            {greeting}
+            {user?.email ? `, ${user.email.split('@')[0].charAt(0).toUpperCase() + user.email.split('@')[0].slice(1)}` : ""}
+          </h1>
+          <p className={styles.subtitle}>
+            Your private, local-first media playground. Type a task below or press <kbd className={styles.kbdInline}>⌘K</kbd> to run any utility instantly with zero server uploads.
+          </p>
         </div>
         
         <div className={styles.aiCommandBox}>

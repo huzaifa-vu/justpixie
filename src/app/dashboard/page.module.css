@@ -38,6 +38,28 @@
   font-weight: 500;
 }
 
+.kbdInline {
+  font-family: inherit;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 0.12rem 0.35rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--deep-charcoal);
+  box-shadow: 0 1.5px 0 rgba(0, 0, 0, 0.08);
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+:global([data-theme="dark"]) .kbdInline {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  box-shadow: 0 1.5px 0 rgba(255, 255, 255, 0.08);
+}
+
 /* ─── AI Command Box (Premium Redesign) ─── */
 @keyframes meshPan {
   0% { background-position: 0% 50%; }
