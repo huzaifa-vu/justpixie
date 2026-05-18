@@ -1,11 +1,18 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Wand2, Code, Braces, Binary, Lock, Palette, FileType, LinkIcon, Key, Fingerprint, Clock, Minimize2, Terminal, FileText, ArrowLeftRight, QrCode , ArrowRight } from "lucide-react";
+import { 
+  Wand2, Code, Braces, Binary, Lock, Palette, FileType, 
+  LinkIcon, Key, Fingerprint, Clock, Minimize2, Terminal, 
+  FileText, ArrowLeftRight, QrCode , ArrowRight, Search 
+} from "lucide-react";
 import styles from "../page.module.css";
 import Link from "next/link";
 
 export default function DevCategoryHome() {
+  const [searchQuery, setSearchQuery] = useState("");
+
   const tools = [
     { name: 'JSON Formatter', type: 'Dev', desc: 'Beautify, minify, and validate JSON instantly.', href: '/dashboard/dev/json', icon: Braces },
     { name: 'Base64 Codec', type: 'Dev', desc: 'Encode and decode Base64 strings.', href: '/dashboard/dev/base64', icon: Binary },
@@ -23,6 +30,13 @@ export default function DevCategoryHome() {
     { name: 'QR Code Generator', type: 'Dev', desc: 'Generate URL and text QR Codes.', href: '/dashboard/dev/qr', icon: QrCode }
   ];
 
+  const filteredTools = useMemo(() => {
+    return tools.filter(tool => 
+      tool.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      tool.desc.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery]);
+
   return (
     <div className={styles.dashboardContainer} style={{ height: 'auto', padding: '1rem', background: 'transparent' }}>
       <div className={styles.aiCommandBox} style={{ background: 'var(--gentle-lilac)', color: 'var(--deep-charcoal)', marginBottom: '2rem' }}>
@@ -36,31 +50,56 @@ export default function DevCategoryHome() {
         </p>
       </div>
 
-      <div className={styles.toolsGrid}>
-        {tools.map((tool, idx) => (
-          <Link href={tool.href} key={idx} style={{ textDecoration: 'none' }}>
-            <motion.div
-              className={styles.toolCard}
-              whileHover={{ y: -5 }}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-            >
-              <div className={styles.toolHeader}>
-                <div className={styles.toolIconContainer}>
-                  <tool.icon size={24} className={styles.toolIcon} />
-                </div>
-                <span className={styles.toolBadge}>{tool.type}</span>
-              </div>
-              <h4 className={styles.toolName}>{tool.name}</h4>
-              <p className={styles.toolDesc}>{tool.desc}</p>
-              <div className={styles.toolArrowBtn}>
-                <ArrowRight size={18} />
-              </div>
-            </motion.div>
-          </Link>
-        ))}
+      <div className={styles.hubHeaderBar}>
+        <div className={styles.hubStatsText}>
+          <span>Available spells</span>
+          <span className={styles.hubStatsCount}>{filteredTools.length}</span>
+        </div>
+        
+        <div className={styles.hubSearchWrapper}>
+          <input 
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search dev tools..."
+            className={styles.hubSearchInput}
+          />
+          <Search size={16} className={styles.hubSearchIcon} />
+        </div>
       </div>
+
+      {filteredTools.length === 0 ? (
+        <div className={styles.hubEmptyState}>
+          <div className={styles.hubEmptyTitle}>No spells found matching "{searchQuery}"</div>
+          <div className={styles.hubEmptyText}>Try adjusting your parameters or looking for another local action.</div>
+        </div>
+      ) : (
+        <div className={styles.toolsGrid}>
+          {filteredTools.map((tool, idx) => (
+            <Link href={tool.href} key={idx} style={{ textDecoration: 'none' }}>
+              <motion.div
+                className={styles.toolCard}
+                whileHover={{ y: -5 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.05 }}
+              >
+                <div className={styles.toolHeader}>
+                  <div className={styles.toolIconContainer}>
+                    <tool.icon size={24} className={styles.toolIcon} />
+                  </div>
+                  <span className={styles.toolBadge}>{tool.type}</span>
+                </div>
+                <h4 className={styles.toolName}>{tool.name}</h4>
+                <p className={styles.toolDesc}>{tool.desc}</p>
+                <div className={styles.toolArrowBtn}>
+                  <ArrowRight size={18} />
+                </div>
+              </motion.div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

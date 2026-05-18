@@ -1,15 +1,18 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { 
   Video, Headphones, VolumeX, Shrink, FileVideo, 
   RotateCw, Gauge, Scissors, Camera, ArrowRight, 
-  Plus, Play
+  Plus, Play, Search
 } from "lucide-react";
 import styles from "../page.module.css";
 import Link from "next/link";
 
 export default function VideoCategoryHome() {
+  const [searchQuery, setSearchQuery] = useState("");
+
   const tools = [
     { name: 'A/V Merger', type: 'Video', desc: 'Locally merge video & audio streams.', href: '/dashboard/video/merge', icon: Plus },
     { name: 'Video to Audio', type: 'Video', desc: 'Extract MP3 directly in browser.', href: '/dashboard/video/audio', icon: Headphones },
@@ -22,6 +25,13 @@ export default function VideoCategoryHome() {
     { name: 'To Screenshots', type: 'Video', desc: 'Capture frames natively at intervals.', href: '/dashboard/video/screenshots', icon: Camera },
     { name: 'YouTube Downloader', type: 'Download', desc: 'Securely extract high-quality YouTube videos.', href: '/dashboard/video/youtube', icon: Play }
   ];
+
+  const filteredTools = useMemo(() => {
+    return tools.filter(tool => 
+      tool.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      tool.desc.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery]);
 
   return (
     <div className={styles.dashboardContainer} style={{ height: 'auto', padding: '1rem', background: 'transparent' }}>
@@ -36,31 +46,56 @@ export default function VideoCategoryHome() {
         </p>
       </div>
 
-      <div className={styles.toolsGrid}>
-        {tools.map((tool, idx) => (
-          <Link href={tool.href} key={idx} style={{ textDecoration: 'none' }}>
-            <motion.div 
-              className={styles.toolCard}
-              whileHover={{ y: -5 }}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-            >
-              <div className={styles.toolHeader}>
-                <div className={styles.toolIconContainer}>
-                  <tool.icon size={24} className={styles.toolIcon} />
-                </div>
-                <span className={styles.toolBadge}>{tool.type}</span>
-              </div>
-              <h4 className={styles.toolName}>{tool.name}</h4>
-              <p className={styles.toolDesc}>{tool.desc}</p>
-              <div className={styles.toolArrowBtn}>
-                <ArrowRight size={18} />
-              </div>
-            </motion.div>
-          </Link>
-        ))}
+      <div className={styles.hubHeaderBar}>
+        <div className={styles.hubStatsText}>
+          <span>Available spells</span>
+          <span className={styles.hubStatsCount}>{filteredTools.length}</span>
+        </div>
+        
+        <div className={styles.hubSearchWrapper}>
+          <input 
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search video tools..."
+            className={styles.hubSearchInput}
+          />
+          <Search size={16} className={styles.hubSearchIcon} />
+        </div>
       </div>
+
+      {filteredTools.length === 0 ? (
+        <div className={styles.hubEmptyState}>
+          <div className={styles.hubEmptyTitle}>No spells found matching "{searchQuery}"</div>
+          <div className={styles.hubEmptyText}>Try adjusting your parameters or looking for another local action.</div>
+        </div>
+      ) : (
+        <div className={styles.toolsGrid}>
+          {filteredTools.map((tool, idx) => (
+            <Link href={tool.href} key={idx} style={{ textDecoration: 'none' }}>
+              <motion.div 
+                className={styles.toolCard}
+                whileHover={{ y: -5 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.05 }}
+              >
+                <div className={styles.toolHeader}>
+                  <div className={styles.toolIconContainer}>
+                    <tool.icon size={24} className={styles.toolIcon} />
+                  </div>
+                  <span className={styles.toolBadge}>{tool.type}</span>
+                </div>
+                <h4 className={styles.toolName}>{tool.name}</h4>
+                <p className={styles.toolDesc}>{tool.desc}</p>
+                <div className={styles.toolArrowBtn}>
+                  <ArrowRight size={18} />
+                </div>
+              </motion.div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

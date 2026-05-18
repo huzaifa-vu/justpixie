@@ -1642,3 +1642,122 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Hub Category Search Bar */
+.hubHeaderBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.hubStatsText {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hubStatsCount {
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 0.25rem 0.65rem;
+  background: rgba(167, 243, 208, 0.4);
+  color: #047857;
+  border-radius: var(--radius-pill);
+}
+
+:global([data-theme="dark"]) .hubStatsCount {
+  background: rgba(4, 120, 87, 0.2);
+  color: #34d399;
+}
+
+.hubSearchWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  align-items: center;
+}
+
+.hubSearchIcon {
+  position: absolute;
+  left: 1rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  opacity: 0.8;
+  transition: color 0.2s ease;
+}
+
+.hubSearchInput {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  color: var(--foreground);
+  font-size: 0.9rem;
+  font-weight: 500;
+  outline: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02), inset 0 2px 4px rgba(255, 255, 255, 0.6);
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+:global([data-theme="dark"]) .hubSearchInput {
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.hubSearchInput:focus {
+  border-color: rgba(168, 85, 247, 0.4);
+  background: var(--pure-white);
+  box-shadow: 
+    0 10px 25px rgba(168, 85, 247, 0.05),
+    0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
+:global([data-theme="dark"]) .hubSearchInput:focus {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.4),
+    0 0 0 3px rgba(168, 85, 247, 0.2);
+}
+
+.hubSearchInput:focus + .hubSearchIcon {
+  color: #a855f7;
+}
+
+/* Hub empty states polishes */
+.hubEmptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-bento);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  box-shadow: var(--shadow-bento);
+  width: 100%;
+}
+
+:global([data-theme="dark"]) .hubEmptyState {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.hubEmptyTitle {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--foreground);
+  margin-bottom: 0.4rem;
+}
+
+.hubEmptyText {
+  font-size: 0.88rem;
+  opacity: 0.85;
+}
+

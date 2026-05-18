@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Wand2, Image as ImageIcon, Shrink, Eraser, Replace, Stamp, Maximize, Crop, RotateCcw, Sliders, Square, Palette, Pencil, FileText , ArrowRight } from "lucide-react";
+import { Wand2, Image as ImageIcon, Shrink, Eraser, Replace, Stamp, Maximize, Crop, RotateCcw, Sliders, Square, Palette, Pencil, FileText , ArrowRight, Search } from "lucide-react";
 import styles from "../page.module.css";
 import Link from "next/link";
 
@@ -45,32 +45,28 @@ export default function ImageCategoryHome() {
         </p>
       </div>
 
-      <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'flex-start' }}>
-        <input 
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="🔍 Search for an image tool..."
-          style={{
-            width: '100%',
-            maxWidth: '400px',
-            padding: '0.85rem 1.25rem',
-            borderRadius: '16px',
-            border: '1px solid var(--border)',
-            background: 'var(--pure-white)',
-            boxShadow: 'var(--shadow-inner)',
-            fontSize: '0.95rem',
-            outline: 'none',
-            color: 'var(--foreground)',
-            transition: 'all 0.2s'
-          }}
-        />
+      <div className={styles.hubHeaderBar}>
+        <div className={styles.hubStatsText}>
+          <span>Available spells</span>
+          <span className={styles.hubStatsCount}>{filteredTools.length}</span>
+        </div>
+        
+        <div className={styles.hubSearchWrapper}>
+          <input 
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search image tools..."
+            className={styles.hubSearchInput}
+          />
+          <Search size={16} className={styles.hubSearchIcon} />
+        </div>
       </div>
 
       {filteredTools.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
-          <p style={{ fontSize: '1.1rem', fontWeight: 600 }}>No spells found matching "{searchQuery}"</p>
-          <span style={{ fontSize: '0.9rem' }}>Try looking under another category or requesting this feature!</span>
+        <div className={styles.hubEmptyState}>
+          <div className={styles.hubEmptyTitle}>No spells found matching "{searchQuery}"</div>
+          <div className={styles.hubEmptyText}>Try adjusting your parameters or looking for another local action.</div>
         </div>
       ) : (
         <div className={styles.toolsGrid}>
