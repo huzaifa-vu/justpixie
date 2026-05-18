@@ -64,76 +64,114 @@ export default function LoginPage() {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <div className={styles.cardHeader}>
-          <Link href="/" className={styles.logoLink}>
-            <Image 
-              src={mounted && theme === 'dark' ? '/logo-full-dark.png' : '/logo-full.png'} 
-              alt="Pixie Logo" 
-              width={150} 
-              height={59} 
-              priority 
-              className={styles.logoImg}
-            />
+        {/* Left Side: Premium Benefits List */}
+        <div className={styles.benefitsPanel}>
+          <h2 className={styles.benefitsTitle}>Why create a free account?</h2>
+          <ul className={styles.benefitsList}>
+            <li className={styles.benefitItem}>
+              <div className={styles.benefitIconBox}>✨</div>
+              <div className={styles.benefitText}>
+                <strong>Unlimited AI Prompts</strong>
+                <span>Never run out of free AI commands to route your file tasks instantly.</span>
+              </div>
+            </li>
+            <li className={styles.benefitItem}>
+              <div className={styles.benefitIconBox}>🔒</div>
+              <div className={styles.benefitText}>
+                <strong>Custom Preferences</strong>
+                <span>Set your default download folder, engine settings, and visual themes.</span>
+              </div>
+            </li>
+            <li className={styles.benefitItem}>
+              <div className={styles.benefitIconBox}>🚀</div>
+              <div className={styles.benefitText}>
+                <strong>Feature Sandbox Write</strong>
+                <span>Unlock the ability to request custom offline spells on our feature wishboard.</span>
+              </div>
+            </li>
+            <li className={styles.benefitItem}>
+              <div className={styles.benefitIconBox}>⚡</div>
+              <div className={styles.benefitText}>
+                <strong>100% Free & Local</strong>
+                <span>Sign in safely. Your files still run locally inside your browser at all times.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        {/* Right Side: Login Panel */}
+        <div className={styles.loginPanel}>
+          <div className={styles.cardHeader}>
+            <Link href="/" className={styles.logoLink}>
+              <Image 
+                src={mounted && theme === 'dark' ? '/logo-full-dark.png' : '/logo-full.png'} 
+                alt="Pixie Logo" 
+                width={150} 
+                height={59} 
+                priority 
+                className={styles.logoImg}
+              />
+            </Link>
+            <h1 className={styles.title}>{isSignUp ? "Create Account" : "Welcome Back"}</h1>
+            <p className={styles.subtitle}>
+              {isSignUp ? "Start your magical file transformation journey." : "Sign in to access your workspace."}
+            </p>
+          </div>
+
+          <form className={styles.form} onSubmit={handleSubmit}>
+            <div className={styles.inputGroup}>
+              <Mail size={18} className={styles.inputIcon} />
+              <input
+                type="email"
+                placeholder="your@email.com"
+                className={styles.input}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className={styles.inputGroup}>
+              <Lock size={18} className={styles.inputIcon} />
+              <input
+                type="password"
+                placeholder="Password"
+                className={styles.input}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            {errorMsg && (
+               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: isSignUp && errorMsg.includes("Check") ? '#16a34a' : '#ef4444', background: isSignUp && errorMsg.includes("Check") ? 'rgba(22, 163, 74, 0.1)' : 'rgba(239, 68, 68, 0.1)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.875rem' }}>
+                  <AlertCircle size={16} />
+                  <span>{errorMsg}</span>
+               </div>
+            )}
+
+            <button type="submit" className={styles.submitBtn} disabled={loading}>
+              <span>{loading ? "Processing..." : (isSignUp ? "Create Account" : "Sign In")}</span>
+              {!loading && <ArrowRight size={18} />}
+            </button>
+          </form>
+
+          <div className={styles.divider}>
+            <span>or</span>
+          </div>
+
+          <Link href="/dashboard" className={styles.guestBtn}>
+            <Sparkles size={18} />
+            Continue as Guest
           </Link>
-          <h1 className={styles.title}>{isSignUp ? "Create Account" : "Welcome Back"}</h1>
-          <p className={styles.subtitle}>
-            {isSignUp ? "Start your magical file transformation journey." : "Sign in to access your workspace."}
+
+          <p className={styles.toggle}>
+            {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+            <button onClick={() => setIsSignUp(!isSignUp)} className={styles.toggleBtn}>
+              {isSignUp ? "Sign In" : "Sign Up"}
+            </button>
           </p>
         </div>
-
-        <form className={styles.form} onSubmit={handleSubmit}>
-          <div className={styles.inputGroup}>
-            <Mail size={18} className={styles.inputIcon} />
-            <input
-              type="email"
-              placeholder="your@email.com"
-              className={styles.input}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className={styles.inputGroup}>
-            <Lock size={18} className={styles.inputIcon} />
-            <input
-              type="password"
-              placeholder="Password"
-              className={styles.input}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          {errorMsg && (
-             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: isSignUp && errorMsg.includes("Check") ? '#16a34a' : '#ef4444', background: isSignUp && errorMsg.includes("Check") ? 'rgba(22, 163, 74, 0.1)' : 'rgba(239, 68, 68, 0.1)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.875rem' }}>
-                <AlertCircle size={16} />
-                <span>{errorMsg}</span>
-             </div>
-          )}
-
-          <button type="submit" className={styles.submitBtn} disabled={loading}>
-            <span>{loading ? "Processing..." : (isSignUp ? "Create Account" : "Sign In")}</span>
-            {!loading && <ArrowRight size={18} />}
-          </button>
-        </form>
-
-        <div className={styles.divider}>
-          <span>or</span>
-        </div>
-
-        <Link href="/dashboard" className={styles.guestBtn}>
-          <Sparkles size={18} />
-          Continue as Guest
-        </Link>
-
-        <p className={styles.toggle}>
-          {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
-          <button onClick={() => setIsSignUp(!isSignUp)} className={styles.toggleBtn}>
-            {isSignUp ? "Sign In" : "Sign Up"}
-          </button>
-        </p>
       </div>
     </div>
   );
