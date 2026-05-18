@@ -1,26 +1,31 @@
 import React from "react";
-import MarketingWrapper from "@/components/MarketingWrapper";
+import Navbar from "@/components/landing/Navbar";
 import NoiseOverlay from "@/components/landing/NoiseOverlay";
 import HeroSection from "@/components/landing/HeroSection";
 import BentoFeatures from "@/components/landing/BentoFeatures";
 import TerminalCTA from "@/components/landing/TerminalCTA";
+import Footer from "@/components/landing/Footer";
 
 export default function Home() {
   return (
-    <MarketingWrapper>
-      <div className="relative min-h-screen bg-[#030303] text-white overflow-y-auto overflow-x-hidden">
-        {/* Anti-banding film noise texture */}
-        <NoiseOverlay />
+    <div className="relative min-h-screen w-full bg-[#030303] text-white overflow-x-hidden">
+      {/* Global anti-banding grain noise */}
+      <NoiseOverlay />
 
-        {/* Immersive Landing Hook */}
-        <HeroSection />
+      {/* Floating high-end session-aware glass nav */}
+      <Navbar />
 
-        {/* Detailed High-Performance Asymmetric Features */}
-        <BentoFeatures />
+      {/* The Hook & Interactive browser transforms crucible */}
+      <HeroSection />
 
-        {/* Command Shell Direct Activation CTA */}
-        <TerminalCTA />
-      </div>
-    </MarketingWrapper>
+      {/* Structured asymmetric Bento Grid features highlight */}
+      <BentoFeatures />
+
+      {/* Shell cmd-prompt conversion activation */}
+      <TerminalCTA />
+
+      {/* Clean high-density footer */}
+      <Footer />
+    </div>
   );
 }
