@@ -55,11 +55,11 @@ export default function HeroSection() {
 
         {/* Headline (Friendly rounded Plus Jakarta display) */}
         <motion.div variants={itemVariants} className="flex flex-col gap-3">
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-[var(--foreground)] leading-[1.1] font-sans">
-            Just tell us what you want to do.
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[var(--foreground)] leading-[1.2] font-sans">
+            An AI Swiss Army knife
             <br />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--gentle-lilac)] via-[var(--pixie-teal)] to-[var(--mint-green)]">
-              Your files never leave your computer.
+              for your files.
             </span>
           </h1>
         </motion.div>
@@ -67,9 +67,9 @@ export default function HeroSection() {
         {/* Subtitle */}
         <motion.p
           variants={itemVariants}
-          className="text-base sm:text-lg md:text-xl text-[var(--text-muted)] font-medium leading-relaxed max-w-xl ml-auto mr-auto font-sans"
+          className="text-base sm:text-lg text-[var(--text-muted)] font-medium leading-relaxed max-w-xl ml-auto mr-auto font-sans"
         >
-          Type simple sentences like "make my video file smaller" or "combine my PDF papers". Our smart helper instantly finds the right tool. No waiting, no uploads, and no logins needed.
+          One simple search box opens 50+ private tools instantly. Crop photos, shrink videos, combine PDFs, and more. No uploads needed.
         </motion.p>
 
         {/* The Interactive Crucible Widget */}
