@@ -14,10 +14,25 @@ export async function POST(req: NextRequest) {
 
     const supabase = await createClient();
 
-    // 1. Fetch current votes count to avoid client-side state assumptions
+    // 1. Extract client IP address
+    const ip = (req as any).ip || req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
+
+    // 2. Query existing vote record for this IP and feature
+    const { data: existingVote, error: checkErr } = await supabase
+      .from("feature_votes")
+      .select("id")
+      .eq("feature_id", id)
+      .eq("ip_address", ip)
+      .maybeSingle();
+
+    if (checkErr) {
+      throw checkErr;
+    }
+
+    // 3. Query current wish details
     const { data: currentFeature, error: fetchErr } = await supabase
       .from("feature_requests")
-      .select("votes")
+      .select("*")
       .eq("id", id)
       .single();
 
@@ -25,24 +40,75 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Feature request not found" }, { status: 404 });
     }
 
-    // 2. Compute safe new vote count (prevent negative counts)
-    const newVotes = Math.max(0, currentFeature.votes + increment);
+    let finalFeature = currentFeature;
 
-    // 3. Update the remote table
-    const { data, error } = await supabase
-      .from("feature_requests")
-      .update({ votes: newVotes })
-      .eq("id", id)
-      .select()
-      .single();
+    if (increment === 1) {
+      // UPVOTE SPAM GUARD
+      if (existingVote) {
+        // IP has already upvoted this feature! Silently block the spam and return current details.
+        return NextResponse.json(currentFeature);
+      }
 
-    if (error) {
-      throw error;
+      // Record the IP vote
+      const { error: recordVoteErr } = await supabase
+        .from("feature_votes")
+        .insert({
+          feature_id: id,
+          ip_address: ip
+        });
+
+      if (recordVoteErr) {
+        // If unique constraint violation occurred concurrently
+        if (recordVoteErr.code === "23505") {
+          return NextResponse.json(currentFeature);
+        }
+        throw recordVoteErr;
+      }
+
+      // Increment total count in database
+      const newVotes = currentFeature.votes + 1;
+      const { data: updatedFeature, error: updateErr } = await supabase
+        .from("feature_requests")
+        .update({ votes: newVotes })
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (updateErr) throw updateErr;
+      finalFeature = updatedFeature;
+
+    } else if (increment === -1) {
+      // DOWNVOTE SPAM GUARD
+      if (!existingVote) {
+        // IP hasn't voted for this feature yet! Block invalid downvotes.
+        return NextResponse.json(currentFeature);
+      }
+
+      // Delete the IP vote record
+      const { error: deleteVoteErr } = await supabase
+        .from("feature_votes")
+        .delete()
+        .eq("feature_id", id)
+        .eq("ip_address", ip);
+
+      if (deleteVoteErr) throw deleteVoteErr;
+
+      // Decrement total count in database safely
+      const newVotes = Math.max(0, currentFeature.votes - 1);
+      const { data: updatedFeature, error: updateErr } = await supabase
+        .from("feature_requests")
+        .update({ votes: newVotes })
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (updateErr) throw updateErr;
+      finalFeature = updatedFeature;
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json(finalFeature);
   } catch (err: any) {
-    console.error("Voting system error:", err);
+    console.error("Voting system validation error:", err);
     return NextResponse.json(
       { error: err.message || "Failed to update wish support" },
       { status: 500 }

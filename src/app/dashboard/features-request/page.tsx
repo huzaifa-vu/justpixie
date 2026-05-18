@@ -22,11 +22,12 @@ export default function FeaturesRequestPage() {
 
   // 1. Load voted list from localStorage and fetch all wishes from database
   useEffect(() => {
-    // Sync localStorage wishes
+    let localVoted: string[] = [];
     try {
       const saved = localStorage.getItem("pixie_voted_features");
       if (saved) {
-        setVotedIds(JSON.parse(saved));
+        localVoted = JSON.parse(saved);
+        setVotedIds(localVoted);
       }
     } catch (e) {
       console.error("Local storage wish parsing failed:", e);
@@ -38,7 +39,16 @@ export default function FeaturesRequestPage() {
         const res = await fetch("/api/features-request");
         if (!res.ok) throw new Error("Failed to load wishlist");
         const data = await res.json();
-        setSuggestions(data || []);
+        
+        const list = data?.suggestions || [];
+        const ipVotedIds = data?.votedIds || [];
+
+        // Consolidate client local votes and remote IP votes to guard against clearings
+        const mergedVoted = Array.from(new Set([...localVoted, ...ipVotedIds]));
+        setVotedIds(mergedVoted);
+        localStorage.setItem("pixie_voted_features", JSON.stringify(mergedVoted));
+
+        setSuggestions(list);
       } catch (err: any) {
         setFetchError("Could not retrieve feature sandbox wishes. Check your connection!");
       } finally {
