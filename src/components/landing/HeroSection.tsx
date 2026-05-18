@@ -3,7 +3,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import InteractiveWidget from "./InteractiveWidget";
-import { Sparkles } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function HeroSection() {
   const containerVariants = {
@@ -71,6 +72,23 @@ export default function HeroSection() {
         >
           One simple search box opens 50+ private tools instantly. Crop photos, shrink videos, combine PDFs, and more. No uploads needed.
         </motion.p>
+
+        {/* Hero CTA Button Group */}
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-wrap items-center justify-center gap-4 mt-2"
+        >
+          <Link href="/dashboard" className="text-decoration-none">
+            <button className="group flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[var(--foreground)] hover:opacity-90 text-[var(--pure-white)] font-extrabold text-sm transition-all duration-300 cursor-pointer shadow-md hover:shadow-lg">
+              Use Pixie <ArrowRight className="h-4.5 w-4.5 transition-transform group-hover:translate-x-1" />
+            </button>
+          </Link>
+          <Link href="/login" className="text-decoration-none">
+            <button className="flex items-center justify-center gap-2 px-8 py-3.5 rounded-full border border-[var(--border)] bg-[var(--pure-white)]/40 text-[var(--text-muted)] hover:text-[var(--foreground)] font-bold text-sm transition-all duration-200 cursor-pointer">
+              Login
+            </button>
+          </Link>
+        </motion.div>
 
         {/* The Interactive Crucible Widget */}
         <motion.div
