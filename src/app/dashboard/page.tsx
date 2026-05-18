@@ -50,7 +50,7 @@ const useTypewriter = () => {
     "Convert my CSV to JSON...",
   ];
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentText, setCurrentText] = useState("");
+  const [currentText, setCurrentText] = useState("Compress this image to 200kb...");
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -428,7 +428,7 @@ export default function DashboardHome() {
               onPaste={handlePromptPaste}
               maxLength={200}
               className={styles.promptInput}
-              placeholder={typewriterPlaceholder || 'Tell Pixie what to do — e.g. "Convert my CSV to JSON"'}
+              placeholder={typewriterPlaceholder}
               disabled={isThinking}
             />
             {instruction.trim() && (
@@ -622,19 +622,28 @@ export default function DashboardHome() {
           </div>
           <div className={styles.onboardingGrid}>
             <div className={styles.onboardingCard}>
-              <div className={styles.stepNum}>1</div>
+              <div className={styles.stepIconHeader}>
+                <div className={styles.stepNum}>1</div>
+                <UploadCloud size={20} className={styles.stepIcon} style={{ color: '#06b6d4' }} />
+              </div>
               <h3 className={styles.stepTitle}>Drop your Media</h3>
-              <p className={styles.stepDesc}>Attach your image, PDF, or video to the Data Zone. It stays 100% private and never leaves your PC.</p>
+              <p className={styles.stepDesc}>Attach your image, PDF, or video. Everything stays 100% private on your machine.</p>
             </div>
             <div className={styles.onboardingCard}>
-              <div className={styles.stepNum}>2</div>
+              <div className={styles.stepIconHeader}>
+                <div className={styles.stepNum}>2</div>
+                <Type size={20} className={styles.stepIcon} style={{ color: '#a855f7' }} />
+              </div>
               <h3 className={styles.stepTitle}>Type your Intent</h3>
-              <p className={styles.stepDesc}>Tell Pixie what you need in plain English. Our AI routes you to the perfect local tool instantly.</p>
+              <p className={styles.stepDesc}>Tell Pixie what you need. Our local router directs you to the perfect tool instantly.</p>
             </div>
             <div className={styles.onboardingCard}>
-              <div className={styles.stepNum}>3</div>
+              <div className={styles.stepIconHeader}>
+                <div className={styles.stepNum}>3</div>
+                <Download size={20} className={styles.stepIcon} style={{ color: '#10b981' }} />
+              </div>
               <h3 className={styles.stepTitle}>Grab your File</h3>
-              <p className={styles.stepDesc}>Our local engine processes your file at warp speed. Download the result immediately—no waiting, no server logs.</p>
+              <p className={styles.stepDesc}>Our local WASM engine processes it at warp speed. Download it with zero server logs.</p>
             </div>
           </div>
         </div>
