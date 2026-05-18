@@ -254,6 +254,93 @@
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* --- Command Palette Sidebar Trigger --- */
+.cmdPaletteTriggerWrapper {
+  padding: 0.5rem 1.5rem;
+  margin-top: auto; /* Push to the bottom above the footer */
+}
+
+.cmdPaletteTrigger {
+  width: 100%;
+  height: 2.5rem;
+  padding: 0 0.85rem;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+:global([data-theme="dark"]) .cmdPaletteTrigger {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.cmdPaletteTrigger:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.15);
+  color: var(--foreground);
+}
+
+:global([data-theme="dark"]) .cmdPaletteTrigger:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.cmdSearchIcon {
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.cmdTriggerText {
+  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.2s ease;
+}
+
+.cmdTriggerBadge {
+  font-size: 0.65rem;
+  padding: 0.12rem 0.35rem;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+:global([data-theme="dark"]) .cmdTriggerBadge {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Collapsed sidebar trigger adaptations */
+.sidebar.collapsed .cmdPaletteTriggerWrapper {
+  padding: 0.5rem 0;
+  width: 100%;
+}
+
+.sidebar.collapsed .cmdPaletteTrigger {
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  justify-content: center;
+  margin: 0 auto;
+  border-radius: 50%;
+}
+
+.cmdTriggerTextHidden,
+.cmdTriggerBadgeHidden {
+  display: none !important;
+}
+
 @keyframes meshPan {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }

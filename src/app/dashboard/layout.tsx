@@ -3,7 +3,7 @@
 import { ReactNode, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Wand2, LayoutDashboard, Image as ImageIcon, FileText, Video, Code, Settings, UserCircle, LogOut, Type, Menu, X, Info, HelpCircle, Sparkles, Download, Sun, Moon, Lightbulb } from "lucide-react";
+import { Wand2, LayoutDashboard, Image as ImageIcon, FileText, Video, Code, Settings, UserCircle, LogOut, Type, Menu, X, Info, HelpCircle, Sparkles, Download, Sun, Moon, Lightbulb, Search } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useQuota } from "@/hooks/useQuota";
 import { useTheme } from "next-themes";
@@ -11,6 +11,7 @@ import styles from "./layout.module.css";
 import Image from "next/image";
 import { FileDropProvider } from "@/contexts/FileDropContext";
 import { GlobalDropOverlay } from "@/components/GlobalDropOverlay";
+import CommandPalette from "@/components/CommandPalette";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
@@ -29,10 +30,23 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [cmdOpen, setCmdOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const [user, setUser] = useState<any>(null);
   const supabase = createClient();
   const { guestUsed, guestLimit, guestRemaining, authPromptsUsed, isUnlimited, authLimit, loading } = useQuota(user);
+
+  // Keyboard listener for Cmd/Ctrl+K command palette
+  useEffect(() => {
+    const handleKeys = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setCmdOpen(prev => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeys);
+    return () => window.removeEventListener("keydown", handleKeys);
+  }, []);
 
   // Pre-calculate quota numbers for clean rendering & collapsed SVG progress
   const limit = user ? authLimit : guestLimit;
@@ -196,6 +210,23 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
             </Link>
           </div>
         </nav>
+        {/* Ctrl+K Trigger Button */}
+        <div className={styles.cmdPaletteTriggerWrapper}>
+          <button 
+            className={styles.cmdPaletteTrigger}
+            onClick={() => setCmdOpen(true)}
+            title="Open command palette (Ctrl+K)"
+            type="button"
+          >
+            <Search size={16} className={styles.cmdSearchIcon} />
+            <span className={`${styles.cmdTriggerText} ${collapsed ? styles.cmdTriggerTextHidden : ""}`}>
+              Search tools...
+            </span>
+            <span className={`${styles.cmdTriggerBadge} ${collapsed ? styles.cmdTriggerBadgeHidden : ""}`}>
+              ⌘K
+            </span>
+          </button>
+        </div>
 
         <div className={styles.sidebarFooter}>
           <div className={`${styles.quotaBox} ${collapsed ? styles.quotaBoxCollapsed : ""}`}>
@@ -525,6 +556,7 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
           </div>
         </main>
       </div>
+      <CommandPalette isOpen={cmdOpen} onClose={() => setCmdOpen(false)} />
     </div>
   );
 }
