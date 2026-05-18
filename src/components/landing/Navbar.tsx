@@ -2,13 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { LayoutDashboard, LogIn, Menu, X } from "lucide-react";
+import { LayoutDashboard, LogIn, Menu, X, Sun, Moon } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 
 export default function Navbar() {
-  const { theme, resolvedTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const [session, setSession] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -53,6 +53,21 @@ export default function Navbar() {
 
         {/* Action Button & Mobile Toggle */}
         <div className="flex items-center gap-3">
+          {/* Desktop/Global Theme Toggle */}
+          <button 
+            onClick={() => mounted && setTheme(theme === 'dark' || resolvedTheme === 'dark' ? 'light' : 'dark')}
+            className="p-2 rounded-full border border-[var(--border)] bg-[var(--pure-white)]/40 hover:bg-[var(--foreground)]/[0.04] cursor-pointer transition-all duration-200 text-[var(--foreground)] flex items-center justify-center shadow-sm w-9 h-9"
+            title={mounted ? `Switch to ${(theme === 'dark' || resolvedTheme === 'dark') ? 'Light' : 'Dark'} Mode` : "Toggle Theme"}
+          >
+            {!mounted ? (
+              <Moon className="h-4 w-4 opacity-50" />
+            ) : (theme === 'dark' || resolvedTheme === 'dark') ? (
+              <Sun className="h-4 w-4 text-amber-500" />
+            ) : (
+              <Moon className="h-4 w-4 text-slate-700" />
+            )}
+          </button>
+
           <div className="hidden md:block">
             {mounted && session ? (
               <Link href="/dashboard" className="text-decoration-none">
@@ -103,7 +118,34 @@ export default function Navbar() {
           >
             Pricing
           </Link>
+
           <div className="h-[1px] bg-[var(--border)] w-full my-1" />
+
+          {/* Mobile Theme Row */}
+          <div className="flex items-center justify-between py-1">
+            <span className="text-sm font-bold text-[var(--text-muted)]">Theme</span>
+            <button 
+              onClick={() => mounted && setTheme(theme === 'dark' || resolvedTheme === 'dark' ? 'light' : 'dark')}
+              className="flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--border)] bg-[var(--pure-white)]/40 hover:bg-[var(--foreground)]/[0.04] cursor-pointer transition-all duration-200 text-xs font-bold text-[var(--foreground)]"
+            >
+              {!mounted ? (
+                <>
+                  <Moon className="h-3.5 w-3.5 opacity-50" /> <span>Dark Mode</span>
+                </>
+              ) : (theme === 'dark' || resolvedTheme === 'dark') ? (
+                <>
+                  <Sun className="h-3.5 w-3.5 text-amber-500" /> <span>Light Mode</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="h-3.5 w-3.5" /> <span>Dark Mode</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="h-[1px] bg-[var(--border)] w-full my-1" />
+
           {mounted && session ? (
             <Link href="/dashboard" onClick={() => setIsOpen(false)} className="text-decoration-none">
               <button className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-full bg-[var(--foreground)] text-[var(--pure-white)] font-bold text-sm transition-all duration-200 cursor-pointer shadow-sm">
