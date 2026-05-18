@@ -226,7 +226,9 @@ export default function UpgradePage() {
               <XIcon size={20} />
             </button>
             
-            <h2 className={styles.modalTitle}>🪄 Step 2: Activate Your Upgrade</h2>
+            <h2 className={styles.modalTitle}>
+              <Sparkles size={24} style={{ color: "var(--mint-green)" }} /> Step 2: Activate Your Upgrade
+            </h2>
             <p className={styles.modalSub}>
               We have opened Patreon in a new tab for you to subscribe. Once you complete your subscription, choose how you would like to activate your Unlimited Magic tier:
             </p>
