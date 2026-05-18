@@ -9,7 +9,7 @@ import Footer from "@/components/landing/Footer";
 
 export default function Home() {
   return (
-    <div className="relative h-screen w-full bg-[var(--soft-sage)] text-[var(--foreground)] overflow-y-auto overflow-x-hidden">
+    <div className="relative h-screen w-full bg-[var(--soft-sage)] bg-dots text-[var(--foreground)] overflow-y-auto overflow-x-hidden">
       {/* Global anti-banding grain noise */}
       <NoiseOverlay />
 

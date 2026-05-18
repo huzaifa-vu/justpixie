@@ -178,18 +178,18 @@ export default function InteractiveWidget() {
                        : "border-[var(--border)] bg-[var(--foreground)]/[0.01] hover:bg-[var(--foreground)]/[0.04]"
                    }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-[16px] bg-[var(--pure-white)] border border-[var(--border)] shadow-sm">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="p-2.5 rounded-[16px] bg-[var(--pure-white)] border border-[var(--border)] shadow-sm flex-shrink-0">
                       {intent.icon}
                     </div>
-                    <div>
-                      <p className="text-sm font-bold text-[var(--foreground)] font-sans">{intent.toolName}</p>
-                      <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider font-semibold font-sans">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-bold text-[var(--foreground)] font-sans truncate">{intent.toolName}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider font-semibold font-sans truncate">
                         {intent.category}
                       </p>
                     </div>
                   </div>
-                  <span className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider ${
+                  <span className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider flex-shrink-0 ml-2 ${
                     isSelected ? "bg-[var(--pixie-teal)]/20 text-[var(--pixie-teal)]" : "bg-[var(--foreground)]/[0.05] text-[var(--text-muted)]"
                   }`}>
                     Try it
