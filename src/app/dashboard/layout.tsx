@@ -210,23 +210,6 @@ function DashboardInnerLayout({ children }: { children: ReactNode }) {
             </Link>
           </div>
         </nav>
-        {/* Ctrl+K Trigger Button */}
-        <div className={styles.cmdPaletteTriggerWrapper}>
-          <button 
-            className={styles.cmdPaletteTrigger}
-            onClick={() => setCmdOpen(true)}
-            title="Open command palette (Ctrl+K)"
-            type="button"
-          >
-            <Search size={16} className={styles.cmdSearchIcon} />
-            <span className={`${styles.cmdTriggerText} ${collapsed ? styles.cmdTriggerTextHidden : ""}`}>
-              Search tools...
-            </span>
-            <span className={`${styles.cmdTriggerBadge} ${collapsed ? styles.cmdTriggerBadgeHidden : ""}`}>
-              ⌘K
-            </span>
-          </button>
-        </div>
 
         <div className={styles.sidebarFooter}>
           <div className={`${styles.quotaBox} ${collapsed ? styles.quotaBoxCollapsed : ""}`}>
