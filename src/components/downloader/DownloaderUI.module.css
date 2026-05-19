@@ -918,3 +918,155 @@
 .manualLink:hover {
   color: var(--deep-charcoal);
 }
+
+/* Dark Mode Compatibility overrides for YouTube Downloader */
+
+:global([data-theme="dark"]) .urlInput {
+  background: var(--surface-card);
+  color: var(--foreground);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:global([data-theme="dark"]) .urlInput:focus {
+  border-color: var(--gentle-lilac);
+}
+
+:global([data-theme="dark"]) .pasteInBtn {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--foreground);
+}
+
+:global([data-theme="dark"]) .pasteInBtn:hover {
+  background: var(--mint-green);
+  color: var(--deep-charcoal);
+  border-color: var(--mint-green);
+}
+
+:global([data-theme="dark"]) .heroText h1 {
+  color: var(--foreground);
+}
+
+:global([data-theme="dark"]) .featureCard {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+:global([data-theme="dark"]) .featureCard:hover {
+  border-color: var(--mint-green);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+:global([data-theme="dark"]) .featureCard h3 {
+  color: var(--foreground);
+}
+
+:global([data-theme="dark"]) .videoTitle {
+  color: var(--foreground);
+}
+
+:global([data-theme="dark"]) .qualityBtn {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--foreground);
+}
+
+:global([data-theme="dark"]) .qualityBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--gentle-lilac);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+:global([data-theme="dark"]) .audioRow {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+:global([data-theme="dark"]) .audioRow:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--gentle-lilac);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+:global([data-theme="dark"]) .audioQuality {
+  color: var(--foreground);
+}
+
+:global([data-theme="dark"]) .audioExt {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+:global([data-theme="dark"]) .manualLink:hover {
+  color: var(--foreground);
+}
+
+:global([data-theme="dark"]) .statsContainer {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+:global([data-theme="dark"]) .statusPulse {
+  color: var(--foreground);
+}
+
+:global([data-theme="dark"]) .largeProgressBar {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+:global([data-theme="dark"]) .readyBtn {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--mint-green);
+  color: var(--foreground);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+:global([data-theme="dark"]) .readyBtn:hover {
+  background: var(--mint-green);
+  color: var(--deep-charcoal);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Skeletons */
+:global([data-theme="dark"]) .skeletonThumbnail {
+  background: linear-gradient(90deg, #222 25%, #2a2a2a 50%, #222 75%);
+}
+
+:global([data-theme="dark"]) .skeletonTitle,
+:global([data-theme="dark"]) .skeletonMeta,
+:global([data-theme="dark"]) .skeletonOptions {
+  background: #222;
+}
+
+/* Success Modal */
+:global([data-theme="dark"]) .successOverlay {
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(25px) saturate(180%);
+}
+
+:global([data-theme="dark"]) .successCard {
+  background: rgba(15, 15, 15, 0.75);
+  backdrop-filter: blur(40px);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 40px 100px -20px rgba(0, 0, 0, 0.6),
+    inset 0 2px 20px rgba(255, 255, 255, 0.03);
+}
+
+:global([data-theme="dark"]) .successCard h2 {
+  color: var(--pure-white, #fff);
+}
+
+:global([data-theme="dark"]) .successCard p {
+  color: var(--text-muted);
+}
+
+:global([data-theme="dark"]) .closeSuccess {
+  background: var(--pure-white, #fff);
+  color: var(--deep-charcoal);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+:global([data-theme="dark"]) .closeSuccess:hover {
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55);
+  filter: brightness(0.9);
+}

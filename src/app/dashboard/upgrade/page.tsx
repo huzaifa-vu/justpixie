@@ -267,18 +267,18 @@ export default function UpgradePage() {
                 
                 <div className={styles.modalActionRow}>
                   <a 
-                    href={getMailtoLink()}
-                    className={styles.primaryPatreonBtn}
-                  >
-                    <Mail size={18} /> Email for Instant Activation
-                  </a>
-                  <a 
                     href="https://patreon.com/u71272467" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className={styles.secondaryEmailBtn}
+                    className={styles.primaryPatreonBtn}
                   >
                     Go to Patreon to Subscribe <ExternalLink size={16} />
+                  </a>
+                  <a 
+                    href={getMailtoLink()}
+                    className={styles.secondaryEmailBtn}
+                  >
+                    <Mail size={18} /> Email for Instant Activation
                   </a>
                 </div>
               </motion.div>
