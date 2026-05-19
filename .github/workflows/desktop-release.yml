@@ -11,6 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
 
@@ -28,6 +29,7 @@ jobs:
         run: npm ci
         env:
           CI_SKIP_YTDLP: true # Skip yt-dlp download during npm install to avoid timeouts
+          YOUTUBE_DL_SKIP_DOWNLOAD: true # Skip youtube-dl-exec postinstall download
 
       - name: Download yt-dlp Binary
         run: node scripts/download-yt-dlp.mjs
