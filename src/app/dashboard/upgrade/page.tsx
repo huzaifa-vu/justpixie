@@ -68,149 +68,141 @@ export default function UpgradePage() {
   ];
 
   return (
-    <div className={styles.container}>
-      {/* Top Banner section */}
-      <div className={styles.headerSection}>
-        <div className={styles.sparkleIcon}>
-          <Crown size={32} style={{ color: "var(--mint-green)" }} />
-        </div>
-        <h1 className={styles.title}>
-          Unlock <span className={styles.gradientText}>Unlimited Magic</span>
-        </h1>
+    <div className={styles.dashboardPricing}>
+      <div className={styles.headerArea}>
+        <div className={styles.badge}><Sparkles size={16} /> Support Indie Devs</div>
+        <h1 className={styles.title}>Unlock <br/><span className={styles.titleHighlight}>Unlimited Magic</span></h1>
         <p className={styles.subtitle}>
-          Supercharge your workflow with heavy-duty AI engines, local high-density conversions, and unlimited prompts.
+          Pixie's core tools will always be free. Upgrade to Unlimited Magic for heavy-duty AI usage and priority local processing.
         </p>
       </div>
 
-      {/* Main pricing structure */}
-      <div className={styles.pricingWrapper}>
-        {/* Tier 1: Free */}
+      <div className={styles.pricingGrid}>
+        {/* Guest Tier */}
         <div className={styles.pricingCard}>
+          <div className={styles.iconWrapper} style={{ '--accent-color': '#0ea5e9' } as React.CSSProperties}>
+            <Compass size={28} />
+          </div>
           <div className={styles.cardHeader}>
-            <span className={styles.tierName}>Guest Explorer</span>
-            <div className={styles.priceRow}>
+            <div className={styles.tierName}>Guest Explorer</div>
+            <div className={styles.priceBlock}>
               <span className={styles.currency}>$</span>
-              <span className={styles.amount}>0</span>
+              <span className={styles.price}>0</span>
               <span className={styles.period}>/no account</span>
             </div>
-            <p className={styles.cardDesc}>Try out the tools without signing in.</p>
+            <p className={styles.tierDesc}>Try out the tools without signing in.</p>
           </div>
+          
+          {!user ? (
+            <div className={styles.planBtnOutline} style={{ cursor: 'default' }}>
+              Current Plan
+            </div>
+          ) : (
+            <div className={styles.planBtnOutlineDisabled} style={{ opacity: 0.5 }}>
+              Free Tier
+            </div>
+          )}
 
-          <div className={styles.featuresList}>
-            <div className={styles.featureItem}>
-              <Check className={styles.checkIcon} size={16} />
-              <span>Standard File Tools</span>
-            </div>
-            <div className={styles.featureItem}>
-              <Check className={styles.checkIcon} size={16} />
-              <span>Local WASM processing</span>
-            </div>
-            <div className={styles.featureItem}>
-              <Check className={styles.checkIcon} size={16} />
-              <span>3 AI Prompts Daily</span>
-            </div>
-            <div className={styles.featureItemDisabled}>
-              <span className={styles.dash}>—</span>
-              <span>Unlimited AI Prompts</span>
-            </div>
-          </div>
-
-          <button className={styles.planBtnOutlined} disabled>
-            Free Tier
-          </button>
+          <ul className={styles.featuresList}>
+            <li><Check size={18} className={styles.checkIcon} /> Standard File Tools</li>
+            <li><Check size={18} className={styles.checkIcon} /> Local WASM processing</li>
+            <li><Check size={18} className={styles.checkIcon} /> <strong>3 AI Prompts Daily</strong></li>
+            <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Unlimited AI Prompts</li>
+            <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Account Sync</li>
+          </ul>
         </div>
 
-        {/* Tier 2: Hobbyist */}
+        {/* Hobbyist Tier */}
         <div className={styles.pricingCard}>
+          <div className={styles.iconWrapper} style={{ '--accent-color': '#8b5cf6' } as React.CSSProperties}>
+            <User size={28} />
+          </div>
           <div className={styles.cardHeader}>
-            <span className={styles.tierName}>Hobbyist</span>
-            <div className={styles.priceRow}>
+            <div className={styles.tierName}>Hobbyist</div>
+            <div className={styles.priceBlock}>
               <span className={styles.currency}>$</span>
-              <span className={styles.amount}>0</span>
+              <span className={styles.price}>0</span>
               <span className={styles.period}>/forever</span>
             </div>
-            <p className={styles.cardDesc}>Perfect for exploring Pixie's magical file tools.</p>
+            <p className={styles.tierDesc}>Perfect for exploring Pixie's magical file tools.</p>
           </div>
+          
+          {user && !isLifetime ? (
+            <div className={styles.planBtnOutline} style={{ cursor: 'default' }}>
+              Current Plan
+            </div>
+          ) : !user ? (
+            <Link href="/login" className={styles.planBtnSolid} style={{ background: 'var(--foreground)', color: 'var(--background)' }}>
+              Login to Upgrade
+            </Link>
+          ) : (
+            <div className={styles.planBtnOutlineDisabled} style={{ opacity: 0.5 }}>
+              Free Tier
+            </div>
+          )}
 
-          <div className={styles.featuresList}>
-            <div className={styles.featureItem}>
-              <Check className={styles.checkIcon} size={16} />
-              <span>All 50+ File Tools forever</span>
-            </div>
-            <div className={styles.featureItem}>
-              <Check className={styles.checkIcon} size={16} />
-              <span>Local-first WASM processing</span>
-            </div>
-            <div className={styles.featureItem}>
-              <Check className={styles.checkIcon} size={16} />
-              <span>100 Free AI Prompts Daily</span>
-            </div>
-            <div className={styles.featureItemDisabled}>
-              <span className={styles.dash}>—</span>
-              <span>Unlimited AI Prompts</span>
-            </div>
-          </div>
-
-          <button className={styles.planBtnOutlined} disabled>
-            Current Plan
-          </button>
+          <ul className={styles.featuresList}>
+            <li><Check size={18} className={styles.checkIcon} /> All 50+ File Tools forever</li>
+            <li><Check size={18} className={styles.checkIcon} /> Local-first WASM processing</li>
+            <li><Check size={18} className={styles.checkIcon} /> <strong>100 Free AI Prompts Daily</strong></li>
+            <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Unlimited AI Prompts</li>
+            <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Priority Processing</li>
+          </ul>
         </div>
 
-        {/* Tier 3: Pro */}
-        <div className={`${styles.pricingCard} ${styles.pricingCardActive}`}>
-          <div className={styles.badge}>Most Popular</div>
+        {/* Unlimited Magic Tier */}
+        <div className={`${styles.pricingCard} ${styles.popularCard}`}>
+          <div className={styles.popularBadge}>Most Popular</div>
+          <div className={styles.iconWrapper} style={{ '--accent-color': 'var(--mint-green)' } as React.CSSProperties}>
+            <Crown size={28} />
+          </div>
           <div className={styles.cardHeader}>
-            <span className={styles.tierName}>Unlimited Magic</span>
-            <div className={styles.priceRow}>
+            <div className={styles.tierName}>Unlimited Magic</div>
+            <div className={styles.priceBlock}>
               <span className={styles.currency}>$</span>
-              <span className={styles.amount}>1</span>
+              <span className={styles.price}>1</span>
               <span className={styles.period}>/month</span>
             </div>
-            <p className={styles.cardDesc}>Support on Patreon. Cancel anytime.</p>
+            <p className={styles.tierDesc}>Support on Patreon. Cancel anytime.</p>
           </div>
+          
+          {isLifetime ? (
+            <div className={styles.planBtnOutline} style={{ border: '2px solid var(--mint-green)', color: 'var(--mint-green)', cursor: 'default' }}>
+              Current Plan ✓
+            </div>
+          ) : (
+            <button 
+              className={styles.planBtnSolid} 
+              onClick={handleUpgrade}
+            >
+              {user ? "Upgrade via Patreon" : "Sign In to Buy"} <ArrowRight size={18} />
+            </button>
+          )}
 
-          <div className={styles.featuresList}>
-            <div className={styles.featureItem}>
-              <Check className={styles.checkIcon} size={16} />
-              <span>Unlimited AI Prompts</span>
-            </div>
-            <div className={styles.featureItem}>
-              <Check className={styles.checkIcon} size={16} />
-              <span>Intelligent File Routing Engine</span>
-            </div>
-            <div className={styles.featureItem}>
-              <Check className={styles.checkIcon} size={16} />
-              <span>Priority Conversion Queue</span>
-            </div>
-            <div className={styles.featureItem}>
-              <Check className={styles.checkIcon} size={16} />
-              <span>All 50+ File Tools forever</span>
-            </div>
-          </div>
-
-          <button 
-            className={styles.planBtnSolid} 
-            onClick={handleUpgrade}
-          >
-            Upgrade via Patreon <ArrowRight size={18} />
-          </button>
+          <ul className={styles.featuresList}>
+            <li><Check size={18} className={styles.checkIcon} /> <strong>Unlimited AI Prompts</strong></li>
+            <li><Check size={18} className={styles.checkIcon} /> Intelligent File Routing Engine</li>
+            <li><Check size={18} className={styles.checkIcon} /> Priority Conversion Queue</li>
+            <li><Check size={18} className={styles.checkIcon} /> All 50+ File Tools forever</li>
+            <li><Check size={18} className={styles.checkIcon} /> Local-first WASM processing</li>
+          </ul>
         </div>
       </div>
 
-      {/* FAQ Accordion Section */}
-      <div className={styles.faqWrapper}>
-        <h2 className={styles.faqTitle}>Frequently Asked Questions</h2>
+      {/* Interactive FAQ Accordion Section */}
+      <div className={styles.faq}>
+        <h2><HelpCircle size={24} style={{ color: 'var(--mint-green)', verticalAlign: 'middle', marginRight: '0.5rem' }} /> Frequently Asked Questions</h2>
         <div className={styles.faqList}>
           {faqItems.map((item, idx) => (
-            <div key={idx} className={styles.faqItem}>
+            <div key={idx} className={`${styles.faqItem} ${openFaq === idx ? styles.faqItemOpen : ''}`}>
               <button 
-                className={styles.faqQuestion}
+                className={styles.faqHeader}
                 onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
               >
                 <span>{item.q}</span>
                 <ChevronDown size={20} className={`${styles.faqChevron} ${openFaq === idx ? styles.faqChevronOpen : ''}`} />
               </button>
-              <div className={`${styles.faqAnswer} ${openFaq === idx ? styles.faqAnswerOpen : ''}`}>
+              <div className={styles.faqAnswer}>
                 <p>{item.a}</p>
               </div>
             </div>
