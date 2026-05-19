@@ -12,8 +12,6 @@ directories:
   buildResources: public
 
 # We specify typescript compile outputs or original TS paths (electron-builder compiles ts internally if needed, but ts-node compiled output is safer)
-main: electron/main.js
-
 files:
   - electron/**/*
   - public/**/*
