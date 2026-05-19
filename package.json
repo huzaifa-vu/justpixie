@@ -7,7 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "node scripts/download-yt-dlp.mjs"
+    "postinstall": "node scripts/download-yt-dlp.mjs",
+    "electron:dev": "concurrently --kill-others \"npm run dev\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development electron -r ts-node/register electron/main.ts\"",
+    "electron:build": "cross-env BUILD_TARGET=electron next build && tsc electron/main.ts electron/preload.ts --target es2020 --module commonjs --esModuleInterop --skipLibCheck && electron-builder build --config electron-builder.yml",
+    "electron:build:win": "cross-env BUILD_TARGET=electron next build && tsc electron/main.ts electron/preload.ts --target es2020 --module commonjs --esModuleInterop --skipLibCheck && electron-builder build --win --config electron-builder.yml",
+    "electron:build:mac": "cross-env BUILD_TARGET=electron next build && tsc electron/main.ts electron/preload.ts --target es2020 --module commonjs --esModuleInterop --skipLibCheck && electron-builder build --mac --config electron-builder.yml",
+    "electron:build:linux": "cross-env BUILD_TARGET=electron next build && tsc electron/main.ts electron/preload.ts --target es2020 --module commonjs --esModuleInterop --skipLibCheck && electron-builder build --linux --config electron-builder.yml"
   },
   "dependencies": {
     "@ffmpeg/ffmpeg": "^0.12.7",
@@ -50,10 +55,16 @@
     "@types/react-dom": "^19",
     "autoprefixer": "^10.5.0",
     "babel-plugin-react-compiler": "^1.0.0",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "electron": "^42.1.0",
+    "electron-builder": "^26.8.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.3",
     "postcss": "^8.5.14",
     "tailwindcss": "^4.3.0",
-    "typescript": "^5"
+    "ts-node": "^10.9.2",
+    "typescript": "^5",
+    "wait-on": "^9.0.10"
   }
 }

@@ -254,6 +254,12 @@ export default function DashboardHome() {
     e?.preventDefault();
     if (!instruction.trim() || isThinking) return;
 
+    if (!isOnline) {
+      setAiError("AI routing requires an active internet connection. Please browse tools manually below.");
+      setAiMessage("");
+      return;
+    }
+
     if (isLoggedIn === false && guestUsed >= guestLimit) {
       setAiError("");
       setAiMessage("");
@@ -443,7 +449,7 @@ export default function DashboardHome() {
             )}
             <button 
               className={styles.submitBtn}
-              disabled={!instruction.trim() || isThinking || guestLimitReached || dataInPromptWarning}
+              disabled={!instruction.trim() || isThinking || guestLimitReached || dataInPromptWarning || !isOnline}
               onClick={() => handleSubmit()}
             >
               {isThinking ? <Loader2 size={18} className={styles.spinIcon} /> : <ArrowRight size={18} />}

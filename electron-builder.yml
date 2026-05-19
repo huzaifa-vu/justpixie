@@ -1,0 +1,56 @@
+appId: com.pixie.desktop
+productName: Pixie
+copyright: "© 2026 Pixie"
+
+directories:
+  output: dist-electron
+  buildResources: public
+
+# We specify typescript compile outputs or original TS paths (electron-builder compiles ts internally if needed, but ts-node compiled output is safer)
+main: electron/main.js
+
+files:
+  - electron/**/*
+  - public/**/*
+  - ".next/standalone/**/*"
+  - ".next/static/**/*"
+
+extraResources:
+  - from: ".next/standalone"
+    to: "app/.next/standalone"
+    filter: ["**/*"]
+  - from: ".next/static"
+    to: "app/.next/standalone/.next/static"
+    filter: ["**/*"]
+  - from: "public"
+    to: "app/.next/standalone/public"
+    filter: ["**/*"]
+  - from: "bin"
+    to: "app/bin"
+    filter: ["**/*"]
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  icon: public/favicon.ico
+
+mac:
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+  icon: public/apple-touch-icon.png
+  category: public.app-category.productivity
+
+linux:
+  target:
+    - target: AppImage
+    - target: deb
+  icon: public/favicon.ico
+  category: Utility
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  installerIcon: public/favicon.ico
+  uninstallerIcon: public/favicon.ico

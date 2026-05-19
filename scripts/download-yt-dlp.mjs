@@ -58,6 +58,11 @@ function downloadFile(url, dest) {
 }
 
 async function main() {
+  if (process.env.VERCEL || process.env.CI_SKIP_YTDLP) {
+    console.log('Skipping yt-dlp download (Vercel or CI bypass environment detected).');
+    process.exit(0);
+  }
+
   const platform = process.platform;
   const url = URLS[platform];
   

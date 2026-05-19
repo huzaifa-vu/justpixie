@@ -135,88 +135,92 @@ export async function POST(req: NextRequest) {
     }
 
     // --- SECURE QUOTA & AUTH CHECK ---
-    const supabase = await createClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    const user = session?.user;
+    try {
+      const supabase = await createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
 
-    let isUnlimited = false;
-    let promptsUsed = 0;
-    
-    // Get current date string (YYYY-MM-DD)
-    const today = new Date().toISOString().split('T')[0];
-
-    if (user) {
-      // FORCE FETCH FRESH METADATA FROM DB (Prevents 'Stuck Quota' from stale cookies)
-      const adminSupabase = createAdminClient();
-      const { data: { user: freshUser }, error: fetchErr } = await adminSupabase.auth.admin.getUserById(user.id);
+      let isUnlimited = false;
+      let promptsUsed = 0;
       
-      if (fetchErr) {
-        console.error("Failed to fetch fresh user for quota:", fetchErr);
-        // Fallback to session if fetch fails, though not ideal
-      }
+      // Get current date string (YYYY-MM-DD)
+      const today = new Date().toISOString().split('T')[0];
 
-      const metadata = (freshUser || user).user_metadata || {};
-      isUnlimited = metadata.tier === 'unlimited';
-      
-      const lastPromptDate = metadata.last_prompt_date;
-      
-      // If it's a new day, we treat their usage as 0
-      if (lastPromptDate !== today) {
-        promptsUsed = 0;
-      } else {
-        promptsUsed = metadata.prompts_used || 0;
-      }
-
-      if (!isUnlimited && promptsUsed >= FREE_TIER_DAILY_LIMIT) {
-        return NextResponse.json({ 
-          error: "You have reached your daily limit of 100 free AI prompts. Come back tomorrow or upgrade to Unlimited forever!" 
-        }, { status: 402 }); // 402 Payment Required
-      }
-
-      // --- INCREMENT AUTH QUOTA BEFORE PROCESSING ---
-      if (!isUnlimited) {
-        try {
-          await adminSupabase.auth.admin.updateUserById(user.id, {
-            user_metadata: { 
-              ...metadata,
-              prompts_used: promptsUsed + 1,
-              last_prompt_date: today
-            }
-          });
-        } catch (adminErr) {
-          console.error("Failed to pre-increment user quota:", adminErr);
-        }
-      }
-    } else {
-      // --- SERVER-SIDE GUEST GUARD ---
-      try {
-        const ip = (req as any).ip || req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
+      if (user) {
+        // FORCE FETCH FRESH METADATA FROM DB (Prevents 'Stuck Quota' from stale cookies)
         const adminSupabase = createAdminClient();
-        const { data: usage, error: fetchErr } = await adminSupabase.from("guest_usage").select("*").eq("ip", ip).single();
+        const { data: { user: freshUser }, error: fetchErr } = await adminSupabase.auth.admin.getUserById(user.id);
         
-        if (fetchErr && fetchErr.code !== "PGRST116") {
-          console.error("Guest usage pre-check error:", fetchErr);
+        if (fetchErr) {
+          console.error("Failed to fetch fresh user for quota:", fetchErr);
+          // Fallback to session if fetch fails, though not ideal
         }
 
-        if (usage && usage.last_date === today && usage.count >= 3) {
+        const metadata = (freshUser || user).user_metadata || {};
+        isUnlimited = metadata.tier === 'unlimited';
+        
+        const lastPromptDate = metadata.last_prompt_date;
+        
+        // If it's a new day, we treat their usage as 0
+        if (lastPromptDate !== today) {
+          promptsUsed = 0;
+        } else {
+          promptsUsed = metadata.prompts_used || 0;
+        }
+
+        if (!isUnlimited && promptsUsed >= FREE_TIER_DAILY_LIMIT) {
           return NextResponse.json({ 
-            error: "Your guest limit has been reached for today. Sign in for unlimited spells!" 
-          }, { status: 402 });
+            error: "You have reached your daily limit of 100 free AI prompts. Come back tomorrow or upgrade to Unlimited forever!" 
+          }, { status: 402 }); // 402 Payment Required
         }
 
-        // --- INCREMENT GUEST QUOTA BEFORE PROCESSING ---
-        try {
-          if (usage && usage.last_date === today) {
-            await adminSupabase.from("guest_usage").update({ count: usage.count + 1 }).eq("ip", ip);
-          } else {
-            await adminSupabase.from("guest_usage").upsert({ ip, count: 1, last_date: today });
+        // --- INCREMENT AUTH QUOTA BEFORE PROCESSING ---
+        if (!isUnlimited) {
+          try {
+            await adminSupabase.auth.admin.updateUserById(user.id, {
+              user_metadata: { 
+                ...metadata,
+                prompts_used: promptsUsed + 1,
+                last_prompt_date: today
+              }
+            });
+          } catch (adminErr) {
+            console.error("Failed to pre-increment user quota:", adminErr);
           }
-        } catch (incErr) {
-          console.error("Guest increment logic failed:", incErr);
         }
-      } catch (checkErr) {
-        console.error("Guest guard check failed:", checkErr);
+      } else {
+        // --- SERVER-SIDE GUEST GUARD ---
+        try {
+          const ip = (req as any).ip || req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
+          const adminSupabase = createAdminClient();
+          const { data: usage, error: fetchErr } = await adminSupabase.from("guest_usage").select("*").eq("ip", ip).single();
+          
+          if (fetchErr && fetchErr.code !== "PGRST116") {
+            console.error("Guest usage pre-check error:", fetchErr);
+          }
+
+          if (usage && usage.last_date === today && usage.count >= 3) {
+            return NextResponse.json({ 
+              error: "Your guest limit has been reached for today. Sign in for unlimited spells!" 
+            }, { status: 402 });
+          }
+
+          // --- INCREMENT GUEST QUOTA BEFORE PROCESSING ---
+          try {
+            if (usage && usage.last_date === today) {
+              await adminSupabase.from("guest_usage").update({ count: usage.count + 1 }).eq("ip", ip);
+            } else {
+              await adminSupabase.from("guest_usage").upsert({ ip, count: 1, last_date: today });
+            }
+          } catch (incErr) {
+            console.error("Guest increment logic failed:", incErr);
+          }
+        } catch (checkErr) {
+          console.error("Guest guard check failed:", checkErr);
+        }
       }
+    } catch (quotaErr) {
+      console.warn("Database quota verification bypassed due to connectivity failure:", quotaErr);
     }
     // --- END QUOTA CHECK ---
 
