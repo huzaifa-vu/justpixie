@@ -51,6 +51,7 @@ linux:
     - target: deb
   icon: public/icon.png
   category: Utility
+  maintainer: "huzaifa-vu@users.noreply.github.com"
 
 nsis:
   oneClick: false
