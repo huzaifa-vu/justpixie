@@ -2,6 +2,11 @@ import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { spawn, ChildProcess } from 'child_process';
 import path from 'path';
 import waitOn from 'wait-on';
+import { fileURLToPath } from 'url';
+
+const _dirname = typeof __dirname !== 'undefined'
+  ? __dirname
+  : path.dirname(fileURLToPath(new Function('return import.meta.url')()));
 
 const PORT = 3000;
 let nextServer: ChildProcess | null = null;
@@ -41,9 +46,9 @@ async function createWindow() {
     minWidth: 900,
     minHeight: 600,
     title: 'Pixie',
-    icon: path.join(__dirname, '../public/favicon.ico'),
+    icon: path.join(_dirname, '../public/favicon.ico'),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(_dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
     },
