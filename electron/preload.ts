@@ -16,5 +16,9 @@ contextBridge.exposeInMainWorld('electronPixie', {
     // Let client trigger openExternal explicitly if needed
     // Otherwise the setWindowOpenHandler in main.ts catches target="_blank" redirects.
     return ipcRenderer.send('open-external', url);
+  },
+
+  downloadURL: (url: string) => {
+    ipcRenderer.send('download-url', url);
   }
 });

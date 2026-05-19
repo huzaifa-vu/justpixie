@@ -240,7 +240,13 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
   };
 
   const triggerDownload = (url: string, filename: string, isExternal: boolean = false) => {
+    const isDesktop = typeof window !== 'undefined' && (window as any).electronPixie?.isDesktop;
+
     if (isExternal) {
+      if (isDesktop && (window as any).electronPixie?.downloadURL) {
+        (window as any).electronPixie.downloadURL(url);
+        return true;
+      }
       const win = window.open(url, '_blank');
       // Detect if popup was blocked
       if (!win || win.closed || typeof win.closed === 'undefined') {

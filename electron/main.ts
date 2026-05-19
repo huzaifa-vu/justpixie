@@ -87,6 +87,12 @@ ipcMain.on('open-external', (_e, url) => {
   shell.openExternal(url);
 });
 
+ipcMain.on('download-url', (_e, url) => {
+  if (mainWindow) {
+    mainWindow.webContents.downloadURL(url);
+  }
+});
+
 app.whenReady().then(async () => {
   await startNextServer();
   await createWindow();
