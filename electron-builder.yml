@@ -2,6 +2,11 @@ appId: com.pixie.desktop
 productName: Pixie
 copyright: "© 2026 Pixie"
 
+publish:
+  provider: github
+  owner: huzaifa-vu
+  repo: justpixie
+
 directories:
   output: dist-electron
   buildResources: public

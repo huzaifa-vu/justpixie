@@ -1,0 +1,55 @@
+name: Build and Release Desktop App
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Build & Publish Target
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+        env:
+          CI_SKIP_YTDLP: true # Skip yt-dlp download during npm install to avoid timeouts
+
+      - name: Download yt-dlp Binary
+        run: node scripts/download-yt-dlp.mjs
+
+      - name: Build Next.js & Package App
+        run: |
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            npm run electron:build:win -- --publish always
+          elif [ "${{ matrix.os }}" = "macos-latest" ]; then
+            npm run electron:build:mac -- --publish always
+          else
+            npm run electron:build:linux -- --publish always
+          fi
+        shell: bash
+        env:
+          BUILD_TARGET: electron
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          LEMON_SQUEEZY_API_KEY: ${{ secrets.LEMON_SQUEEZY_API_KEY }}
+          LEMON_SQUEEZY_STORE_ID: ${{ secrets.LEMON_SQUEEZY_STORE_ID }}
+          LEMON_SQUEEZY_VARIANT_ID: ${{ secrets.LEMON_SQUEEZY_VARIANT_ID }}
+          LEMON_SQUEEZY_WEBHOOK_SECRET: ${{ secrets.LEMON_SQUEEZY_WEBHOOK_SECRET }}
