@@ -1,12 +1,90 @@
 import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { spawn, ChildProcess } from 'child_process';
 import path from 'path';
+import fs from 'fs';
+import net from 'net';
 
-const PORT = 3000;
+let PORT = 3000;
 let nextServer: ChildProcess | null = null;
 let mainWindow: BrowserWindow | null = null;
+let logStream: fs.WriteStream | null = null;
 
 const isDev = process.env.NODE_ENV === 'development';
+const isDebug = process.argv.includes('--debug');
+
+// Setup file logging to userData directory
+function setupLogging() {
+  try {
+    const userDataPath = app.getPath('userData');
+    if (!fs.existsSync(userDataPath)) {
+      fs.mkdirSync(userDataPath, { recursive: true });
+    }
+    const logPath = path.join(userDataPath, 'pixie-app.log');
+    logStream = fs.createWriteStream(logPath, { flags: 'a' });
+    writeLog('=== App Started ===');
+    writeLog('Node Version:', process.version);
+    writeLog('Platform:', process.platform);
+    writeLog('UserData Path:', userDataPath);
+  } catch (e) {
+    console.error('Failed to setup file logging:', e);
+  }
+}
+
+function writeLog(...args: any[]) {
+  const msg = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' ');
+  const line = `[${new Date().toISOString()}] ${msg}\n`;
+  console.log(msg);
+  if (logStream) {
+    logStream.write(line);
+  }
+}
+
+async function checkPortFree(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const socket = new net.Socket();
+    socket.setTimeout(500);
+    
+    socket.once('connect', () => {
+      socket.destroy();
+      resolve(false);
+    });
+    
+    socket.once('timeout', () => {
+      socket.destroy();
+      resolve(false);
+    });
+    
+    socket.once('error', () => {
+      socket.destroy();
+      
+      const server = net.createServer();
+      server.once('error', () => {
+        resolve(false);
+      });
+      server.once('listening', () => {
+        server.close(() => {
+          resolve(true);
+        });
+      });
+      server.listen(port, '127.0.0.1');
+    });
+    
+    socket.connect(port, '127.0.0.1');
+  });
+}
+
+async function getAvailablePort(startPort: number = 3000): Promise<number> {
+  let port = startPort;
+  while (true) {
+    if (await checkPortFree(port)) {
+      return port;
+    }
+    port++;
+    if (port > 65535) {
+      throw new Error('No available ports found');
+    }
+  }
+}
 
 async function waitForServer(url: string, timeoutMs: number = 30000) {
   const start = Date.now();
@@ -24,27 +102,35 @@ async function waitForServer(url: string, timeoutMs: number = 30000) {
 
 async function startNextServer() {
   if (isDev) {
-    // In dev mode, assume `npm run dev` is already running
+    writeLog('Running in development mode, assuming external server runs on port', PORT);
     return;
   }
 
-  // In production, spawn the standalone server
   const serverPath = path.join(process.resourcesPath, 'app', '.next', 'standalone', 'server.js');
-  
+  writeLog('Spawning Next.js standalone server at:', serverPath);
+  writeLog('Using port:', PORT);
+
   nextServer = spawn('node', [serverPath], {
     env: {
       ...process.env,
       PORT: String(PORT),
       NODE_ENV: 'production',
-      // Pass client environment parameters
       NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     },
     stdio: 'pipe',
   });
 
-  nextServer.stdout?.on('data', (d) => console.log('[Next]', d.toString()));
-  nextServer.stderr?.on('data', (d) => console.error('[Next ERR]', d.toString()));
+  nextServer.stdout?.on('data', (d) => writeLog('[Next stdout]', d.toString().trim()));
+  nextServer.stderr?.on('data', (d) => writeLog('[Next stderr]', d.toString().trim()));
+
+  nextServer.on('error', (err) => {
+    writeLog('[Next Error Event]', err);
+  });
+
+  nextServer.on('exit', (code, signal) => {
+    writeLog(`[Next Exit Event] Code: ${code}, Signal: ${signal}`);
+  });
 }
 
 async function createWindow() {
@@ -61,29 +147,34 @@ async function createWindow() {
       nodeIntegration: false,
     },
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
-    backgroundColor: '#F4F7F4', // Soft-sage background token to avoid white flash
+    backgroundColor: '#F4F7F4',
   });
 
-  // Wait for the local Next.js server port to respond
-  await waitForServer(`http://localhost:${PORT}`, 30000);
-  
+  writeLog(`Waiting for Next.js server to respond at http://localhost:${PORT}...`);
+  try {
+    await waitForServer(`http://localhost:${PORT}`, 30000);
+    writeLog(`Next.js server is ready. Loading URL...`);
+  } catch (e: any) {
+    writeLog(`Error waiting for server: ${e.message}`);
+  }
+
   mainWindow.loadURL(`http://localhost:${PORT}`);
 
-  // Route any external links to standard desktop browser
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (!url.startsWith(`http://localhost:${PORT}`)) {
+      writeLog(`Opening external link: ${url}`);
       shell.openExternal(url);
       return { action: 'deny' };
     }
     return { action: 'allow' };
   });
 
-  if (isDev) {
+  if (isDev || isDebug) {
+    writeLog('Opening Developer Tools...');
     mainWindow.webContents.openDevTools({ mode: 'detach' });
   }
 }
 
-// Native Dialogue Intercepts
 ipcMain.handle('show-save-dialog', async (_e, options) => {
   if (!mainWindow) return null;
   return await dialog.showSaveDialog(mainWindow, options);
@@ -106,7 +197,26 @@ ipcMain.on('download-url', (_e, url) => {
   }
 });
 
+function cleanupChildProcess() {
+  if (nextServer) {
+    writeLog('Terminating Next.js child process...');
+    nextServer.kill('SIGTERM');
+    nextServer = null;
+  }
+}
+
 app.whenReady().then(async () => {
+  setupLogging();
+
+  if (!isDev) {
+    try {
+      PORT = await getAvailablePort(3000);
+      writeLog(`Dynamically resolved port: ${PORT}`);
+    } catch (e: any) {
+      writeLog(`Error finding port, using default 3000: ${e.message}`);
+    }
+  }
+
   await startNextServer();
   await createWindow();
 
@@ -132,7 +242,7 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
-  nextServer?.kill();
+  cleanupChildProcess();
   if (process.platform !== 'darwin') app.quit();
 });
 
@@ -141,5 +251,20 @@ app.on('activate', () => {
 });
 
 app.on('before-quit', () => {
-  nextServer?.kill();
+  cleanupChildProcess();
 });
+
+process.on('exit', () => {
+  cleanupChildProcess();
+});
+
+process.on('SIGINT', () => {
+  cleanupChildProcess();
+  app.quit();
+});
+
+process.on('SIGTERM', () => {
+  cleanupChildProcess();
+  app.quit();
+});
+
