@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
 
 export default function UpgradePage() {
@@ -218,64 +219,80 @@ export default function UpgradePage() {
       </div>
 
       {/* Patreon Activation Modal */}
-      {showModal && mounted && createPortal(
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
-            <button 
-              className={styles.modalCloseBtn}
+      {mounted && createPortal(
+        <AnimatePresence>
+          {showModal && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className={styles.modalOverlay}
               onClick={() => setShowModal(false)}
-              aria-label="Close modal"
             >
-              <XIcon size={20} />
-            </button>
-            
-            <h2 className={styles.modalTitle}>
-              <Sparkles size={24} style={{ color: "var(--mint-green)" }} /> Step 2: Activate Your Upgrade
-            </h2>
-            <p className={styles.modalSub}>
-              We have opened Patreon in a new tab for you to subscribe. Once you complete your subscription, choose how you would like to activate your Unlimited Magic tier:
-            </p>
-            
-            <div className={styles.stepsContainer}>
-              <div className={styles.stepCard}>
-                <div className={styles.stepNum}>A</div>
-                <div className={styles.stepDetails}>
-                  <h4 className={styles.stepTitle}>Instant Activation (Recommended)</h4>
-                  <p className={styles.stepDesc}>
-                    Click the button below to email me. I will manually upgrade your account immediately.
-                  </p>
-                </div>
-              </div>
-              
-              <div className={styles.stepCard}>
-                <div className={styles.stepNum}>B</div>
-                <div className={styles.stepDetails}>
-                  <h4 className={styles.stepTitle}>Automatic Match (24–48 Hours)</h4>
-                  <p className={styles.stepDesc}>
-                    We sync Patreon registers daily. If your Patreon email matches your Pixie email ({user?.email}), you'll be upgraded automatically.
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className={styles.modalActionRow}>
-              <a 
-                href="https://patreon.com/u71272467" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className={styles.primaryPatreonBtn}
+              <motion.div 
+                initial={{ scale: 0.8, opacity: 0, y: 30 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.8, opacity: 0, y: 30 }}
+                className={styles.modalContent}
+                onClick={(e) => e.stopPropagation()}
               >
-                Go back to Patreon <ExternalLink size={16} />
-              </a>
-              <a 
-                href={getMailtoLink()}
-                className={styles.secondaryEmailBtn}
-              >
-                <Mail size={18} /> Email for Instant Activation
-              </a>
-            </div>
-          </div>
-        </div>,
+                <button 
+                  className={styles.modalCloseBtn}
+                  onClick={() => setShowModal(false)}
+                  aria-label="Close modal"
+                >
+                  <XIcon size={20} />
+                </button>
+                
+                <h2 className={styles.modalTitle}>
+                  <Sparkles size={24} style={{ color: "var(--mint-green)" }} /> Step 2: Activate Your Upgrade
+                </h2>
+                <p className={styles.modalSub}>
+                  We have opened Patreon in a new tab for you to subscribe. Once you complete your subscription, choose how you would like to activate your Unlimited Magic tier:
+                </p>
+                
+                <div className={styles.stepsContainer}>
+                  <div className={styles.stepCard}>
+                    <div className={styles.stepNum}>A</div>
+                    <div className={styles.stepDetails}>
+                      <h4 className={styles.stepTitle}>Instant Activation (Recommended)</h4>
+                      <p className={styles.stepDesc}>
+                        Click the button below to email me. I will manually upgrade your account immediately.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className={styles.stepCard}>
+                    <div className={styles.stepNum}>B</div>
+                    <div className={styles.stepDetails}>
+                      <h4 className={styles.stepTitle}>Automatic Match (24–48 Hours)</h4>
+                      <p className={styles.stepDesc}>
+                        We sync Patreon registers daily. If your Patreon email matches your Pixie email ({user?.email}), you'll be upgraded automatically.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className={styles.modalActionRow}>
+                  <a 
+                    href="https://patreon.com/u71272467" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className={styles.primaryPatreonBtn}
+                  >
+                    Go back to Patreon <ExternalLink size={16} />
+                  </a>
+                  <a 
+                    href={getMailtoLink()}
+                    className={styles.secondaryEmailBtn}
+                  >
+                    <Mail size={18} /> Email for Instant Activation
+                  </a>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
         document.body
       )}
     </div>
