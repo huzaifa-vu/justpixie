@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "node scripts/download-yt-dlp.mjs",
-    "electron:dev": "tsc electron/main.ts electron/preload.ts --target es2020 --module commonjs --esModuleInterop --skipLibCheck && concurrently --kill-others \"npm run dev\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development electron electron/main.js\"",
+    "electron:dev": "tsc electron/main.ts electron/preload.ts --target es2020 --module commonjs --esModuleInterop --skipLibCheck && concurrently --kill-others \"npm run dev\" \"cross-env NODE_ENV=development electron electron/main.js\"",
     "electron:build": "cross-env BUILD_TARGET=electron next build && tsc electron/main.ts electron/preload.ts --target es2020 --module commonjs --esModuleInterop --skipLibCheck && electron-builder build --config electron-builder.yml",
     "electron:build:win": "cross-env BUILD_TARGET=electron next build && tsc electron/main.ts electron/preload.ts --target es2020 --module commonjs --esModuleInterop --skipLibCheck && electron-builder build --win --config electron-builder.yml",
     "electron:build:mac": "cross-env BUILD_TARGET=electron next build && tsc electron/main.ts electron/preload.ts --target es2020 --module commonjs --esModuleInterop --skipLibCheck && electron-builder build --mac --config electron-builder.yml",
@@ -66,7 +66,6 @@
     "postcss": "^8.5.14",
     "tailwindcss": "^4.3.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5",
-    "wait-on": "^9.0.10"
+    "typescript": "^5"
   }
 }

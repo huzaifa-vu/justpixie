@@ -1,13 +1,26 @@
 import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { spawn, ChildProcess } from 'child_process';
 import path from 'path';
-import waitOn from 'wait-on';
 
 const PORT = 3000;
 let nextServer: ChildProcess | null = null;
 let mainWindow: BrowserWindow | null = null;
 
 const isDev = process.env.NODE_ENV === 'development';
+
+async function waitForServer(url: string, timeoutMs: number = 30000) {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) return;
+    } catch (e) {
+      // server not ready yet
+    }
+    await new Promise(r => setTimeout(r, 500));
+  }
+  throw new Error(`Server did not respond at ${url} within ${timeoutMs}ms`);
+}
 
 async function startNextServer() {
   if (isDev) {
@@ -52,7 +65,7 @@ async function createWindow() {
   });
 
   // Wait for the local Next.js server port to respond
-  await waitOn({ resources: [`http://localhost:${PORT}`], timeout: 30000 });
+  await waitForServer(`http://localhost:${PORT}`, 30000);
   
   mainWindow.loadURL(`http://localhost:${PORT}`);
 
