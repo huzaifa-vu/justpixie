@@ -35,9 +35,6 @@ export default function UpgradePage() {
       router.push("/login");
       return;
     }
-
-    // Open Patreon in a new tab
-    window.open("https://patreon.com/u71272467", "_blank");
     
     // Show the Activation Wizard Modal
     setShowModal(true);
@@ -58,155 +55,158 @@ export default function UpgradePage() {
     },
     {
       q: "Are my files actually private?",
-      a: "100%. Pixie runs transformations like Background Removal and Image Compression directly in your browser using WASM (WebAssembly). We strictly use our AI only to parse your instructions — your files never leave your device."
+      a: "Yes! All image, PDF, and video editing actions are executed directly inside your local web browser using client-side WASM sandboxing. None of your media files are ever uploaded, stored, or processed on our servers."
     },
     {
-      q: "How does the Patreon subscription work?",
-      a: "By supporting us at Patreon for just $1/month, you unlock Unlimited Magic. You can cancel at any time directly through Patreon with zero hassle."
+      q: "How does Patreon billing work?",
+      a: "Patreon subscriptions are priced at just $1/month, billed monthly. You can cancel at any time directly through your Patreon account with a single click."
     },
     {
-      q: "How long does activation take?",
-      a: "If you email us at huzaifaramzan10@gmail.com after subscribing, we will activate your account instantly. Otherwise, accounts are automatically matched and upgraded within 24–48 hours."
-    },
-    {
-      q: "Can I use the tools without writing prompts?",
-      a: "Absolutely. You can manually navigate to any of our 50+ utilities via the dashboard menu and use them without consuming any AI Prompts whatsoever."
-    },
-    {
-      q: "What if I exceed my 100 free prompts?",
-      a: "Free tier users will fall back to manual tool navigation for the remainder of the day once their prompt limit is reached. The limit resets automatically every 24 hours."
-    },
+      q: "How fast is manual activation?",
+      a: "If you use the 'Email for Instant Activation' link inside the modal, I will manually upgrade your account immediately (typically within 1-2 hours). Auto-match activation matches registers daily and takes 24-48 hours."
+    }
   ];
 
   return (
-    <div className={styles.dashboardPricing}>
-      <div className={styles.headerArea}>
-        <div className={styles.badge}><Sparkles size={16} /> Support Indie Devs</div>
-        <h1 className={styles.title}>Simple pricing, <br/><span className={styles.titleHighlight}>magical results.</span></h1>
+    <div className={styles.container}>
+      {/* Top Banner section */}
+      <div className={styles.headerSection}>
+        <div className={styles.sparkleIcon}>
+          <Crown size={32} style={{ color: "var(--mint-green)" }} />
+        </div>
+        <h1 className={styles.title}>
+          Unlock <span className={styles.gradientText}>Unlimited Magic</span>
+        </h1>
         <p className={styles.subtitle}>
-          Pixie's core tools will always be free. Upgrade to Unlimited Magic for heavy-duty AI usage and priority local processing.
+          Supercharge your workflow with heavy-duty AI engines, local high-density conversions, and unlimited prompts.
         </p>
       </div>
 
-      <div className={styles.pricingGrid}>
-        {/* Guest Tier */}
+      {/* Main pricing structure */}
+      <div className={styles.pricingWrapper}>
+        {/* Tier 1: Free */}
         <div className={styles.pricingCard}>
-          <div className={styles.iconWrapper} style={{ '--accent-color': '#0ea5e9' } as React.CSSProperties}>
-            <Compass size={28} />
-          </div>
           <div className={styles.cardHeader}>
-            <div className={styles.tierName}>Guest Explorer</div>
-            <div className={styles.priceBlock}>
+            <span className={styles.tierName}>Guest Explorer</span>
+            <div className={styles.priceRow}>
               <span className={styles.currency}>$</span>
-              <span className={styles.price}>0</span>
+              <span className={styles.amount}>0</span>
               <span className={styles.period}>/no account</span>
             </div>
-            <p className={styles.tierDesc}>Try out the tools without signing in.</p>
+            <p className={styles.cardDesc}>Try out the tools without signing in.</p>
           </div>
-          
-          {!user ? (
-            <div className={styles.planBtnOutline} style={{ cursor: 'default' }}>
-              Current Plan
-            </div>
-          ) : (
-            <div className={styles.planBtnOutlineDisabled} style={{ opacity: 0.5 }}>
-              Free Tier
-            </div>
-          )}
 
-          <ul className={styles.featuresList}>
-            <li><Check size={18} className={styles.checkIcon} /> Standard File Tools</li>
-            <li><Check size={18} className={styles.checkIcon} /> Local WASM processing</li>
-            <li><Check size={18} className={styles.checkIcon} /> <strong>3 AI Prompts Daily</strong></li>
-            <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Unlimited AI Prompts</li>
-            <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Account Sync</li>
-          </ul>
+          <div className={styles.featuresList}>
+            <div className={styles.featureItem}>
+              <Check className={styles.checkIcon} size={16} />
+              <span>Standard File Tools</span>
+            </div>
+            <div className={styles.featureItem}>
+              <Check className={styles.checkIcon} size={16} />
+              <span>Local WASM processing</span>
+            </div>
+            <div className={styles.featureItem}>
+              <Check className={styles.checkIcon} size={16} />
+              <span>3 AI Prompts Daily</span>
+            </div>
+            <div className={styles.featureItemDisabled}>
+              <span className={styles.dash}>—</span>
+              <span>Unlimited AI Prompts</span>
+            </div>
+          </div>
+
+          <button className={styles.planBtnOutlined} disabled>
+            Free Tier
+          </button>
         </div>
 
-        {/* Hobbyist Tier */}
+        {/* Tier 2: Hobbyist */}
         <div className={styles.pricingCard}>
-          <div className={styles.iconWrapper} style={{ '--accent-color': '#8b5cf6' } as React.CSSProperties}>
-            <User size={28} />
-          </div>
           <div className={styles.cardHeader}>
-            <div className={styles.tierName}>Hobbyist</div>
-            <div className={styles.priceBlock}>
+            <span className={styles.tierName}>Hobbyist</span>
+            <div className={styles.priceRow}>
               <span className={styles.currency}>$</span>
-              <span className={styles.price}>0</span>
+              <span className={styles.amount}>0</span>
               <span className={styles.period}>/forever</span>
             </div>
-            <p className={styles.tierDesc}>Perfect for exploring Pixie's magical file tools.</p>
+            <p className={styles.cardDesc}>Perfect for exploring Pixie's magical file tools.</p>
           </div>
-          
-          {user && !isLifetime ? (
-            <div className={styles.planBtnOutline} style={{ cursor: 'default' }}>
-              Current Plan
-            </div>
-          ) : !user ? (
-            <Link href="/login" className={styles.planBtnSolid} style={{ background: 'var(--foreground)', color: 'var(--background)' }}>
-              Login to Upgrade
-            </Link>
-          ) : (
-            <div className={styles.planBtnOutlineDisabled} style={{ opacity: 0.5 }}>
-              Free Tier
-            </div>
-          )}
 
-          <ul className={styles.featuresList}>
-            <li><Check size={18} className={styles.checkIcon} /> All 50+ File Tools forever</li>
-            <li><Check size={18} className={styles.checkIcon} /> Local-first WASM processing</li>
-            <li><Check size={18} className={styles.checkIcon} /> <strong>100 Free AI Prompts Daily</strong></li>
-            <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Unlimited AI Prompts</li>
-            <li className={styles.disabledFeature}><XIcon size={18} className={styles.xIcon} /> Priority Processing</li>
-          </ul>
+          <div className={styles.featuresList}>
+            <div className={styles.featureItem}>
+              <Check className={styles.checkIcon} size={16} />
+              <span>All 50+ File Tools forever</span>
+            </div>
+            <div className={styles.featureItem}>
+              <Check className={styles.checkIcon} size={16} />
+              <span>Local-first WASM processing</span>
+            </div>
+            <div className={styles.featureItem}>
+              <Check className={styles.checkIcon} size={16} />
+              <span>100 Free AI Prompts Daily</span>
+            </div>
+            <div className={styles.featureItemDisabled}>
+              <span className={styles.dash}>—</span>
+              <span>Unlimited AI Prompts</span>
+            </div>
+          </div>
+
+          <button className={styles.planBtnOutlined} disabled>
+            Current Plan
+          </button>
         </div>
 
-        {/* Unlimited Magic Tier */}
-        <div className={`${styles.pricingCard} ${styles.popularCard}`}>
-          <div className={styles.popularBadge}>Most Popular</div>
-          <div className={styles.iconWrapper} style={{ '--accent-color': 'var(--mint-green)' } as React.CSSProperties}>
-            <Crown size={28} />
-          </div>
+        {/* Tier 3: Pro */}
+        <div className={`${styles.pricingCard} ${styles.pricingCardActive}`}>
+          <div className={styles.badge}>Most Popular</div>
           <div className={styles.cardHeader}>
-            <div className={styles.tierName}>Unlimited Magic</div>
-            <div className={styles.priceBlock}>
+            <span className={styles.tierName}>Unlimited Magic</span>
+            <div className={styles.priceRow}>
               <span className={styles.currency}>$</span>
-              <span className={styles.price}>1</span>
+              <span className={styles.amount}>1</span>
               <span className={styles.period}>/month</span>
             </div>
-            <p className={styles.tierDesc}>Support on Patreon. Cancel anytime.</p>
+            <p className={styles.cardDesc}>Support on Patreon. Cancel anytime.</p>
           </div>
-          
-          {isLifetime ? (
-            <div className={styles.planBtnOutline} style={{ border: '2px solid var(--mint-green)', color: 'var(--mint-green)', cursor: 'default' }}>
-              Current Plan ✓
-            </div>
-          ) : (
-            <button 
-              className={styles.planBtnSolid} 
-              onClick={handleUpgrade}
-            >
-              {user ? "Upgrade via Patreon" : "Sign In to Buy"} <ArrowRight size={18} />
-            </button>
-          )}
 
-          <ul className={styles.featuresList}>
-            <li><Check size={18} className={styles.checkIcon} /> <strong>Unlimited AI Prompts</strong></li>
-            <li><Check size={18} className={styles.checkIcon} /> Intelligent File Routing Engine</li>
-            <li><Check size={18} className={styles.checkIcon} /> Priority Conversion Queue</li>
-            <li><Check size={18} className={styles.checkIcon} /> All 50+ File Tools forever</li>
-            <li><Check size={18} className={styles.checkIcon} /> Local-first WASM processing</li>
-          </ul>
+          <div className={styles.featuresList}>
+            <div className={styles.featureItem}>
+              <Check className={styles.checkIcon} size={16} />
+              <span>Unlimited AI Prompts</span>
+            </div>
+            <div className={styles.featureItem}>
+              <Check className={styles.checkIcon} size={16} />
+              <span>Intelligent File Routing Engine</span>
+            </div>
+            <div className={styles.featureItem}>
+              <Check className={styles.checkIcon} size={16} />
+              <span>Priority Conversion Queue</span>
+            </div>
+            <div className={styles.featureItem}>
+              <Check className={styles.checkIcon} size={16} />
+              <span>All 50+ File Tools forever</span>
+            </div>
+          </div>
+
+          <button 
+            className={styles.planBtnSolid} 
+            onClick={handleUpgrade}
+          >
+            Upgrade via Patreon <ArrowRight size={18} />
+          </button>
         </div>
       </div>
 
-      {/* Interactive FAQ */}
-      <div className={styles.faq}>
-        <h2><HelpCircle size={24} style={{ color: 'var(--mint-green)', verticalAlign: 'middle', marginRight: '0.5rem' }} /> Frequently Asked Questions</h2>
+      {/* FAQ Accordion Section */}
+      <div className={styles.faqWrapper}>
+        <h2 className={styles.faqTitle}>Frequently Asked Questions</h2>
         <div className={styles.faqList}>
           {faqItems.map((item, idx) => (
-            <div key={idx} className={`${styles.faqItem} ${openFaq === idx ? styles.faqItemOpen : ''}`}>
-              <button className={styles.faqHeader} onClick={() => setOpenFaq(openFaq === idx ? null : idx)}>
+            <div key={idx} className={styles.faqItem}>
+              <button 
+                className={styles.faqQuestion}
+                onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+              >
                 <span>{item.q}</span>
                 <ChevronDown size={20} className={`${styles.faqChevron} ${openFaq === idx ? styles.faqChevronOpen : ''}`} />
               </button>
@@ -245,29 +245,29 @@ export default function UpgradePage() {
                 </button>
                 
                 <h2 className={styles.modalTitle}>
-                  <Sparkles size={24} style={{ color: "var(--mint-green)" }} /> Step 2: Activate Your Upgrade
+                  <Crown size={26} style={{ color: "var(--mint-green)" }} /> Upgrade to Unlimited Magic
                 </h2>
                 <p className={styles.modalSub}>
-                  We have opened Patreon in a new tab for you to subscribe. Once you complete your subscription, choose how you would like to activate your Unlimited Magic tier:
+                  Follow these two simple steps to subscribe and activate your professional account:
                 </p>
                 
                 <div className={styles.stepsContainer}>
                   <div className={styles.stepCard}>
-                    <div className={styles.stepNum}>A</div>
+                    <div className={styles.stepNum}>1</div>
                     <div className={styles.stepDetails}>
-                      <h4 className={styles.stepTitle}>Instant Activation (Recommended)</h4>
+                      <h4 className={styles.stepTitle}>Subscribe on Patreon ($1/month)</h4>
                       <p className={styles.stepDesc}>
-                        Click the button below to email me. I will manually upgrade your account immediately.
+                        Click the primary button below to go to Patreon. Choose the $1/month tier and subscribe.
                       </p>
                     </div>
                   </div>
                   
                   <div className={styles.stepCard}>
-                    <div className={styles.stepNum}>B</div>
+                    <div className={styles.stepNum}>2</div>
                     <div className={styles.stepDetails}>
-                      <h4 className={styles.stepTitle}>Automatic Match (24–48 Hours)</h4>
+                      <h4 className={styles.stepTitle}>Activate Your Account</h4>
                       <p className={styles.stepDesc}>
-                        We sync Patreon registers daily. If your Patreon email matches your Pixie email ({user?.email}), you'll be upgraded automatically.
+                        Once subscribed, click 'Email for Instant Activation' to notify me for instant upgrade, or wait for automatic sync.
                       </p>
                     </div>
                   </div>
@@ -275,18 +275,18 @@ export default function UpgradePage() {
                 
                 <div className={styles.modalActionRow}>
                   <a 
+                    href={getMailtoLink()}
+                    className={styles.primaryPatreonBtn}
+                  >
+                    <Mail size={18} /> Email for Instant Activation
+                  </a>
+                  <a 
                     href="https://patreon.com/u71272467" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className={styles.primaryPatreonBtn}
-                  >
-                    Go back to Patreon <ExternalLink size={16} />
-                  </a>
-                  <a 
-                    href={getMailtoLink()}
                     className={styles.secondaryEmailBtn}
                   >
-                    <Mail size={18} /> Email for Instant Activation
+                    Go to Patreon to Subscribe <ExternalLink size={16} />
                   </a>
                 </div>
               </motion.div>
