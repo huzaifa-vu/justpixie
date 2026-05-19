@@ -239,13 +239,33 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
     return new Blob(chunks);
   };
 
-  const triggerDownload = (url: string, filename: string, isExternal: boolean = false) => {
+  const triggerDownload = async (url: string, filename: string, isExternal: boolean = false): Promise<boolean> => {
     const isDesktop = typeof window !== 'undefined' && (window as any).electronPixie?.isDesktop;
 
     if (isExternal) {
       if (isDesktop && (window as any).electronPixie?.downloadURL) {
-        (window as any).electronPixie.downloadURL(url);
-        return true;
+        return new Promise((resolve) => {
+          const ep = (window as any).electronPixie;
+          setStatusMsg("📥 Native Download Started...");
+          setProgress(0);
+          
+          ep.onDownloadProgress((data: any) => {
+            setProgress(Math.round((data.received / data.total) * 100) || 0);
+            setStatusMsg(`⏳ Downloading: ${formatBytes(data.received)} / ${formatBytes(data.total)}`);
+          });
+          
+          ep.onDownloadComplete((state: string) => {
+            ep.removeDownloadListeners();
+            if (state === 'completed') {
+              resolve(true);
+            } else {
+              setError(`Download ${state}`);
+              resolve(false);
+            }
+          });
+          
+          ep.downloadURL(url);
+        });
       }
       const win = window.open(url, '_blank');
       // Detect if popup was blocked
@@ -441,7 +461,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
               await new Promise(r => setTimeout(r, 5000));
             } else if (statusJson.status === 'completed' || statusJson.fileUrl) {
                 const finalLink = statusJson.fileUrl || targetUrl;
-                const success = triggerDownload(finalLink, fileName, true);
+                const success = await triggerDownload(finalLink, fileName, true);
                 if (!success) setIsPopupBlocked(true);
                 setManualDownloadUrl(finalLink);
                 polling = false;
@@ -450,7 +470,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
                 return;
             } else { pollCount++; await new Promise(r => setTimeout(r, 5000)); }
           } catch (pollErr: any) {
-            const success = triggerDownload(targetUrl, fileName, true);
+            const success = await triggerDownload(targetUrl, fileName, true);
             if (!success) setIsPopupBlocked(true);
             setManualDownloadUrl(targetUrl);
             polling = false;
@@ -468,12 +488,10 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
         // If we don't need local merging (ffmpeg), just trigger the browser download directly
         if (!needsLocalMerging) {
            setStatusMsg("🚀 Direct Download Started...");
-           triggerDownload(targetUrl, fileName, option.isExternal);
-           setTimeout(() => {
-             setIsProcessing(false);
-             setShowSuccess(true);
-             setTimeout(() => setShowSuccess(false), 5000);
-           }, 1500);
+           await triggerDownload(targetUrl, fileName, option.isExternal);
+           setIsProcessing(false);
+           setShowSuccess(true);
+           setTimeout(() => setShowSuccess(false), 5000);
            return;
         }
         
@@ -544,7 +562,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
             await writable.close();
         } else {
             const blob = await fetchFullBlobInChunks(targetUrl, totalSize, setProgress, isAudio ? "Downloading Audio" : `Downloading ${option.quality} Video`);
-            triggerDownload(URL.createObjectURL(blob), fileName);
+            await triggerDownload(URL.createObjectURL(blob), fileName);
         }
       } else {
         if (!isReady) throw new Error("WASM Engine still loading.");
@@ -571,7 +589,7 @@ export default function DownloaderUI({ platform, placeholder, accentColor = "var
           await writable.write(mergedBlob);
           await writable.close();
         } else {
-          triggerDownload(URL.createObjectURL(mergedBlob), fileName);
+          await triggerDownload(URL.createObjectURL(mergedBlob), fileName);
         }
       }
       setStatusMsg("Success! File saved correctly. 🎉");

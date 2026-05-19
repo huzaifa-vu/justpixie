@@ -96,6 +96,26 @@ ipcMain.on('download-url', (_e, url) => {
 app.whenReady().then(async () => {
   await startNextServer();
   await createWindow();
+
+  if (mainWindow) {
+    mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
+      item.on('updated', (event, state) => {
+        if (state === 'interrupted') {
+          webContents.send('download-complete', 'interrupted');
+        } else if (state === 'progressing' && !item.isPaused()) {
+          webContents.send('download-progress', {
+            received: item.getReceivedBytes(),
+            total: item.getTotalBytes(),
+            percent: item.getTotalBytes() ? item.getReceivedBytes() / item.getTotalBytes() : 0
+          });
+        }
+      });
+
+      item.once('done', (event, state) => {
+        webContents.send('download-complete', state);
+      });
+    });
+  }
 });
 
 app.on('window-all-closed', () => {
