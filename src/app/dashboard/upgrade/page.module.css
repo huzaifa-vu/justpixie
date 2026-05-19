@@ -488,7 +488,7 @@
 }
 
 :global([data-theme="dark"]) .modalTitle {
-  color: var(--pure-white, #fff);
+  color: #ffffff;
 }
 
 .modalSub {
@@ -567,7 +567,7 @@
 }
 
 :global([data-theme="dark"]) .stepTitle {
-  color: var(--pure-white, #fff);
+  color: #ffffff;
 }
 
 .stepDesc {
@@ -589,36 +589,6 @@
 .secondaryEmailBtn {
   padding: 1rem 2.25rem;
   border-radius: 100px;
-  border: none;
-  background: var(--deep-charcoal);
-  color: #fff;
-  font-weight: 800;
-  font-size: 0.95rem;
-  cursor: pointer;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-:global([data-theme="dark"]) .secondaryEmailBtn {
-  background: var(--pure-white);
-  color: var(--deep-charcoal);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
-}
-
-.secondaryEmailBtn:hover {
-  transform: translateY(-4px) scale(1.03);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-  filter: brightness(1.2);
-}
-
-.primaryPatreonBtn {
-  padding: 1rem 2.25rem;
-  border-radius: 100px;
   border: 1px solid var(--border);
   background: rgba(0, 0, 0, 0.03);
   color: var(--foreground);
@@ -634,22 +604,52 @@
   width: 100%;
 }
 
-:global([data-theme="dark"]) .primaryPatreonBtn {
+:global([data-theme="dark"]) .secondaryEmailBtn {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.1);
-  color: var(--pure-white, #fff);
+  color: #ffffff;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-.primaryPatreonBtn:hover {
+.secondaryEmailBtn:hover {
   transform: translateY(-3px) scale(1.02);
   background: rgba(0, 0, 0, 0.06);
   border-color: var(--foreground);
 }
 
-:global([data-theme="dark"]) .primaryPatreonBtn:hover {
+:global([data-theme="dark"]) .secondaryEmailBtn:hover {
   background: rgba(255, 255, 255, 0.1);
-  border-color: var(--pure-white, #fff);
+  border-color: #ffffff;
+}
+
+.primaryPatreonBtn {
+  padding: 1rem 2.25rem;
+  border-radius: 100px;
+  border: none;
+  background: var(--deep-charcoal);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+:global([data-theme="dark"]) .primaryPatreonBtn {
+  background: #ffffff;
+  color: #111111;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
+}
+
+.primaryPatreonBtn:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  filter: brightness(1.2);
 }
 
 .modalCloseBtn {

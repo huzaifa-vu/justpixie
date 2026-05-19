@@ -1053,7 +1053,7 @@
 }
 
 :global([data-theme="dark"]) .successCard h2 {
-  color: var(--pure-white, #fff);
+  color: #ffffff;
 }
 
 :global([data-theme="dark"]) .successCard p {
@@ -1061,8 +1061,8 @@
 }
 
 :global([data-theme="dark"]) .closeSuccess {
-  background: var(--pure-white, #fff);
-  color: var(--deep-charcoal);
+  background: #ffffff;
+  color: #111111;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
 }
 
