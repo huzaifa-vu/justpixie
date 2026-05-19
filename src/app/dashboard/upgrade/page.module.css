@@ -442,7 +442,9 @@
 }
 
 :global([data-theme="dark"]) .modalOverlay {
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
 }
 
 .modalContent {
@@ -455,7 +457,7 @@
   max-width: 600px;
   padding: 3.5rem;
   box-shadow: 
-    0 40px 100px -20px rgba(0, 0, 0, 0.1),
+    0 40px 100px -20px rgba(0, 0, 0, 0.08),
     inset 0 2px 20px rgba(255, 255, 255, 0.8);
   position: relative;
   overflow: hidden;
@@ -463,11 +465,13 @@
 }
 
 :global([data-theme="dark"]) .modalContent {
-  background: rgba(15, 15, 15, 0.85);
+  background: rgba(18, 18, 18, 0.8);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
   border-color: rgba(255, 255, 255, 0.08);
   box-shadow: 
-    0 40px 100px -20px rgba(0, 0, 0, 0.6),
-    inset 0 2px 20px rgba(255, 255, 255, 0.03);
+    0 40px 100px -20px rgba(0, 0, 0, 0.65),
+    inset 0 2px 20px rgba(255, 255, 255, 0.02);
 }
 
 .modalTitle {
@@ -484,7 +488,7 @@
 }
 
 :global([data-theme="dark"]) .modalTitle {
-  color: var(--pure-white);
+  color: var(--pure-white, #fff);
 }
 
 .modalSub {
@@ -563,7 +567,7 @@
 }
 
 :global([data-theme="dark"]) .stepTitle {
-  color: var(--pure-white);
+  color: var(--pure-white, #fff);
 }
 
 .stepDesc {
@@ -579,28 +583,6 @@
   justify-content: center;
   margin-top: 2rem;
   flex-wrap: wrap;
-}
-
-.primaryPatreonBtn {
-  padding: 1rem 2.25rem;
-  border-radius: 100px;
-  border: none;
-  background: linear-gradient(135deg, #f96854 0%, #ff8c7a 100%);
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 0.95rem;
-  cursor: pointer;
-  box-shadow: 0 15px 30px rgba(249, 104, 84, 0.25);
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.primaryPatreonBtn:hover {
-  transform: translateY(-4px) scale(1.03);
-  box-shadow: 0 20px 40px rgba(249, 104, 84, 0.35);
-  filter: brightness(1.1);
 }
 
 .secondaryEmailBtn {
@@ -622,13 +604,47 @@
 :global([data-theme="dark"]) .secondaryEmailBtn {
   background: var(--pure-white);
   color: var(--deep-charcoal);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
 }
 
 .secondaryEmailBtn:hover {
   transform: translateY(-4px) scale(1.03);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
   filter: brightness(1.2);
+}
+
+.primaryPatreonBtn {
+  padding: 1rem 2.25rem;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--foreground);
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.02);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+:global([data-theme="dark"]) .primaryPatreonBtn {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--pure-white, #fff);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.primaryPatreonBtn:hover {
+  transform: translateY(-3px) scale(1.02);
+  background: rgba(0, 0, 0, 0.06);
+  border-color: var(--foreground);
+}
+
+:global([data-theme="dark"]) .primaryPatreonBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--pure-white, #fff);
 }
 
 .modalCloseBtn {
@@ -645,6 +661,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 10;
 }
 
 .modalCloseBtn:hover {
@@ -654,6 +671,8 @@
 
 :global([data-theme="dark"]) .modalCloseBtn:hover {
   background: rgba(255, 255, 255, 0.08);
+  color: var(--pure-white, #fff);
 }
+
 
 
